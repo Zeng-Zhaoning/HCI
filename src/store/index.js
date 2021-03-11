@@ -5,7 +5,7 @@
  */
 
 import { createStore } from 'vuex'
-import { getProjectByPID } from "@/api/projectAPI";
+import { getProjectAPI } from "@/api/projectAPI";
 
 export default createStore({
   state: {
@@ -25,7 +25,7 @@ export default createStore({
 
   actions: {
     loadProject({ commit }, pid) {
-      getProjectByPID(pid)
+      getProjectAPI(pid)
           .then( project => { commit('setCurrentProject', project) })
           .catch( error => { console.log(error) })
     }
