@@ -18,8 +18,10 @@
         操作
       </div>
       <div class="operations">
-        <div class="op">
-          <img src="../assets/icons/export.svg" alt="导出">
+        <div class="op" @click="export_img">
+          <div>
+            <img src="../assets/icons/export.svg" alt="导出">
+          </div>
           <div class="op-name">导出</div>
         </div>
       </div>
@@ -58,6 +60,9 @@ export default {
   },
   name: "EditBar",
   methods:{
+    export_img(){
+      alert("导出图片");
+    }
   }
 }
 </script>
@@ -93,9 +98,11 @@ export default {
 .operations{
   display: flex;
   flex-wrap: wrap;
-  padding: 5px @len1 0 @len1;
+  padding: 5px @len1 0 10px;
 }
 .op{
+  width: 40px;
+  text-align: center;
   img{
     height: 25px;
     width: 25px;
@@ -107,7 +114,11 @@ export default {
     font-family: 幼圆;
     font-weight: bold;
   }
+  :hover{
+    cursor:pointer;
+  }
 }
+
 .graph-area{
   flex-grow: 1;
 }

@@ -1,10 +1,9 @@
 <template>
   <div class="container">
-<!--    <div class="header">个人信息</div>-->
     <div class="user-info">
       <div>
         你好，
-        <span class="user-name">"用户名"</span>
+        <span class="user-name">{{ user_name }}</span>
       </div>
       <div class="prompt">新建或打开已有项目以开始操作</div>
     </div>
@@ -12,32 +11,53 @@
     <div class="projects">
       <div class="header">
         <span>我的项目</span>
-        <el-button class="addbtn" icon="el-icon-plus"></el-button>
+        <el-button class="addbtn" icon="el-icon-plus" @click="create_pro"></el-button>
       </div>
-      <el-menu
-          class="menu"
-          >
-        <el-menu-item index="1">项目1</el-menu-item>
-        <el-menu-item index="2">项目2</el-menu-item>
-        <el-menu-item index="3">项目3</el-menu-item>
-      </el-menu>
+      <div class="menu">
+        <project-item v-for="(pro,i) of all_projects"
+                      :pname="pro.project_name"
+                      :pid="pro.pid"
+                      :key="i"
+                      @click="select(pro)">
+        </project-item>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import {mapState, mapMutations} from "vuex";
+import ProjectItem from "./ProjectItem"
 export default {
   name: "SideBar",
-  methods:{
+  components:{ProjectItem},
+  data(){
+    return{
 
+    }
+  },
+  computed:{
+    ...mapState([
+        "user_name", "all_projects","current_project"
+    ])
+  },
+  methods:{
+    ...mapMutations(['setCurrentProject']),
+    create_pro(){
+      alert("创建新项目")
+    },
+    select(pro){
+      this.setCurrentProject(pro);
+      console.log(this.current_project.pid)
+    }
   }
 }
 </script>
 
 <style scoped lang="less">
-@import "../assets/css/colors.less";
+@import "../../assets/css/colors.less";
 @pad : 15px;
-@project_item_height : 50px;
+
 .container{
   height: 100%;
   display: flex;
@@ -88,9 +108,5 @@ export default {
 .menu{
   width: 220px;
   border-right: 1px solid white;
-}
-.el-menu-item{
-  height: @project_item_height;
-  line-height: @project_item_height;
 }
 </style>

@@ -9,9 +9,28 @@ import { getProjectAPI } from "@/api/projectAPI";
 
 export default createStore({
   state: {
-    current_project: null,
-    current_pid: 1,
-
+    user_name: "傻逼",
+    uid: 1,
+    current_project: {
+      pid: 1,
+      project_name: "希望工程",
+      text: "测试内容",
+      graph: [{subject: "傻逼1",object: "傻逼2",relation: "嘲笑"}]
+    },
+    all_projects: [
+      {
+        pid: 1,
+        project_name: "希望工程",
+        text: "测试内容",
+        graph: [{subject: "傻逼1",object: "傻逼2",relation: "嘲笑"}]
+      },
+      {
+        pid: 2,
+        project_name: "吃饭工程",
+        text: "测试吃饭",
+        graph: [{subject: "傻逼2",object: "傻逼3",relation: "鄙视"}]
+      }
+    ]
   },
 
   getters: {
@@ -21,7 +40,7 @@ export default createStore({
   mutations: {
     setCurrentProject(state, project){
       state.current_project = project;
-    }
+    },
   },
 
   actions: {

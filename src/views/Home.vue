@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import SideBar from "../components/SideBar";
+import SideBar from "../components/SideBar/SideBar";
 import WorkSpace from "../components/WorkSpace";
 
 export default {
