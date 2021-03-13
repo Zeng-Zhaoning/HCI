@@ -4,7 +4,7 @@
       <side-bar></side-bar>
     </el-aside>
     <el-main>
-      <work-space></work-space>
+      <work-space class="work-space"></work-space>
     </el-main>
   </el-container>
 </template>
@@ -22,9 +22,16 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
+@import "../assets/css/colors.less";
 #home {
   height: 100%;
 }
-
+.el-main{
+  padding: 0;
+  background-color: @background;
+}
+.work-space{
+  height: 100%;
+}
 </style>

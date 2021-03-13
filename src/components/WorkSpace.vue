@@ -18,8 +18,11 @@ export default {
 
 <style scoped lang="less">
 .edit-bar{
+
+}
+.graph-area{
   position: absolute;
-  right: 20px;
-  height: 90%;
+  top: 48%;
+  left: 43%;
 }
 </style>

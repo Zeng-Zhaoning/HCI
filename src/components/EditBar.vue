@@ -1,18 +1,19 @@
 <template class="container">
   <div class="container">
-    <div class="edit-text">
+    <div class="edit-block">
       <div class="title">
-        文本
+        待解析文本
       </div>
       <el-input
+          class="el-input"
           type="textarea"
-          :rows="4"
+          :rows="6"
           placeholder="请输入待解析文本"
           v-model="textarea">
       </el-input>
     </div>
 
-    <div class="show-operations">
+    <div class="edit-block">
       <div class="title">
         操作
       </div>
@@ -24,7 +25,7 @@
       </div>
     </div>
 
-    <div class="show-structure">
+    <div class="edit-block graph-area">
       <div class="title">
         知识结构
       </div>
@@ -61,11 +62,53 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
+@import "../assets/css/colors.less";
+@len1 : 10px;
+@len2 : 12px;
 .container{
+  position: fixed;
+  top: 1%;
+  right: 5px;
+  height: 97.5%;
   display: flex;
   flex-direction: column;
   width: 350px;
-  border: 2px solid blue;
+  background: none;
+}
+.title{
+  color: @theme;
+  font-weight: bold;
+  font-size: 15px;
+  font-family: 微软雅黑;
+  margin-bottom: @len1;
+}
+.edit-block{
+  padding: @len2 @len2 18px @len2;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 0 10px #e6e6e6;
+}
+.operations{
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px @len1 0 @len1;
+}
+.op{
+  img{
+    height: 25px;
+    width: 25px;
+  }
+  .op-name{
+    font-size: 13px;
+    text-align: center;
+    color: #909399;
+    font-family: 幼圆;
+    font-weight: bold;
+  }
+}
+.graph-area{
+  flex-grow: 1;
 }
 </style>

@@ -37,11 +37,12 @@ export default {
 <style scoped lang="less">
 @import "../assets/css/colors.less";
 @pad : 15px;
+@project_item_height : 50px;
 .container{
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid @separator;
+  overflow: hidden;
 }
 .user-info{
   padding: @pad;
@@ -85,11 +86,11 @@ export default {
   padding: 0px;
 }
 .menu{
-  border-right: 1px solid @separator;
-  width: 219px;
+  width: 220px;
+  border-right: 1px solid white;
 }
 .el-menu-item{
-  height: 50px;
-  line-height: 50px;
+  height: @project_item_height;
+  line-height: @project_item_height;
 }
 </style>
