@@ -5,6 +5,7 @@
 <script>
     //界面位置待调整
     //大概只能在d3v4下跑，有force，拖完后变红固定，双击恢复，滚轮不可zoom（可以按ctrl后再滚轮，页面自带）
+    //可读json文件
     import * as d3 from 'd3'
 
     export default {

@@ -3,18 +3,18 @@
 <!--    <div class="graph-area">-->
 <!--      知识图谱展示区-->
 <!--    </div>-->
-    <d3-template></d3-template>
+    <kg-template></kg-template>
     <edit-bar class="edit-bar"></edit-bar>
   </div>
 </template>
 
 <script>
 import EditBar from "./EditBar";
-import d3Template from "./d3_ref1"
+import kgTemplate from "./cy_ref1"
 
 export default {
   name: "WorkSpace",
-  components: {EditBar,d3Template}
+  components: {EditBar,kgTemplate}
 }
 </script>
 

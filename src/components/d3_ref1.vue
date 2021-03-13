@@ -34,6 +34,7 @@
 
 <script>
     //大概只能在d3v4下跑, 有force，拖完后不固定，滚轮可zoom
+    //可读json文件
     import * as d3 from 'd3'
 
     let svg, drag, simulation

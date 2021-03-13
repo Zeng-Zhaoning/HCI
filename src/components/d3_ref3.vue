@@ -30,6 +30,7 @@
     //界面位置待调整
     //大概只能在d3v4下跑，有force，拖完不固定，滚轮不可zoom（可以按ctrl后再滚轮，页面自带）
     //关系线和节点的边线因为不明原因无法显示
+    //可读json文件
     import * as d3 from 'd3'
     import $ from 'jquery'
 

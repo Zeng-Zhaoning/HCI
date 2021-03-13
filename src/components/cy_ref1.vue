@@ -9,6 +9,8 @@
 <script>
     //界面位置待调整
     //无force，滚轮可zoom
+    //可读json文件
+    //可修改属性值
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -176,7 +178,7 @@
                         }
                     }
                 });
-                const navigator = cy_ref2.navigator({
+                const navigator = cy.navigator({
                     container: "#navigator",
                     viewLiveFramerate: 0,
                     thumbnailEventFramerate: 30,
@@ -212,9 +214,9 @@
                 })*/
 
                 // 绑定事件
-                cy_ref2.on('tap', event => {
+                cy.on('tap', event => {
                     const node = event.target;
-                    if( node === cy_ref2 ){
+                    if( node === cy ){
                         return
                     }
                     const group = node.group()
