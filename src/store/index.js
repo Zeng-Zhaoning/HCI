@@ -10,7 +10,8 @@ import { getProjectAPI } from "@/api/projectAPI";
 export default createStore({
   state: {
     current_project: null,
-    current_pid: 1
+    current_pid: 1,
+
   },
 
   getters: {
