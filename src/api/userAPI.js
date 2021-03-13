@@ -1,10 +1,11 @@
 import axios from "axios";
-axios.defaults.baseURL =  '/api/user';
 
 export {registerAPI, createProjectAPI}
 
+let base =  '/api/user';
+
 function registerAPI(userForm){
-    return axios.post( '/register', {userForm})
+    return axios.post( base + '/register', {userForm})
         .then(res => {
             return res.data
         })
@@ -14,7 +15,7 @@ function registerAPI(userForm){
 }
 
 function createProjectAPI(userForm){
-    return axios.get( '/login', {userForm})
+    return axios.get( base + '/login', {userForm})
         .then(res => {
             return res.data
         })

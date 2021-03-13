@@ -1,10 +1,11 @@
 import axios from "axios";
-axios.defaults.baseURL =  '/api/project';
 
 export {createProjectAPI, getProjectAPI, getAllProjectsAPI}
 
+let base =  '/api/project';
+
 function createProjectAPI(uid, projectName){
-    return axios.post( '/create_new_project/' + uid, { projectName })
+    return axios.post( base + '/create_new_project/' + uid, { projectName })
         .then(res => {
             return res.data
         })
@@ -14,7 +15,7 @@ function createProjectAPI(uid, projectName){
 }
 
 function getProjectAPI(pid){
-    return axios.get( '/get_project/' + pid)
+    return axios.get( base + '/get_project/' + pid)
         .then(res => {
             return res.data
         })
@@ -24,7 +25,7 @@ function getProjectAPI(pid){
 }
 
 function getAllProjectsAPI(uid){
-    return axios.get( '/get_all_projects' + uid)
+    return axios.get( base + '/get_all_projects' + uid)
         .then(res => {
             return res.data
         })

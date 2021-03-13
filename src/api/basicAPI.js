@@ -1,10 +1,13 @@
 import axios from "axios";
-axios.defaults.baseURL =  '/api/basic';
+
 
 export {setTextAPI, getGraphAPI}
 
+let base =  '/api/basic';
+
 function setTextAPI(pid, text){
-    return axios.post('/set_text/' + pid, {content: text})
+
+    return axios.post(base + '/set_text/' + pid, {text})
         .then(res => {
             return res.data
         }).catch(error => {
@@ -14,7 +17,7 @@ function setTextAPI(pid, text){
 
 
 function getGraphAPI(pid){
-    return axios.get('/get_graph/' + pid )
+    return axios.get(base + '/get_graph/' + pid )
         .then(res => {
             return res.data
         }).catch(error => {

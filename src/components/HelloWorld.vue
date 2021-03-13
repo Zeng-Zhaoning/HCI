@@ -7,6 +7,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { setTextAPI,getGraphAPI } from '@/api/basicAPI'
+import { getProjectAPI } from "../api/projectAPI";
 
 export default {
   name: 'HelloWorld',
@@ -32,6 +34,9 @@ export default {
   },
   created() {
     this.loadProject(this.current_pid);
+    setTextAPI(1,'just test').then(res => {
+      console.log(res)
+    })
   }
 }
 </script>
