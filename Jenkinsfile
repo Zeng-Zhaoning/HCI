@@ -18,7 +18,7 @@ node {
 
             echo 'buid start'
 
-            sh 'BUILD_ID=dontKillMe npm install && npm run build'
+            sh 'JENKINS_NODE_COOKIE=dontKillMe npm install && npm run build'
 
 
     }
