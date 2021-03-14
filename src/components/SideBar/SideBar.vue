@@ -18,7 +18,7 @@
                       :pname="pro.project_name"
                       :pid="pro.pid"
                       :key="i"
-                      @click="select(pro)">
+                      @click="select(pro.pid)">
         </project-item>
       </div>
     </div>
@@ -26,19 +26,14 @@
 </template>
 
 <script>
-import {mapState, mapMutations} from "vuex";
+import {mapState, mapMutations, mapGetters} from "vuex";
 import ProjectItem from "./ProjectItem"
 export default {
   name: "SideBar",
   components:{ProjectItem},
-  data(){
-    return{
-
-    }
-  },
   computed:{
     ...mapState([
-        "user_name", "all_projects","current_project"
+        "user_name", "all_projects"
     ])
   },
   methods:{
@@ -46,9 +41,8 @@ export default {
     create_pro(){
       alert("创建新项目")
     },
-    select(pro){
-      this.setCurrentProject(pro);
-      console.log(this.current_project.pid)
+    select(pid){
+      this.setCurrentProject(pid);
     }
   }
 }

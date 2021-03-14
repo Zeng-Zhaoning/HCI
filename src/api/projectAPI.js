@@ -25,7 +25,7 @@ function getProjectAPI(pid){
 }
 
 function getAllProjectsAPI(uid){
-    return axios.get( base + '/get_all_projects' + uid)
+    return axios.get( base + '/get_all_projects/' + uid)
         .then(res => {
             return res.data
         })

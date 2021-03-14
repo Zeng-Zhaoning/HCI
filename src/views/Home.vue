@@ -12,12 +12,22 @@
 <script>
 import SideBar from "../components/SideBar/SideBar";
 import WorkSpace from "../components/WorkSpace";
+import { mapActions,mapState } from "vuex";
 
 export default {
   name: 'Home',
   components: {
     WorkSpace,
     SideBar
+  },
+  computed: {
+    ...mapState(['uid']),
+  },
+  methods: {
+    ...mapActions(['loadAllProjects']),
+  },
+  created() {
+    this.loadAllProjects(this.uid);
   }
 }
 </script>

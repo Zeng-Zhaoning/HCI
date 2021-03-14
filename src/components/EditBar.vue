@@ -9,8 +9,11 @@
           type="textarea"
           :rows="6"
           placeholder="请输入待解析文本"
-          v-model="textarea">
+          v-model="text">
       </el-input>
+      <div class="analyse-btn-box">
+        <el-button type="primary" :loading="false" @click="analyse">解析</el-button>
+      </div>
     </div>
 
     <div class="edit-block">
@@ -31,7 +34,7 @@
       <div class="title">
         知识结构
       </div>
-      <el-tree :data="data"
+      <el-tree :data="tree"
                :props="defaultProps">
       </el-tree>
 
@@ -40,10 +43,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
+  name: "EditBar",
   data(){
     return{
-      data: [{
+      text: "",
+      tree: [{
         label: '一级 1',
         children: [{
           label: '二级 1-1',
@@ -58,11 +64,19 @@ export default {
       }
     }
   },
-  name: "EditBar",
+  computed: {
+    ...mapState(['current_pid'])
+  },
   methods:{
+    analyse(){
+
+    },
     export_img(){
       alert("导出图片");
     }
+  },
+  created() {
+    //TODO: 将三元关系组转化成树
   }
 }
 </script>
@@ -94,6 +108,17 @@ export default {
   border-radius: 4px;
   background-color: white;
   box-shadow: 0 0 10px #e6e6e6;
+}
+.analyse-btn-box{
+  display: flex;
+  flex-direction: row-reverse;
+  .el-button{
+    padding: @len1 2*@len1 @len1 2*@len1;
+    font-size: 13px;
+    min-height: 20px;
+    width: 80px;
+    margin: @len1 0 -@len1 0;
+  }
 }
 .operations{
   display: flex;

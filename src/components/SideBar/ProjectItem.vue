@@ -23,9 +23,9 @@ export default {
   },
   computed: {
     selected(){
-      return this.pid === this.current_project.pid;
+      return this.pid === this.current_pid;
     },
-    ...mapState(['current_project'])
+    ...mapState(['current_pid'])
   },
   methods:{
 
