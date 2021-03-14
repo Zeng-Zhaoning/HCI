@@ -11,7 +11,15 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "cytoscape": "^3.18.1",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "cytoscape-dagre": "^2.3.2",
+    "cytoscape-navigator": "^2.0.1",
+    "cytoscape-panzoom": "^2.5.3",
+    "cytoscape-spread": "^3.0.0",
+    "d3": "^4.13.0",
     "element-plus": "^1.0.2-beta.34",
+    "jquery": "^3.6.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
