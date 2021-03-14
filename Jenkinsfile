@@ -24,13 +24,9 @@ node {
         echo 'buid start'
 
 
-        OLD_BUILD_ID=$BUILD_ID
-        echo $OLD_BUILD_ID
+
         BUILD_ID=dontKillMe
         sh './run.sh restart'
-
-        BUILD_ID=$OLD_BUILD_ID
-        echo $BUILD_ID
 
 
     }
