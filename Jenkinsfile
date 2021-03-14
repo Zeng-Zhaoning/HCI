@@ -1,6 +1,8 @@
 #!/usr/bin/env groovy
 node {
-
+    def nodeHome
+    nodeHome = tool 'node'
+    env.PATH = "${nodeHome}/bin;${env.PATH}"
 
     stage('git clone') { // for display purposes
         // Get some code from a GitHub repository
