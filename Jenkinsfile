@@ -13,11 +13,11 @@ node {
 
 
     stage('Build') {
-        steps {
+
             echo 'buid start'
 
             sh 'npm install && npm run build'
-        }
+
 
     }
 
