@@ -23,10 +23,7 @@ node {
 
         echo 'buid start'
 
-
-
-        BUILD_ID=dontKillMe
-        sh './run.sh restart'
+        sh 'JENKINS_NODE_COOKIE=dontKillMe sh ./run.sh'
 
 
     }
