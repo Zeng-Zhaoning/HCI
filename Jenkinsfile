@@ -18,7 +18,7 @@ node {
 
             echo 'buid start'
 
-            sh 'npm install && npm run build'
+            sh 'BUILD_ID=dontKillMe npm install && npm run build'
 
 
     }
