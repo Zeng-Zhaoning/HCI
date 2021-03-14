@@ -13,12 +13,24 @@ node {
 
     }
 
+    stage('Npm Install') {
+        echo 'install start'
+
+        sh 'npm install'
+    }
 
     stage('Build') {
 
-            echo 'buid start'
+        echo 'buid start'
 
-            sh 'JENKINS_NODE_COOKIE=dontKillMe npm install && npm run build'
+
+        OLD_BUILD_ID=$BUILD_ID
+        echo $OLD_BUILD_ID
+        BUILD_ID=dontKillMe
+        sh './run.sh restart'
+
+        BUILD_ID=$OLD_BUILD_ID
+        echo $BUILD_ID
 
 
     }
