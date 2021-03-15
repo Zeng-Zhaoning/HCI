@@ -542,6 +542,24 @@
                             onClickFunction: function (event) {
                                 that.exportPng();
                             }
+                        },
+                        {
+                            id: 'exportCutPng',
+                            content: 'exportCutPng',
+                            selector: 'edge, node',
+                            coreAsWell: true,
+                            onClickFunction: function (event) {
+                                that.exportCutPng();
+                            }
+                        },
+                        {
+                            id: 'exportJSON',
+                            content: 'exportJSON',
+                            selector: 'edge, node',
+                            coreAsWell: true,
+                            onClickFunction: function (event) {
+                                that.exportJSON();
+                            }
                         }
                     ],
                     // css classes that menu items will have
@@ -678,6 +696,23 @@
                 (remove && remove.length) && (remove.restore()); // 恢复删除内容
             },
 
+
+            exportJSON(){//有空也可以改成promise式的
+                let data = this.getDataJsonObject();
+                let filename =  `${new Date().getTime()}.json`;
+                if(typeof data === 'object'){
+                    data = JSON.stringify(data, undefined, 4)
+                }
+                var blob = new Blob([data], {type: 'text/json'}),
+                    e = document.createEvent('MouseEvents'),
+                    a = document.createElement('a');
+                a.download = filename;
+                a.href = window.URL.createObjectURL(blob);
+                a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+                e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                a.dispatchEvent(e);
+            },
+
             //JSON.parse(JSON.stringify(obj))我们一般用来深拷贝
             //但不是完全深拷贝，有以下特点：
             //1、如果obj里面有时间对象，则JSON.stringify后再JSON.parse的结果，时间将只是字符串的形式。而不是时间对象；
@@ -688,7 +723,7 @@
             //6、如果对象中存在循环引用的情况也无法正确实现深拷贝；
 
 
-            exportDataJson() {
+            getDataJsonObject() {
                 let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
                 let obj = {"edges": [], "nodes": []};
                 if (JSON.stringify(eles) !== '{}') {
@@ -715,7 +750,7 @@
                 return obj;
             },
 
-            exportGraphJson() {
+            getGraphJsonObject() {
                 let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
                 console.log("eles_json", eles);
                 console.log("eles_layout", this.cy.layout({
@@ -726,7 +761,7 @@
                 //保存布局是怎么保存呢？eles.layout(options)又是什么？
             },
 
-            exportCyJson() {
+            getCyJsonObject() {
                 let cy = JSON.parse(JSON.stringify(this.cy.json()));
                 console.log("cy_object", this.cy)
                 console.log("cy_json", cy);
