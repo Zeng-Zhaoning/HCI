@@ -11,7 +11,7 @@
     <div class="projects">
       <div class="header">
         <span>我的项目</span>
-        <el-button class="addbtn" icon="el-icon-plus" @click="create_pro"></el-button>
+        <i class="el-icon-plus createbtn" @click="create_pro"></i>
       </div>
       <div class="menu">
         <project-item v-for="(pro,i) of all_projects"
@@ -93,13 +93,14 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.addbtn{
-  border: none;
-  background: none;
-  color: white;
-  width: 30px;
-  height: 10px;
-  padding: 0px;
+.createbtn{
+  text-align: center;
+  height: 50px;
+  width: 40px;
+  line-height: 40px;
+}
+.createbtn:hover{
+  cursor: pointer;
 }
 .menu{
   width: 220px;

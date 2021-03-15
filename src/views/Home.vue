@@ -1,7 +1,7 @@
 <template>
   <el-container id="home">
     <el-aside width="220px">
-      <side-bar></side-bar>
+      <side-bar class="side-bar"></side-bar>
     </el-aside>
     <el-main>
       <work-space class="work-space"></work-space>
@@ -41,12 +41,10 @@ export default {
 @import "../assets/css/colors.less";
 #home {
   height: 100%;
+  width: 100%;
 }
 .el-main{
   padding: 0;
   background-color: @background;
-}
-.work-space{
-  height: 100%;
 }
 </style>

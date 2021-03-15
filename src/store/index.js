@@ -87,10 +87,12 @@ export default createStore({
         let text = data.text;
         setTextAPI(pid, text).then(res => {
             if(res.success){
-
+                //！注意：不能保证grpah不为空！后期需要用上文本时，接口返回的数据一定是要改的。
+                console.log(res)
+                commit('setProjectGraph', { pid: res.graph[0].pid, graph: res.graph })
             }else { console.log(res.message); }
         }).catch(err => {
-
+            console.log(err)
         })
     }
   }

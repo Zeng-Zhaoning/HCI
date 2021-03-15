@@ -7,7 +7,7 @@ let base =  '/api/basic';
 
 function setTextAPI(pid, text){
 
-    return axios.post(base + '/set_text/' + pid, {text})
+    return axios.post(base + '/set_text/' + pid, {string: text})
         .then(res => {
             return res.data
         }).catch(error => {
