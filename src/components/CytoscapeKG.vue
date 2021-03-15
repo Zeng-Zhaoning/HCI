@@ -17,7 +17,7 @@
     window.jQuery = window.$ = $
 
     export default {
-        name: 'test',
+        name: 'CytoscapeKG',
         data () {
             return {
                 defaultStyle: [
@@ -28,7 +28,7 @@
                             'font-size': "25px",
                             'text-outline-width': 5,
                             'text-outline-color': '#888',
-                            'content': 'data(content)',//这里的content是啥？
+                            'content': 'data(text)',//这里的content用来显示节点的内容
                             'text-valign': 'center',
                             'text-halign': 'center',
                             'padding': '25px',
@@ -51,10 +51,10 @@
                             "text-opacity": 1,
                             "text-valign": "center",
                             "text-halign": "center",
-                            "text-border-color": "#65b3fc",
+                            "text-border-color": "#4aa0ff",
                             "text-border-opacity": "1",
-                            "text-border-width": "1px",
-                            "text-background-color": "#fff",
+                            "text-border-width": "2px",
+                            "text-background-color": "#c6fff0",
                             "text-background-shape": "roundrectangle",
                             "text-background-padding": "5px",
                             "text-background-opacity": "1",
@@ -67,7 +67,7 @@
                             'background-color': "#65b3fc",
                             'line-color': "#13efc4",
                             'font-size': "24px",
-                            'content': 'data(label)',//这里的content是啥？
+                            'content': 'data(label)',//这里的content用来显示边的内容
                             'curve-style': 'bezier',//错开不同的边
                             'control-point-step-size': 100, //从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离
                             "edge-text-rotation": "autorotate",
@@ -86,9 +86,8 @@
                     {
                         selector: ':selected',
                         css: {
-                            'line-color': "rgb(255,252,80)",
-                            "border-width": 6,
-                            "border-color": "rgb(255,252,80)"
+                            'line-color': "rgb(255,203,133)",
+                            "background-color": "rgb(255,170,43)"
                         }
                     }
                 ]
@@ -209,7 +208,7 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover','edge',event =>{
                         let target = event.target || event.cyTarget;
-                        target.style({fontSize:48,width: 6,color:"#49ffc5"});//此数无意义，仅仅需要比rendNode最大text的36更大即可
+                        target.style({fontSize:48,width: 6,color:"#1346c6"});//此数无意义，仅仅需要比rendNode最大text的36更大即可
                     })
                     .on('mouseout', 'edge',event =>{
                         let target = event.target || event.cyTarget;
@@ -583,8 +582,6 @@
         /*border: 1px solid pink;*/
         cursor: move;
     }
-
-    /*以下不知道为何渲染不上去*/
 
     .cy-context-menus-cxt-menu {
         display:none;
