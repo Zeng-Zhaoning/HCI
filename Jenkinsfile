@@ -28,6 +28,14 @@ node {
 
     }
 
+    stage('Deploy') {
+
+        echo 'deploy'
+
+        sh 'npm run serve'
+
+    }
+
 
 
 
