@@ -12,7 +12,7 @@
 <script>
 import SideBar from "../components/SideBar/SideBar";
 import WorkSpace from "../components/WorkSpace";
-import { mapActions,mapState } from "vuex";
+import { mapActions,mapState,mapMutations,mapGetters } from "vuex";
 
 export default {
   name: 'Home',
@@ -22,12 +22,17 @@ export default {
   },
   computed: {
     ...mapState(['uid']),
+    ...mapGetters(['current_project']),
   },
   methods: {
     ...mapActions(['loadAllProjects']),
+    ...mapMutations(['setWorkspaceText']),
   },
-  created() {
-    this.loadAllProjects(this.uid);
+  created(){
+    this.loadAllProjects(this.uid)
+        .then(() => {
+          this.setWorkspaceText(this.current_project.text)
+        })
   }
 }
 </script>

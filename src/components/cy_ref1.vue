@@ -264,7 +264,7 @@
     #graph {
         width: 100%;
         height: 800px;
-        border: 1px solid pink;
+        /*border: 1px solid pink;*/
         cursor: move;
     }
 

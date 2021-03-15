@@ -17,17 +17,20 @@ export default createStore({
     user_name: "傻逼",
     uid: 1,
     current_pid: 1,
+    current_project: null,
+    //注意下面这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
+    workspace_text: "",
     all_projects: []
   },
 
   getters: {
-    current_project(){
+    current_project(state){
         for(let p of state.all_projects){
             if (p.pid === state.current_pid){
                 return p;
             }
         }
-    }
+    },
   },
 
   mutations: {
@@ -37,9 +40,18 @@ export default createStore({
     setAllProjects(state, pros){
       state.all_projects = pros;
     },
-    setText(state, pid, text){
-
-    }
+    setWorkspaceText(state, text){
+        state.workspace_text = text;
+    },
+    setProjectGraph(state, data){
+        let pid = data.pid;
+        let graph = data.graph;
+        for(let p of state.all_projects){
+            if(p.pid === pid){
+                p.graph = graph
+            }
+        }
+    },
   },
 
   actions: {
@@ -48,25 +60,39 @@ export default createStore({
           .then( res => {
             if(res.success){
               commit('setCurrentProject', res.content)
-            }else{
-              console.log(res.message)
-            }
-          })
-          .catch( error => { console.log(error) })
-    },
-    loadAllProjects({ commit }, uid){
-      getAllProjectsAPI(uid)
-          .then( res => {
-            if(res.success){
-              commit('setAllProjects', res.content)
-            }
-            else {
-              console.log(res.message)
-            }
+            }else{ console.log(res.message); }
           })
           .catch( error => { console.log(error) })
     },
 
+    loadAllProjects({ state, commit, getters }, uid){
+        return new Promise(((resolve, reject) => {
+            getAllProjectsAPI(uid)
+                .then( function (res) {
+                    if(res.success){
+                        commit('setAllProjects', res.content);
+                        resolve(res);
+                    }
+                    else { console.log(res.message);}
+                })
+                .catch( error => {
+                    console.log(error);
+                    reject(error)
+                });
+        }))
+    },
+
+    postText({ commit }, data){
+        let pid = data.pid;
+        let text = data.text;
+        setTextAPI(pid, text).then(res => {
+            if(res.success){
+
+            }else { console.log(res.message); }
+        }).catch(err => {
+
+        })
+    }
   }
 
 })

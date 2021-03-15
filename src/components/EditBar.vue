@@ -12,7 +12,7 @@
           v-model="text">
       </el-input>
       <div class="analyse-btn-box">
-        <el-button type="primary" :loading="false" @click="analyse">解析</el-button>
+        <el-button type="primary" :loading="false" @click="analyse">保存并解析</el-button>
       </div>
     </div>
 
@@ -43,12 +43,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState,mapMutations } from 'vuex';
 export default {
   name: "EditBar",
   data(){
     return{
-      text: "",
       tree: [{
         label: '一级 1',
         children: [{
@@ -65,9 +64,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['current_pid'])
+    ...mapState(['workspace_text']),
+    text: {
+      get(){
+        return this.workspace_text;
+      },
+      set(value){
+        this.setWorkspaceText(value);
+      }
+    }
   },
   methods:{
+    ...mapMutations(['setWorkspaceText','setProjectGraph']),
     analyse(){
 
     },
@@ -116,7 +124,7 @@ export default {
     padding: @len1 2*@len1 @len1 2*@len1;
     font-size: 13px;
     min-height: 20px;
-    width: 80px;
+    width: 110px;
     margin: @len1 0 -@len1 0;
   }
 }

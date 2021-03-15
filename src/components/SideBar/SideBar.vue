@@ -33,16 +33,18 @@ export default {
   components:{ProjectItem},
   computed:{
     ...mapState([
-        "user_name", "all_projects"
-    ])
+        "user_name", "all_projects", "workspace_text"
+    ]),
+    ...mapGetters(['current_project'])
   },
   methods:{
-    ...mapMutations(['setCurrentProject']),
+    ...mapMutations(['setCurrentProject','setWorkspaceText']),
     create_pro(){
       alert("创建新项目")
     },
     select(pid){
       this.setCurrentProject(pid);
+      this.setWorkspaceText(this.current_project.text);
     }
   }
 }
