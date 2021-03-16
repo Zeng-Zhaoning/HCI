@@ -8,7 +8,7 @@
 <script>
 import EditBar from "./EditBar";
 import { mapState } from "vuex";
-import kgTemplate from "./cy_ref1"
+import kgTemplate from "./CytoscapeKG"
 
 export default {
   name: "WorkSpace",
