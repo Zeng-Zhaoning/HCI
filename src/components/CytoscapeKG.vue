@@ -25,6 +25,7 @@
                         selector: 'node',
                         css: {
                             'color': 'white',
+                            'font-weight': 600,
                             'font-size': "25px",
                             'text-outline-width': 5,
                             'text-outline-color': '#888',
@@ -84,10 +85,25 @@
                         // edge-distances : With value intersection (default), the line from source to target for control-point-weight is from the outside of the source node’s shape to the outside of the target node’s shape. With value node-position, the line is from the source position to the target position. The node-position option makes calculating edge points easier — but it should be used carefully because you can create invalid points that intersection would have automatically corrected.
                     },
                     {
-                        selector: ':selected',
+                        //“选中”的样式要避免和“变色”、“强调”和“源节点”的样式冲突
+                        selector: 'node:selected',
                         css: {
-                            'line-color': "rgb(255,203,133)",
-                            "background-color": "rgb(255,170,43)"
+                            "color": '#f62f2f',
+                            'text-outline-color': "rgb(255,251,0)",
+                            'text-outline-width': 8,
+                        }
+                    },
+                    {
+                        //“强调”时动了这些属性：{fontSize: 24, width: 3, color: '#197edd'}
+                        //所以在这里不能动
+                        selector: 'edge:selected',
+                        css: {
+                            'line-color': "rgb(255,251,0)",
+                            // 'text-outline-color': "rgb(255,251,0)",
+                            // 'text-outline-width': 4,
+                            "text-border-color": "#f62f2f",
+                            "text-border-width": "4px",
+                            // "text-background-padding": "6px",
                         }
                     }
                 ]
@@ -328,7 +344,7 @@
 
                                     // updateData(group, data, value, that)
                                     // that.submit()
-                                } else {
+                                } else if(value!==null) {//取消返回null，空值返回''
                                     alert("名称无效哦!");
                                 }
                             },
@@ -703,7 +719,7 @@
                 if(typeof data === 'object'){
                     data = JSON.stringify(data, undefined, 4)
                 }
-                var blob = new Blob([data], {type: 'text/json'}),
+                let blob = new Blob([data], {type: 'text/json'}),
                     e = document.createEvent('MouseEvents'),
                     a = document.createElement('a');
                 a.download = filename;
