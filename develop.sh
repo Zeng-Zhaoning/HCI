@@ -5,9 +5,10 @@ tomcat_home="/usr/local/apache-tomcat-8.5.63"
 echo this is app : $project_name
 echo tomcat : $tomcat_home
 echo "删除dist"
-rm  -f $tomcat_home/webapps/ROOT/*
+rm  -rf $tomcat_home/webapps/ROOT
 
 echo "复制dist"
+mkdir $tomcat_home/webapps/ROOT
 mv $project_path/$project_name/* $tomcat_home/webapps/ROOT/
 
 echo "kill tomcat $tomcat_home"
