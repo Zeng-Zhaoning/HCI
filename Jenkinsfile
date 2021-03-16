@@ -23,9 +23,15 @@ node {
 
         echo 'buid start'
 
-        sh 'JENKINS_NODE_COOKIE=dontKillMe sh ./run.sh'
+        sh 'JENKINS_NODE_COOKIE=dontKillMe sh ./run_build.sh'
 
 
+    }
+
+    stage('Develop') {
+        echo "develop start"
+
+        sh 'JENKINS_NODE_COOKIE=dontKillMe sh develop.sh'
     }
 
 
