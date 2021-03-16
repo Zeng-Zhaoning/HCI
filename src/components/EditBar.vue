@@ -31,6 +31,13 @@
             <div>导出</div>
           </div>
         </div>
+<!--        <el-upload-->
+<!--                :auto-upload="false"-->
+<!--                :on-change="elInFile"-->
+<!--                multiple-->
+<!--                accept="audio/*">-->
+<!--          <el-button size="mini" icon="el-icon-upload2" round></el-button>-->
+<!--        </el-upload>-->
       </div>
     </div>
 

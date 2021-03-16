@@ -303,54 +303,6 @@
                 var contextMenu = cy.contextMenus({
                     menuItems: [
                         {
-                            id: 'remove',
-                            content: 'remove',
-                            tooltipText: 'remove',
-                            image: {src: "/icons/remove.svg", width: 12, height: 12, x: 6, y: 4}, // menu icon
-                            selector: 'node, edge',
-                            onClickFunction: function (event) {
-                                let target = event.target || event.cyTarget;
-                                console.log("before remove: nodeCount", cy.nodes().length);
-                                console.log("before remove: edgeCount", cy.edges().length);
-                                removed = target.remove();
-                                console.log("after remove: nodeCount", cy.nodes().length);
-                                console.log("after remove: edgeCount", cy.edges().length);
-
-                                contextMenu.showMenuItem('undo-last-remove');
-                            },
-                            hasTrailingDivider: true
-                        },
-                        {
-                            id: 'edit',
-                            content: 'edit',
-                            tooltipText: 'edit',
-                            selector: 'node, edge',
-                            onClickFunction: function (event) {
-                                let target = event.target || event.cyTarget;
-                                const group = target.group()
-                                const data = target.data()
-                                const name = group === 'nodes' ? 'content' : 'label'
-                                const text = data[name]
-                                let value = prompt("请输入需要修改的名称", text)
-                                if (value !== null && value !== "") {
-                                    console.log("before edit: target", target);
-                                    let obj = {};
-                                    obj[name] = value;
-                                    target.data(obj);
-                                    if (name === 'content') {
-                                        that.rendNode(target, that);
-                                    }
-                                    console.log("after edit: target", target);
-
-                                    // updateData(group, data, value, that)
-                                    // that.submit()
-                                } else if(value!==null) {//取消返回null，空值返回''
-                                    alert("名称无效哦!");
-                                }
-                            },
-                            hasTrailingDivider: true
-                        },
-                        {
                             id: 'undo-last-remove',
                             content: 'undo last remove',
                             selector: 'node, edge',
@@ -365,64 +317,24 @@
                                     console.log("after undoing remove: edgeCount", cy.edges().length);
                                 }
                                 contextMenu.hideMenuItem('undo-last-remove');
-                            },
-                            hasTrailingDivider: true
+                            }
                         },
                         {
-                            id: 'color',
-                            content: 'change color',
-                            tooltipText: 'change color',
-                            selector: 'node',
-                            hasTrailingDivider: true,
-                            submenu: [
-                                {
-                                    id: 'color-blue',
-                                    content: 'blue',
-                                    tooltipText: 'blue',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        target.style('background-color', "#65b3fc");
-                                    },
-                                    submenu: [
-                                        {
-                                            id: 'color-light-blue',
-                                            content: 'light blue',
-                                            tooltipText: 'light blue',
-                                            onClickFunction: function (event) {
-                                                let target = event.target || event.cyTarget;
-                                                target.style('background-color', 'lightblue');
-                                            },
-                                        },
-                                        {
-                                            id: 'color-dark-blue',
-                                            content: 'dark blue',
-                                            tooltipText: 'dark blue',
-                                            onClickFunction: function (event) {
-                                                let target = event.target || event.cyTarget;
-                                                target.style('background-color', 'darkblue');
-                                            },
-                                        },
-                                    ],
-                                },
-                                {
-                                    id: 'color-green',
-                                    content: 'green',
-                                    tooltipText: 'green',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        target.style('background-color', 'green');
-                                    },
-                                },
-                                {
-                                    id: 'color-red',
-                                    content: 'red',
-                                    tooltipText: 'red',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        target.style('background-color', 'red');
-                                    },
-                                },
-                            ]
+                            id: 'remove',
+                            content: 'remove',
+                            tooltipText: 'remove',
+                            image: {src: "/icons/remove.svg", width: 12, height: 12, x: 6, y: 4}, // menu icon
+                            selector: 'node, edge',
+                            onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                console.log("before remove: nodeCount", cy.nodes().length);
+                                console.log("before remove: edgeCount", cy.edges().length);
+                                removed = target.remove();
+                                console.log("after remove: nodeCount", cy.nodes().length);
+                                console.log("after remove: edgeCount", cy.edges().length);
+
+                                contextMenu.showMenuItem('undo-last-remove');
+                            }
                         },
                         {
                             id: 'add-node',
@@ -430,6 +342,7 @@
                             tooltipText: 'add node',
                             image: {src: "/icons/add.svg", width: 12, height: 12, x: 6, y: 4}, // menu icon
                             coreAsWell: true,
+                            hasTrailingDivider: true,
                             onClickFunction: function (event) {
                                 // let id = new Date().getTime()+""//不给这个，cy自己也会生成id
 
@@ -495,8 +408,98 @@
                                     });
                                     console.log("finish adding an edge");
                                 });
-
                             }
+                        },
+                        {
+                            id: 'edit',
+                            content: 'edit',
+                            tooltipText: 'edit',
+                            selector: 'node, edge',
+                            hasTrailingDivider: true,
+                            onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                const group = target.group()
+                                const data = target.data()
+                                const name = group === 'nodes' ? 'content' : 'label'
+                                const text = data[name]
+                                let value = prompt("请输入需要修改的名称", text)
+                                if (value !== null && value !== "") {
+                                    console.log("before edit: target", target);
+                                    let obj = {};
+                                    obj[name] = value;
+                                    target.data(obj);
+                                    if (name === 'content') {
+                                        that.rendNode(target, that);
+                                    }
+                                    console.log("after edit: target", target);
+
+                                    // updateData(group, data, value, that)
+                                    // that.submit()
+                                } else if(value!==null) {//取消返回null，空值返回''
+                                    alert("名称无效哦!");
+                                }
+                            }
+                        },
+                        {
+                            id: 'color',
+                            content: 'change color',
+                            tooltipText: 'change color',
+                            selector: 'node',
+                            hasTrailingDivider: true,
+                            submenu: [
+                                {
+                                    id: 'color-blue',
+                                    content: 'blue',
+                                    tooltipText: 'blue',
+                                    submenu: [
+                                        {
+                                            id: 'color-normal-blue',
+                                            content: 'normal blue',
+                                            tooltipText: 'normal blue',
+                                            onClickFunction: function (event) {
+                                                let target = event.target || event.cyTarget;
+                                                target.style('background-color', "#65b3fc");
+                                            },
+                                        },
+                                        {
+                                            id: 'color-light-blue',
+                                            content: 'light blue',
+                                            tooltipText: 'light blue',
+                                            onClickFunction: function (event) {
+                                                let target = event.target || event.cyTarget;
+                                                target.style('background-color', 'lightblue');
+                                            },
+                                        },
+                                        {
+                                            id: 'color-dark-blue',
+                                            content: 'dark blue',
+                                            tooltipText: 'dark blue',
+                                            onClickFunction: function (event) {
+                                                let target = event.target || event.cyTarget;
+                                                target.style('background-color', 'darkblue');
+                                            },
+                                        },
+                                    ],
+                                },
+                                {
+                                    id: 'color-green',
+                                    content: 'green',
+                                    tooltipText: 'green',
+                                    onClickFunction: function (event) {
+                                        let target = event.target || event.cyTarget;
+                                        target.style('background-color', 'green');
+                                    },
+                                },
+                                {
+                                    id: 'color-red',
+                                    content: 'red',
+                                    tooltipText: 'red',
+                                    onClickFunction: function (event) {
+                                        let target = event.target || event.cyTarget;
+                                        target.style('background-color', 'red');
+                                    },
+                                },
+                            ]
                         },
                         {
                             id: 'select-all-nodes',
@@ -530,6 +533,7 @@
                             selector: 'edge',
                             coreAsWell: true,
                             show: true,
+                            hasTrailingDivider: true,
                             onClickFunction: function (event) {
                                 selectAllOfTheSameType('edge');
 
@@ -543,6 +547,7 @@
                             selector: 'edge',
                             coreAsWell: true,
                             show: false,
+                            hasTrailingDivider: true,
                             onClickFunction: function (event) {
                                 unselectAllOfTheSameType('edge');
 
@@ -553,24 +558,55 @@
                         {
                             id: 'exportPng',
                             content: 'exportPng',
+                            tooltipText: 'exportPng',
                             selector: 'edge, node',
                             coreAsWell: true,
-                            onClickFunction: function (event) {
-                                that.exportPng();
-                            }
-                        },
-                        {
-                            id: 'exportCutPng',
-                            content: 'exportCutPng',
-                            selector: 'edge, node',
-                            coreAsWell: true,
-                            onClickFunction: function (event) {
-                                that.exportCutPng();
-                            }
+                            submenu: [
+                                {
+                                    id: 'exportFullPng',
+                                    content: 'exportFullPng',
+                                    tooltipText: 'exportFullPng',
+                                    onClickFunction: function (event) {
+                                        that.exportPng();
+                                    }
+                                },
+                                {
+                                    id: 'exportCutPng',
+                                    content: 'exportCutPng',
+                                    tooltipText: 'exportCutPng',
+                                    onClickFunction: function (event) {
+                                        that.exportCutPng();
+                                    }
+                                },
+                                {
+                                    id: 'exportWatermarkPng',
+                                    content: 'exportWatermarkPng',
+                                    tooltipText: 'exportWatermarkPng',
+                                    submenu: [
+                                        {
+                                            id: 'exportWatermarkFullPng',
+                                            content: 'exportWatermarkFullPng',
+                                            tooltipText: 'exportWatermarkFullPng',
+                                            onClickFunction: function (event) {
+                                                that.exportPngAndWatermark();
+                                            }
+                                        },
+                                        {
+                                            id: 'exportWatermarkCutPng',
+                                            content: 'exportWatermarkCutPng',
+                                            tooltipText: 'exportWatermarkCutPng',
+                                            onClickFunction: function (event) {
+                                                that.exportCutPng({watermark:true});
+                                            }
+                                        },
+                                    ]
+                                }
+                            ]
                         },
                         {
                             id: 'exportJSON',
                             content: 'exportJSON',
+                            tooltipText: 'exportJSON',
                             selector: 'edge, node',
                             coreAsWell: true,
                             onClickFunction: function (event) {
@@ -611,13 +647,22 @@
                     full: true, scale: 4
                 });
                 blob.then(res => {
+                    //创建下载链接
                     let aLink = document.createElement('a');
-                    let evt = document.createEvent("HTMLEvents");
-                    evt.initEvent("click", true, true);
                     aLink.download = `${new Date().getTime()}.png`;
-                    aLink.href = URL.createObjectURL(res);
+                    let url = window.URL.createObjectURL(res);//window加了好还是不加好？
+                    aLink.href = url;
+
+                    //创建、分配并触发点击事件
+                    let evt = document.createEvent("MouseEvents");
+                    evt.initEvent("click", true, true);
                     aLink.dispatchEvent(evt);
-                    aLink.click();
+
+                    // aLink.click();//似乎可以替代以上三行，但好像在火狐下不行
+
+                    // 不知道要不要去除事件，不知道要不要释放blob对象
+                    // window.URL.revokeObjectURL(url); // 释放掉blob对象
+                    // console.log("释放掉blob对象");
                 }).catch(err => {
                     console.log("Error occured: ", err);
                     if (this.cy.elements().length === 0) {
@@ -684,11 +729,15 @@
                         /** 绘制原图 */
                         ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height);
                         ctx.save();
-                        let [aLink, evt] = [document.createElement('a'), document.createEvent("HTMLEvents")];
+                        let [aLink, evt] = [document.createElement('a'), document.createEvent("MouseEvents")];
                         evt.initEvent("click", true, true);
                         [aLink.download, aLink.href] = [`${time}.png`, canvas.toDataURL("image/png")];
                         aLink.dispatchEvent(evt);
-                        aLink.click();
+                        // aLink.click();//似乎可以替代以上三行，但好像在火狐下不行
+
+                        // 不知道要不要去除事件，不知道要不要释放blob对象
+                        // window.URL.revokeObjectURL(url); // 释放掉blob对象
+                        // console.log("释放掉blob对象");
                     }
                 }).catch(err => {
                     console.log("Error occured: ", err);
@@ -705,13 +754,13 @@
             exportCutPng({watermark = false} = {}) {
                 let unselectedVertexes = this.cy.elements('node:unselected')
                 if (!unselectedVertexes || 0 === unselectedVertexes.length) {
-                    return false;
+                    watermark ? this.exportPngAndWatermark() : this.exportPng();
+                }else{
+                    let remove = unselectedVertexes.remove(); // 保留删除内容
+                    watermark ? this.exportPngAndWatermark() : this.exportPng();
+                    (remove && remove.length) && (remove.restore()); // 恢复删除内容
                 }
-                let remove = unselectedVertexes.remove(); // 保留删除内容
-                watermark ? this.exportPngAndWatermark() : this.exportPng();
-                (remove && remove.length) && (remove.restore()); // 恢复删除内容
             },
-
 
             exportJSON(){//有空也可以改成promise式的
                 let data = this.getDataJsonObject();
@@ -719,14 +768,27 @@
                 if(typeof data === 'object'){
                     data = JSON.stringify(data, undefined, 4)
                 }
+                // 要创建一个 blob 数据
                 let blob = new Blob([data], {type: 'text/json'}),
-                    e = document.createEvent('MouseEvents'),
                     a = document.createElement('a');
                 a.download = filename;
+
+                // 将blob转换为地址
+                // 创建 URL 的 Blob 对象
                 a.href = window.URL.createObjectURL(blob);
+
+                // 标签 data- 嵌入自定义属性  屏蔽后也可正常下载
                 a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+                console.log(a.href);
+
+                // 添加鼠标事件并向一个指定的事件目标派发
+                let e = document.createEvent('MouseEvents');
                 e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
                 a.dispatchEvent(e);
+
+                // 不知道要不要去除事件，不知道要不要释放blob对象
+                // window.URL.revokeObjectURL(url); // 释放掉blob对象
+                // console.log("释放掉blob对象");
             },
 
             //JSON.parse(JSON.stringify(obj))我们一般用来深拷贝
