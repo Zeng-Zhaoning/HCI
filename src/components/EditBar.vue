@@ -1,5 +1,5 @@
 <template class="container">
-  <div class="container" :class="{ hideEditBarAni: !showEditBar }">
+  <div class="edit-bar-container" :class="{ hideEditBarAni: !showEditBar, ShowEditBarAni: showEditBar }">
     <span class="control-edit-bar" @click="changeEditBarState">
       <i :class="{'el-icon-arrow-right': showEditBar, 'el-icon-arrow-left': !showEditBar}"></i>
     </span>
@@ -102,11 +102,11 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 @import "../assets/css/colors.less";
 @len1 : 10px;
 @len2 : 12px;
-.container{
+.edit-bar-container{
   position: fixed;
   top: 1%;
   right: 5px;
@@ -117,15 +117,24 @@ export default {
   background: none;
 }
 .hideEditBarAni{
-  //animation-name: editBarAni;
-  //animation-duration: 0.5s;
-  //animation-timing-function: ease-in;
-  //animation-fill-mode: forwards;
-  right: -340px;
+  animation-name: editBarAni;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.6, 0, 1.00, 1.0);
+  animation-fill-mode: forwards;
 }
 @keyframes editBarAni {
   0%{ right: 5px; }
   100%{ right: -340px; }
+}
+.ShowEditBarAni{
+  animation-name: editBarAni-reverse;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0,0,0.8,1.0);
+  animation-fill-mode: forwards;
+}
+@keyframes editBarAni-reverse {
+  0%{ right: -340px; }
+  100%{ right: 5px; }
 }
 
 .control-edit-bar{
