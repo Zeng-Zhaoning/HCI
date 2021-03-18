@@ -5,6 +5,7 @@ export const workspace = {
     state: {
         workspace_text: "",  //注意这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
         show_export_panel: true,
+        json_src_path:  '/static_ref1/data/data.json',
         defaultStyle: [
             {
                 selector: 'node',
@@ -105,7 +106,10 @@ export const workspace = {
         },
         setCy(state, cy){
             state.cy = cy;
-        }
+        },
+        setJsonSrcPath(state, path){
+            state.json_src_path = path;
+        },
     },
 
     actions: {

@@ -5,6 +5,41 @@
     </span>
 
     <div class="edit-block">
+      <div class="title">操作</div>
+      <el-popover
+          placement="bottom"
+          title="操作说明"
+          :width="180"
+          trigger="hover"
+          :content="opInfo"
+      >
+        <template #reference>
+          <i class="el-icon-info op-info"></i>
+        </template>
+      </el-popover>
+      <div class="operations">
+        <div class="op" @click="open">
+          <input type="file" class="choose-file" style="display: none" @change="getFilePath">
+          <div><img src="../../assets/icons/open.png"></div>
+          <div class="text-box">打开</div>
+        </div>
+        <div class="op" @click="save">
+          <div><img src="../../assets/icons/save.png"></div>
+          <div class="text-box">保存</div>
+        </div>
+        <div class="op" @click="changeExportState">
+          <div class="img-box"><img src="../../assets/icons/export.png"></div>
+          <div class="text-box">导出</div>
+          <div class="choose-format-box" :class="{collapsed:!showExportOps, expanded:showExportOps}">
+            <div @click="exportPng" class="export-op">图片</div>
+            <div class="separator"></div>
+            <div @click="exportJson" class="export-op">json</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="edit-block">
       <div class="title">
         待解析文本
       </div>
@@ -18,34 +53,6 @@
       </el-input>
       <div class="analyse-btn-box">
         <el-button disabled type="primary" :loading="false" @click="analyse">保存并解析</el-button>
-      </div>
-    </div>
-
-    <div class="edit-block">
-      <div class="title">
-        操作
-      </div>
-      <div class="operations">
-        <div class="op" @click="save">
-          <div><img src="../../assets/icons/save.svg"></div>
-          <div class="text-box">保存</div>
-        </div>
-        <div class="op" @click="changeExportState">
-          <div class="img-box"><img src="../../assets/icons/export.svg"></div>
-          <div class="text-box">导出</div>
-          <div class="choose-format-box" :class="{collapsed:!showExportOps, expanded:showExportOps}">
-            <div @click="exportPng" class="export-op">图片</div>
-            <div class="separator"></div>
-            <div @click="exportJson" class="export-op">json</div>
-          </div>
-        </div>
-<!--        <el-upload-->
-<!--                :auto-upload="false"-->
-<!--                :on-change="elInFile"-->
-<!--                multiple-->
-<!--                accept="audio/*">-->
-<!--          <el-button size="mini" icon="el-icon-upload2" round></el-button>-->
-<!--        </el-upload>-->
       </div>
     </div>
 

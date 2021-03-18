@@ -16,7 +16,6 @@ export default createStore({
         current_pid: 1,
         current_project: null,
         all_projects: [],
-
     },
 
     getters: {

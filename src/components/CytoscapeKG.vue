@@ -12,7 +12,6 @@
 
     import contextMenus from 'cytoscape-context-menus';
 
-    // register extension
     cytoscape.use(contextMenus);
 
     window.jQuery = window.$ = $
@@ -21,21 +20,27 @@
         name: 'CytoscapeKG',
         data(){
             return{
-                fileURL : '/static_ref1/data/temp2.json',
+
             }
         },
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
-                cy: state => state.workspace.cy
+                cy: state => state.workspace.cy,
+                json_src_path: state => state.workspace.json_src_path,
             })
+        },
+        watch: {
+            json_src_path(now, old){
+                this.getData(now);
+            }
         },
         mounted () {
             //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
             document.oncontextmenu = () => {
                 event.returnValue = false;
             }
-            this.getData(this.fileURL);
+            this.getData(this.json_src_path);
         },
         methods: {
             ...mapMutations(['setCy']),
@@ -47,11 +52,12 @@
                         this.dataHandle(res.data)
                     })
                     .catch(err => {
-                        console.error(err)
+                        console.error(err);
+                        this.$message.error('请确保上传了格式正确的json文件');
                     })
             },
 
-            //在data中存数据，并进行数据展示的预处理，并同步到仓库。
+            //在data中存数据，并进行数据展示的预处理
             dataHandle(data) {
                 // this.data = JSON.parse(JSON.stringify(data))
                 data.edges.forEach((val) => {

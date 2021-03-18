@@ -19,7 +19,8 @@ export default {
             defaultProps: {
                 children: 'children',
                 label: 'label'
-            }
+            },
+            opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n'
         }
     },
     computed: {
@@ -39,7 +40,7 @@ export default {
         }
     },
     methods:{
-        ...mapMutations(['setWorkspaceText', 'setProjectGraph']),
+        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath']),
         ...mapActions(['postText']),
 
         analyse(){
@@ -62,8 +63,29 @@ export default {
             })
         },
 
+        open(){
+            document.getElementsByClassName("choose-file")[0].click();
+        },
+
+        getFilePath(){
+            //获取读取我文件的File对象
+            let selectedFile = document.getElementsByClassName("choose-file")[0].files[0];
+            let reader = new FileReader();//这是核心,读取操作就是由它完成.
+            reader.readAsDataURL(selectedFile)
+            reader.that = this;
+            reader.onload = function () {
+                //当读取完成后回调这个函数,然后此时文件的内容存储到了this.result中,直接操作即可
+                this.that.setJsonSrcPath(this.result);
+            }
+        },
+
         save(){
-            this.$message('保存中...')
+            const loading = this.$loading({
+                lock: true,
+                text: '...保存中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(255, 255,255, 0.8)'
+            });
             let data = {
                 project_name: this.current_project.project_name,
                 pid: this.current_pid,
@@ -78,6 +100,8 @@ export default {
                 }
             }).catch( err => {
                 this.$message.error('网络错误或服务器错误')
+            }).finally(() => {
+                loading.close();
             })
         },
 
