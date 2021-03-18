@@ -1,6 +1,5 @@
 import {setTextAPI} from "@/api/basicAPI"
-import cytoscape from "cytoscape";
-import $ from "jquery";
+
 
 export const workspace = {
     state: {

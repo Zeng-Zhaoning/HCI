@@ -63,30 +63,21 @@ export default {
         },
 
         save(){
+            this.$message('保存中...')
             let data = {
                 project_name: this.current_project.project_name,
                 pid: this.current_pid,
                 text: this.current_project.text,
                 ...this.getDataJsonObject()
             }
-            console.log(data);
             setGraphAPI(data).then(res => {
                 if(res.success){
-                    this.$message({
-                        type: 'success',
-                        message: '保存成功'
-                    })
+                    this.$message.success('保存成功')
                 }else{
-                    this.$message({
-                        type: 'error',
-                        message: '保存失败'
-                    })
+                    this.$message.error( '保存失败')
                 }
             }).catch( err => {
-                this.$message({
-                    type: 'error',
-                    message: '网络错误或服务器错误'
-                })
+                this.$message.error('网络错误或服务器错误')
             })
         },
 
@@ -109,7 +100,7 @@ export default {
          maxHeight: Specifies the scale automatically in combination with maxWidth such that the resultant image is no taller than maxHeight
          */
         exportPng(){
-            this.$message("正在导出图片...");
+            this.$message.success("正在导出图片...");
             let blob = this.cy.png({
                 output: 'blob-promise', bg: 'white',
                 full: true, scale: 4
@@ -131,10 +122,7 @@ export default {
             }).catch(err => {
                 console.log("Error occured: ", err);
                 if (this.cy.elements().length === 0) {
-                    this.$message({
-                        type: 'error',
-                        message: "知识图谱已经空啦，导不出东西的呀"
-                    });
+                    this.$message.error("知识图谱已经空啦，导不出东西的呀");
                 }
             });
         },

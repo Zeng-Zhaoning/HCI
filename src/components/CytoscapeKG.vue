@@ -60,38 +60,8 @@
                 data.nodes.forEach((val) => {
                     val.data.text = val.data.content;
                 })
-                let cy = cytoscape({
-                  container: $('#graph'),
-                  boxSelectionEnabled: false,
-                  autounselectify: true,
-                  style: this.defaultStyle,
-                  elements: data,
-                  hideLabelsOnViewPort: false,
-                  minZoom: 0.15,
-                  maxZoom: 8,
-                  wheelSensitivity: 0.1,   //warning
-                  layout: {
-                    name: 'breadthfirst',
-                    minDist: 40,
-                    fit: true,
-                    padding: 30,
-                    boundingBox: undefined,
-                    animate: false,
-                    animationDuration: 500,
-                    animationEasing: undefined,
-                    animateFilter: function (node, i) {
-                      return true;
-                    },
-                    ready: undefined,
-                    stop: undefined,
-                    transform: (node, position) => {
-                      return position
-                    }
-                  }
-                });
-                this.setCy(cy);
                 let that = this;
-                this.graph(that);
+                this.graph(that, data);
             },
 
             //让过长的内容作为展示的标题时省略
@@ -123,8 +93,37 @@
             },
 
             //作图有关的设置
-            graph(that) {
-                let cy = that.cy;
+            graph(that, data) {
+                let cy = cytoscape({
+                  container: $('#graph'),
+                  boxSelectionEnabled: false,
+                  autounselectify: true,
+                  style: this.defaultStyle,
+                  elements: data,
+                  hideLabelsOnViewPort: false,
+                  minZoom: 0.15,
+                  maxZoom: 8,
+                  wheelSensitivity: 0.1,   //warning
+                  layout: {
+                    name: 'breadthfirst',
+                    minDist: 40,
+                    fit: true,
+                    padding: 30,
+                    boundingBox: undefined,
+                    animate: false,
+                    animationDuration: 500,
+                    animationEasing: undefined,
+                    animateFilter: function (node, i) {
+                      return true;
+                    },
+                    ready: undefined,
+                    stop: undefined,
+                    transform: (node, position) => {
+                      return position
+                    }
+                  }
+                });
+                this.setCy(cy);
 
                 cy.nodes().forEach(val => {
                     that.rendNode(val, that);
@@ -176,26 +175,6 @@
 
                 };
                 cy.on('cxttap', barHandler);//cxttap为右键单击
-
-                // function updateData (group, data, value, that) {
-                //     const initData = that.data[group]
-                //     const len = initData.length
-                //     if (group === 'nodes') {
-                //         for (let i = 0; i < len; i++) {
-                //             if (initData[i].data.id === parseInt(data.id)) {
-                //                 initData[i].data.content = value
-                //                 break
-                //             }
-                //         }
-                //     } else if (group === 'edges') {
-                //         for (let i = 0; i < len; i++) {
-                //             if (initData[i].data.source === parseInt(data.source) && initData[i].data.target === parseInt(data.target)) {
-                //                 initData[i].data.label = value
-                //                 break
-                //             }
-                //         }
-                //     }
-                // }
 
                 var allSelected = function (type) {
                     if (type === 'node') {
@@ -480,14 +459,52 @@
                             }
                         },
                         {
-                            id: 'exportJSON',
-                            content: 'exportJSON',
-                            tooltipText: 'exportJSON',
-                            selector: 'edge, node',
-                            coreAsWell: true,
-                            onClickFunction: function (event) {
-                                that.exportJSON();
+                          id: 'exportPng',
+                          content: 'exportPng',
+                          tooltipText: 'exportPng',
+                          selector: 'edge, node',
+                          coreAsWell: true,
+                          submenu: [
+                            {
+                              id: 'exportFullPng',
+                              content: 'exportFullPng',
+                              tooltipText: 'exportFullPng',
+                              onClickFunction: function (event) {
+                                that.exportPng();
+                              }
+                            },
+                            {
+                              id: 'exportCutPng',
+                              content: 'exportCutPng',
+                              tooltipText: 'exportCutPng',
+                              onClickFunction: function (event) {
+                                that.exportCutPng();
+                              }
+                            },
+                            {
+                              id: 'exportWatermarkPng',
+                              content: 'exportWatermarkPng',
+                              tooltipText: 'exportWatermarkPng',
+                              submenu: [
+                                {
+                                  id: 'exportWatermarkFullPng',
+                                  content: 'exportWatermarkFullPng',
+                                  tooltipText: 'exportWatermarkFullPng',
+                                  onClickFunction: function (event) {
+                                    that.exportPngAndWatermark();
+                                  }
+                                },
+                                {
+                                  id: 'exportWatermarkCutPng',
+                                  content: 'exportWatermarkCutPng',
+                                  tooltipText: 'exportWatermarkCutPng',
+                                  onClickFunction: function (event) {
+                                    that.exportCutPng({watermark:true});
+                                  }
+                                },
+                              ]
                             }
+                          ]
                         }
                     ],
                     // css classes that menu items will have
