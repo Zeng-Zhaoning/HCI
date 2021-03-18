@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-export {setTextAPI, getGraphAPI}
+export {setTextAPI, getGraphAPI, setGraphAPI}
 
 let base =  '/api/basic';
 
@@ -22,5 +22,12 @@ function getGraphAPI(pid){
             return res.data
         }).catch(error => {
             console.log(error);
+        })
+}
+
+function setGraphAPI(data){
+    return axios.post(base + '/set_graph', data)
+        .then(res => {
+            return res.data
         })
 }

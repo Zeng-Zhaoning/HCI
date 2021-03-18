@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <kg-template></kg-template>
-    <edit-bar class="edit-bar"></edit-bar>
+    <edit-bar></edit-bar>
   </div>
 </template>
 
 <script>
-import EditBar from "./EditBar";
+import EditBar from "./EditBar/EditBar.vue";
 import { mapState } from "vuex";
 import kgTemplate from "./CytoscapeKG"
 
@@ -20,5 +20,4 @@ export default {
 </script>
 
 <style scoped lang="less">
-
 </style>

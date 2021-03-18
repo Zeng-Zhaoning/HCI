@@ -8,6 +8,7 @@
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
+    import { mapState,mapMutations } from 'vuex';
 
     import contextMenus from 'cytoscape-context-menus';
 
@@ -18,106 +19,27 @@
 
     export default {
         name: 'CytoscapeKG',
-        data () {
-            return {
-                defaultStyle: [
-                    {
-                        selector: 'node',
-                        css: {
-                            'color': 'white',
-                            'font-weight': 600,
-                            'font-size': "25px",
-                            'text-outline-width': 5,
-                            'text-outline-color': '#888',
-                            'content': 'data(text)',//这里的content用来显示节点的内容
-                            'text-valign': 'center',
-                            'text-halign': 'center',
-                            'padding': '25px',
-                            "background-color": "#65b3fc",
-                        }
-                    },
-                    {
-                        selector: '$node > node',
-                        css: {
-                            'padding': '10px',
-                            'text-valign': 'top',
-                            'text-halign': 'center',
-                            'background-color': '#bbb'
-                        }
-                    },
-                    {
-                        "selector": ".autorotate",
-                        "style": {
-                            "color": "black",
-                            "text-opacity": 1,
-                            "text-valign": "center",
-                            "text-halign": "center",
-                            "text-border-color": "#4aa0ff",
-                            "text-border-opacity": "1",
-                            "text-border-width": "2px",
-                            "text-background-color": "#c6fff0",
-                            "text-background-shape": "roundrectangle",
-                            "text-background-padding": "5px",
-                            "text-background-opacity": "1",
-                        }
-                    },
-                    {
-                        selector: 'edge',
-                        css: {
-                            'color': '#197edd',
-                            'background-color': "#65b3fc",
-                            'line-color': "#13efc4",
-                            'font-size': "24px",
-                            'content': 'data(label)',//这里的content用来显示边的内容
-                            'curve-style': 'bezier',//错开不同的边
-                            'control-point-step-size': 100, //从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离
-                            "edge-text-rotation": "autorotate",
-                            'width': 3,
-                            'target-arrow-shape': 'triangle',
-                            'target-arrow-color': '#ffcb67',
-                            'arrow-scale': 2
-                        }
-                        // Bezier edges
-                        // 适用于自动捆绑贝塞尔边缘(curve-style: bezier):
-                        // control-point-step-size : 从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离。
-                        // control-point-distance : 用手动值重写control-point-step-size的单个值.因为它覆盖了步长，所以具有相同值的贝塞尔边缘将重叠。因此，如果需要的话，最好将它用作特定边的一次性值。
-                        // control-point-weight : 一个单独的值，它控制从源头到目标的控制点。该值通常在[0，1]的范围内，其中0指向源节点，1指向目标节点——但是也可以使用更大或更小的值。
-                        // edge-distances : With value intersection (default), the line from source to target for control-point-weight is from the outside of the source node’s shape to the outside of the target node’s shape. With value node-position, the line is from the source position to the target position. The node-position option makes calculating edge points easier — but it should be used carefully because you can create invalid points that intersection would have automatically corrected.
-                    },
-                    {
-                        //“选中”的样式要避免和“变色”、“强调”和“源节点”的样式冲突
-                        selector: 'node:selected',
-                        css: {
-                            "color": '#f62f2f',
-                            'text-outline-color': "rgb(255,251,0)",
-                            'text-outline-width': 8,
-                        }
-                    },
-                    {
-                        //“强调”时动了这些属性：{fontSize: 24, width: 3, color: '#197edd'}
-                        //所以在这里不能动
-                        selector: 'edge:selected',
-                        css: {
-                            'line-color': "rgb(255,251,0)",
-                            // 'text-outline-color': "rgb(255,251,0)",
-                            // 'text-outline-width': 4,
-                            "text-border-color": "#f62f2f",
-                            "text-border-width": "4px",
-                            // "text-background-padding": "6px",
-                        }
-                    }
-                ]
-                //数据将存在cy里，无需声明此变量
+        data(){
+            return{
+                fileURL : '/static_ref1/data/temp2.json',
             }
         },
+        computed: {
+            ...mapState({
+                defaultStyle: state => state.workspace.defaultStyle,
+                cy: state => state.workspace.cy
+            })
+        },
         mounted () {
-            // 禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
+            //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
             document.oncontextmenu = () => {
                 event.returnValue = false;
             }
-            this.getData('/static_ref1/data/data.json')
+            this.getData(this.fileURL);
         },
         methods: {
+            ...mapMutations(['setCy']),
+
             //读数据，然后交给dataHandle
             getData(url) {
                 axios.get(url)
@@ -128,7 +50,8 @@
                         console.error(err)
                     })
             },
-            //在data中存数据，并进行数据展示的预处理，然后交给graph
+
+            //在data中存数据，并进行数据展示的预处理，并同步到仓库。
             dataHandle(data) {
                 // this.data = JSON.parse(JSON.stringify(data))
                 data.edges.forEach((val) => {
@@ -137,11 +60,40 @@
                 data.nodes.forEach((val) => {
                     val.data.text = val.data.content;
                 })
-                let styleArr = [...this.defaultStyle]
-                console.log("read data:", data);
-                var that = this;
-                this.graph(data, styleArr, that);
+                let cy = cytoscape({
+                  container: $('#graph'),
+                  boxSelectionEnabled: false,
+                  autounselectify: true,
+                  style: this.defaultStyle,
+                  elements: data,
+                  hideLabelsOnViewPort: false,
+                  minZoom: 0.15,
+                  maxZoom: 8,
+                  wheelSensitivity: 0.1,   //warning
+                  layout: {
+                    name: 'breadthfirst',
+                    minDist: 40,
+                    fit: true,
+                    padding: 30,
+                    boundingBox: undefined,
+                    animate: false,
+                    animationDuration: 500,
+                    animationEasing: undefined,
+                    animateFilter: function (node, i) {
+                      return true;
+                    },
+                    ready: undefined,
+                    stop: undefined,
+                    transform: (node, position) => {
+                      return position
+                    }
+                  }
+                });
+                this.setCy(cy);
+                let that = this;
+                this.graph(that);
             },
+
             //让过长的内容作为展示的标题时省略
             fontShow(text) {
                 if (text && text.length > 5) {
@@ -149,6 +101,7 @@
                 }
                 return text
             },
+
             //根据内容设置字体大小，使之不会超出节点（未验证）
             fontStyle(length) {
                 let fontSize = 30 - (length - 2) * 6
@@ -159,7 +112,9 @@
                     "font-size": fontSize + "px"
                 };
             },
-            rendNode(target, that) {//帮助node合适地展示text
+
+            //帮助node合适地展示text
+            rendNode(target, that) {
                 let content = target.data().content;
                 const text = that.fontShow(content);
                 target.data({text: text});
@@ -168,39 +123,8 @@
             },
 
             //作图有关的设置
-            graph(elements, style, that) {
-                that.cy = cytoscape({
-                    // container: document.getElementById('graph'),
-                    container: $('#graph'),
-                    boxSelectionEnabled: false,
-                    autounselectify: true,
-                    style,
-                    elements,
-                    hideLabelsOnViewPort: false,
-                    minZoom: 0.15,
-                    maxZoom: 8,
-                    wheelSensitivity: 0.1,
-                    layout: {
-                        name: 'breadthfirst',
-                        minDist: 40,
-                        fit: true,
-                        padding: 30,
-                        boundingBox: undefined,
-                        animate: false,
-                        animationDuration: 500,
-                        animationEasing: undefined,
-                        animateFilter: function (node, i) {
-                            return true;
-                        },
-                        ready: undefined,
-                        stop: undefined,
-                        transform: (node, position) => {
-                            return position
-                        }
-                    }
-                });
-
-                var cy = that.cy;
+            graph(that) {
+                let cy = that.cy;
 
                 cy.nodes().forEach(val => {
                     that.rendNode(val, that);
@@ -556,54 +480,6 @@
                             }
                         },
                         {
-                            id: 'exportPng',
-                            content: 'exportPng',
-                            tooltipText: 'exportPng',
-                            selector: 'edge, node',
-                            coreAsWell: true,
-                            submenu: [
-                                {
-                                    id: 'exportFullPng',
-                                    content: 'exportFullPng',
-                                    tooltipText: 'exportFullPng',
-                                    onClickFunction: function (event) {
-                                        that.exportPng();
-                                    }
-                                },
-                                {
-                                    id: 'exportCutPng',
-                                    content: 'exportCutPng',
-                                    tooltipText: 'exportCutPng',
-                                    onClickFunction: function (event) {
-                                        that.exportCutPng();
-                                    }
-                                },
-                                {
-                                    id: 'exportWatermarkPng',
-                                    content: 'exportWatermarkPng',
-                                    tooltipText: 'exportWatermarkPng',
-                                    submenu: [
-                                        {
-                                            id: 'exportWatermarkFullPng',
-                                            content: 'exportWatermarkFullPng',
-                                            tooltipText: 'exportWatermarkFullPng',
-                                            onClickFunction: function (event) {
-                                                that.exportPngAndWatermark();
-                                            }
-                                        },
-                                        {
-                                            id: 'exportWatermarkCutPng',
-                                            content: 'exportWatermarkCutPng',
-                                            tooltipText: 'exportWatermarkCutPng',
-                                            onClickFunction: function (event) {
-                                                that.exportCutPng({watermark:true});
-                                            }
-                                        },
-                                    ]
-                                }
-                            ]
-                        },
-                        {
                             id: 'exportJSON',
                             content: 'exportJSON',
                             tooltipText: 'exportJSON',
@@ -628,204 +504,6 @@
                     submenuIndicator: {src: '/icons/submenu-indicator-default.svg', width: 12, height: 12}
                 });
 
-            },
-
-
-            /**
-             * 导出全局图片.
-             */
-            // options: The export options.
-            //     output： Whether the output should be 'base64uri' (default), 'base64', 'blob', or 'blob-promise' (a promise that resolves to the blob is returned).
-            //     bg: The background colour of the image (transparent by default).
-            //     full: Whether to export the current viewport view (false, default) or the entire graph (true).
-            //     scale: This value specifies a positive number that scales the size of the resultant image.
-            //     maxWidth: Specifies the scale automatically in combination with maxHeight such that the resultant image is no wider than maxWidth.
-            //     maxHeight: Specifies the scale automatically in combination with maxWidth such that the resultant image is no taller than maxHeight
-            exportPng() {
-                let blob = this.cy.png({
-                    output: 'blob-promise', bg: 'transparent',
-                    full: true, scale: 4
-                });
-                blob.then(res => {
-                    //创建下载链接
-                    let aLink = document.createElement('a');
-                    aLink.download = `${new Date().getTime()}.png`;
-                    let url = window.URL.createObjectURL(res);//window加了好还是不加好？
-                    aLink.href = url;
-
-                    //创建、分配并触发点击事件
-                    let evt = document.createEvent("MouseEvents");
-                    evt.initEvent("click", true, true);
-                    aLink.dispatchEvent(evt);
-
-                    // aLink.click();//似乎可以替代以上三行，但好像在火狐下不行
-
-                    // 不知道要不要去除事件，不知道要不要释放blob对象
-                    // window.URL.revokeObjectURL(url); // 释放掉blob对象
-                    // console.log("释放掉blob对象");
-                }).catch(err => {
-                    console.log("Error occured: ", err);
-                    if (this.cy.elements().length === 0) {
-                        console.log("知识图谱已经空啦，导不出东西的呀");
-                    }
-                });
-            },
-
-            /**
-             * 绘制水印.
-             */
-            drawWatermark({
-                              canvas = null,
-                              words = `机密信息, 请勿外传! 时间: ${new Date().toTimeString()}`,
-                              width = 200,
-                              height = 200,
-                              font = "15px microsoft yahei", //水印字体设置
-                              fillStyle = "rgba(0, 0, 0, 0.3)", //水印字体颜色设置
-                              rotate = 10 * Math.PI / 180, //水印字体倾斜角度设置, 正数顺时针, 负数逆时针
-                              positionX = 20, // X 轴偏移像素
-                              positionY = 20, // Y 轴偏移像素
-                          } = {}) {
-                let tempCanvas = document.createElement('canvas');
-                [tempCanvas.width, tempCanvas.height] = [width, height];
-                let tempCtx = tempCanvas.getContext("2d");
-                /** 清除画布 */
-                tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-                /** 文字倾斜角度 */
-                tempCtx.rotate(rotate);
-                /** 字体样式及颜色 */
-                [tempCtx.font, tempCtx.fillStyle] = [font, fillStyle];
-
-                let [wordsArr, index, s] = [[], 0, ''];
-                for (let code of words) {
-                    s += code;
-                    code.codePointAt(0) > 255 ? index += 2 : index += 1;
-                    (index > tempCanvas.width / 11.25) && (wordsArr.push(s)) && ([index, s] = [0, '']);
-                }
-                wordsArr.push(s);
-
-                for (let i = 0; i < wordsArr.length; i++) {
-                    tempCtx.fillText(wordsArr[i], positionX, positionY + i * 20, tempCanvas.width - positionX);
-                }
-
-                let ctx = canvas.getContext("2d");
-                ctx.fillStyle = ctx.createPattern(tempCanvas, "repeat");
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            },
-            /**
-             * 导出全局图片带有水印.
-             */
-            exportPngAndWatermark() {
-                let time = new Date().getTime();
-                let blob = this.cy.png({output: 'blob-promise', bg: 'transparent', full: true, scale: 4});
-                blob.then(res => {
-                    let image = new Image();
-                    [image.id, image.crossOrigin, image.src] = [time, 'anonymous', window.URL.createObjectURL(res)];
-                    image.onload = () => {
-                        let canvas = document.createElement('canvas');
-                        [canvas.width, canvas.height] = [image.width, image.height];
-                        let ctx = canvas.getContext('2d');
-                        /** 绘制水印 */
-                        this.drawWatermark({canvas: canvas, words: `机密信息, 请勿外传! 时间: ${new Date().toTimeString()}`});
-                        /** 绘制原图 */
-                        ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height);
-                        ctx.save();
-                        let [aLink, evt] = [document.createElement('a'), document.createEvent("MouseEvents")];
-                        evt.initEvent("click", true, true);
-                        [aLink.download, aLink.href] = [`${time}.png`, canvas.toDataURL("image/png")];
-                        aLink.dispatchEvent(evt);
-                        // aLink.click();//似乎可以替代以上三行，但好像在火狐下不行
-
-                        // 不知道要不要去除事件，不知道要不要释放blob对象
-                        // window.URL.revokeObjectURL(url); // 释放掉blob对象
-                        // console.log("释放掉blob对象");
-                    }
-                }).catch(err => {
-                    console.log("Error occured: ", err);
-                    if (this.cy.elements().length === 0) {
-                        console.log("知识图谱已经空啦，导不出东西的呀");
-                    }
-                });
-
-            },
-
-            /**
-             * 导出局部图片.
-             */
-            exportCutPng({watermark = false} = {}) {
-                let unselectedVertexes = this.cy.elements('node:unselected')
-                if (!unselectedVertexes || 0 === unselectedVertexes.length) {
-                    watermark ? this.exportPngAndWatermark() : this.exportPng();
-                }else{
-                    let remove = unselectedVertexes.remove(); // 保留删除内容
-                    watermark ? this.exportPngAndWatermark() : this.exportPng();
-                    (remove && remove.length) && (remove.restore()); // 恢复删除内容
-                }
-            },
-
-            exportJSON(){//有空也可以改成promise式的
-                let data = this.getDataJsonObject();
-                let filename =  `${new Date().getTime()}.json`;
-                if(typeof data === 'object'){
-                    data = JSON.stringify(data, undefined, 4)
-                }
-                // 要创建一个 blob 数据
-                let blob = new Blob([data], {type: 'text/json'}),
-                    a = document.createElement('a');
-                a.download = filename;
-
-                // 将blob转换为地址
-                // 创建 URL 的 Blob 对象
-                a.href = window.URL.createObjectURL(blob);
-
-                // 标签 data- 嵌入自定义属性  屏蔽后也可正常下载
-                a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
-                console.log(a.href);
-
-                // 添加鼠标事件并向一个指定的事件目标派发
-                let e = document.createEvent('MouseEvents');
-                e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                a.dispatchEvent(e);
-
-                // 不知道要不要去除事件，不知道要不要释放blob对象
-                // window.URL.revokeObjectURL(url); // 释放掉blob对象
-                // console.log("释放掉blob对象");
-            },
-
-            //JSON.parse(JSON.stringify(obj))我们一般用来深拷贝
-            //但不是完全深拷贝，有以下特点：
-            //1、如果obj里面有时间对象，则JSON.stringify后再JSON.parse的结果，时间将只是字符串的形式。而不是时间对象；
-            //2、如果obj里有RegExp、Error对象，则序列化的结果将只得到空对象；
-            //3、如果obj里有函数，undefined，则序列化的结果会把函数或 undefined丢失；
-            //4、如果obj里有NaN、Infinity和-Infinity，则序列化的结果会变成null
-            //5、JSON.stringify()只能序列化对象的可枚举的自有属性，例如 如果obj中的对象是有构造函数生成的， 则使用JSON.parse(JSON.stringify(obj))深拷贝后，会丢弃对象的constructor；
-            //6、如果对象中存在循环引用的情况也无法正确实现深拷贝；
-
-
-            getDataJsonObject() {
-                let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
-                let obj = {"edges": [], "nodes": []};
-                if (JSON.stringify(eles) !== '{}') {
-                    if (eles.edges.length > 0) {
-                        eles.edges.forEach(val => {
-                            let data = {};
-                            data.id = val.data.id;
-                            data.source = val.data.source;
-                            data.target = val.data.target;
-                            data.label = val.data.label;
-                            obj.edges.push({"data": data});
-                        });
-                    }
-                    if (eles.nodes.length > 0) {
-                        eles.nodes.forEach(val => {
-                            let data = {};
-                            data.id = val.data.id;
-                            data.content = val.data.content;
-                            obj.nodes.push({"data": data});
-                        });
-                    }
-                }
-                console.log("eles_simple_json", obj);
-                return obj;
             },
 
             getGraphJsonObject() {
