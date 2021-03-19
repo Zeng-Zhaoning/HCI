@@ -53,7 +53,7 @@
                     })
                     .catch(err => {
                         console.error(err);
-                        this.$message.error('请确保上传了格式正确的json文件');
+                        this.$message.error('文件数据格式不正确');
                     })
             },
 
@@ -67,7 +67,16 @@
                     val.data.text = val.data.content;
                 })
                 let that = this;
+                const loading = this.$loading({
+                  lock: true,
+                  text: '...加载中...',
+                  spinner: 'el-icon-loading',
+                  background: 'rgba(255, 255,255, 0.8)'
+                });
                 this.graph(that, data);
+                this.$nextTick(() => {
+                    loading.close();
+                });
             },
 
             //让过长的内容作为展示的标题时省略
@@ -162,8 +171,8 @@
                         target.style({fontSize: 24, width: 3, color: '#197edd'});//与上文edge的初始配置保持一致
                     })
 
-                // 绑定点击的事件
-                var barHandler = event => {
+                // 绑定右键单击的事件
+                const barHandler = event => {
                     if (allSelected('node')) {
                         contextMenu.hideMenuItem('select-all-nodes');
                         contextMenu.showMenuItem('unselect-all-nodes');
@@ -180,25 +189,24 @@
                     }
 
                 };
-                cy.on('cxttap', barHandler);//cxttap为右键单击
+                cy.on('cxttap', barHandler);  //cxttap为右键单击
 
-                var allSelected = function (type) {
+                const allSelected = function (type) {
                     if (type === 'node') {
                         return cy.nodes().length === cy.nodes(':selected').length;
                     } else if (type === 'edge') {
                         return cy.edges().length === cy.edges(':selected').length;
                     }
                     return false;
-                }
-
-                var selectAllOfTheSameType = function (type) {
+                };
+                const selectAllOfTheSameType = function (type) {
                     if (type === 'node') {
                         cy.nodes().select();
                     } else if (type === 'edge') {
                         cy.edges().select();
                     }
                 };
-                var unselectAllOfTheSameType = function (type) {
+                const unselectAllOfTheSameType = function (type) {
                     if (type === 'node') {
                         cy.nodes().unselect();
                     } else if (type === 'edge') {
@@ -207,13 +215,97 @@
                 };
 
 
-                var removed;//为了撤销删除而使用的缓存，以后可以改成数组等等，恢复多次
-                // demo your core ext
-                var contextMenu = cy.contextMenus({
+                let removed;  //为了撤销删除而使用的缓存，以后可以改成数组等等，恢复多次
+
+                let contextMenu = cy.contextMenus({
                     menuItems: [
                         {
+                        id: 'edit',
+                        content: '命名',
+                        selector: 'node, edge',
+                        hasTrailingDivider: false,
+                        onClickFunction: function (event) {
+                          let target = event.target || event.cyTarget;
+                          const group = target.group()
+                          const data = target.data()
+                          const name = group === 'nodes' ? 'content' : 'label'
+                          const text = data[name]
+                          let value = prompt("请输入需要修改的名称", text)
+                          if (value !== null && value !== "") {
+                            console.log("before edit: target", target);
+                            let obj = {};
+                            obj[name] = value;
+                            target.data(obj);
+                            if (name === 'content') {
+                              that.rendNode(target, that);
+                            }
+                            console.log("after edit: target", target);
+
+                            // updateData(group, data, value, that)
+                            // that.submit()
+                          } else if(value!==null) {//取消返回null，空值返回''
+                            alert("名称无效哦!");
+                          }
+                        }
+                      },
+                        {
+                        id: 'color',
+                        content: '颜色',
+                        selector: 'node',
+                        hasTrailingDivider: true,
+                        submenu: [
+                          {
+                            id: 'color-blue',
+                            content: '蓝',
+                            tooltipText: 'blue',
+                            submenu: [
+                              {
+                                id: 'color-normal-blue',
+                                content: '天蓝',
+                                onClickFunction: function (event) {
+                                  let target = event.target || event.cyTarget;
+                                  target.style('background-color', "#409EFF");//"#65b3fc");
+                                },
+                              },
+                              {
+                                id: 'color-light-blue',
+                                content: '浅蓝',
+                                onClickFunction: function (event) {
+                                  let target = event.target || event.cyTarget;
+                                  target.style('background-color', 'lightblue');
+                                },
+                              },
+                              {
+                                id: 'color-dark-blue',
+                                content: '深蓝',
+                                onClickFunction: function (event) {
+                                  let target = event.target || event.cyTarget;
+                                  target.style('background-color', 'darkblue');
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            id: 'color-green',
+                            content: '绿',
+                            onClickFunction: function (event) {
+                              let target = event.target || event.cyTarget;
+                              target.style('background-color', 'green');
+                            },
+                          },
+                          {
+                            id: 'color-red',
+                            content: '红',
+                            onClickFunction: function (event) {
+                              let target = event.target || event.cyTarget;
+                              target.style('background-color', 'red');
+                            },
+                          },
+                        ]
+                      },
+                        {
                             id: 'undo-last-remove',
-                            content: 'undo last remove',
+                            content: '撤销最近一次删除',
                             selector: 'node, edge',
                             show: false,
                             coreAsWell: true,
@@ -229,27 +321,9 @@
                             }
                         },
                         {
-                            id: 'remove',
-                            content: 'remove',
-                            tooltipText: 'remove',
-                            image: {src: "/icons/remove.svg", width: 12, height: 12, x: 6, y: 4}, // menu icon
-                            selector: 'node, edge',
-                            onClickFunction: function (event) {
-                                let target = event.target || event.cyTarget;
-                                console.log("before remove: nodeCount", cy.nodes().length);
-                                console.log("before remove: edgeCount", cy.edges().length);
-                                removed = target.remove();
-                                console.log("after remove: nodeCount", cy.nodes().length);
-                                console.log("after remove: edgeCount", cy.edges().length);
-
-                                contextMenu.showMenuItem('undo-last-remove');
-                            }
-                        },
-                        {
                             id: 'add-node',
-                            content: 'add node',
-                            tooltipText: 'add node',
-                            image: {src: "/icons/add.svg", width: 12, height: 12, x: 6, y: 4}, // menu icon
+                            content: '实体',
+                            image: {src: "/icons/add.svg", x: 7, y: 8}, // menu icon
                             coreAsWell: true,
                             hasTrailingDivider: true,
                             onClickFunction: function (event) {
@@ -280,10 +354,9 @@
                         },
                         {
                             id: 'add-edge',
-                            content: 'add edge',
-                            tooltipText: 'add edge',
+                            content: '关系',
                             selector: 'node',
-                            image: {src: "/icons/add.svg", width: 12, height: 12, x: 6, y: 4}, // menu icon
+                            image: {src: "/icons/add.svg", x: 7, y: 8}, // menu icon
                             onClickFunction: function (event) {
                                 let starget = event.target || event.cyTarget;
                                 starget.style({
@@ -320,99 +393,25 @@
                             }
                         },
                         {
-                            id: 'edit',
-                            content: 'edit',
-                            tooltipText: 'edit',
-                            selector: 'node, edge',
-                            hasTrailingDivider: true,
-                            onClickFunction: function (event) {
-                                let target = event.target || event.cyTarget;
-                                const group = target.group()
-                                const data = target.data()
-                                const name = group === 'nodes' ? 'content' : 'label'
-                                const text = data[name]
-                                let value = prompt("请输入需要修改的名称", text)
-                                if (value !== null && value !== "") {
-                                    console.log("before edit: target", target);
-                                    let obj = {};
-                                    obj[name] = value;
-                                    target.data(obj);
-                                    if (name === 'content') {
-                                        that.rendNode(target, that);
-                                    }
-                                    console.log("after edit: target", target);
+                        id: 'remove',
+                        content: '删除',
+                          hasTrailingDivider: true,
+                          image: {src: "/icons/remove.svg", x: 7, y: 8}, // menu icon
+                        selector: 'node, edge',
+                        onClickFunction: function (event) {
+                          let target = event.target || event.cyTarget;
+                          console.log("before remove: nodeCount", cy.nodes().length);
+                          console.log("before remove: edgeCount", cy.edges().length);
+                          removed = target.remove();
+                          console.log("after remove: nodeCount", cy.nodes().length);
+                          console.log("after remove: edgeCount", cy.edges().length);
 
-                                    // updateData(group, data, value, that)
-                                    // that.submit()
-                                } else if(value!==null) {//取消返回null，空值返回''
-                                    alert("名称无效哦!");
-                                }
-                            }
-                        },
-                        {
-                            id: 'color',
-                            content: 'change color',
-                            tooltipText: 'change color',
-                            selector: 'node',
-                            hasTrailingDivider: true,
-                            submenu: [
-                                {
-                                    id: 'color-blue',
-                                    content: 'blue',
-                                    tooltipText: 'blue',
-                                    submenu: [
-                                        {
-                                            id: 'color-normal-blue',
-                                            content: 'normal blue',
-                                            tooltipText: 'normal blue',
-                                            onClickFunction: function (event) {
-                                                let target = event.target || event.cyTarget;
-                                                target.style('background-color', "#65b3fc");
-                                            },
-                                        },
-                                        {
-                                            id: 'color-light-blue',
-                                            content: 'light blue',
-                                            tooltipText: 'light blue',
-                                            onClickFunction: function (event) {
-                                                let target = event.target || event.cyTarget;
-                                                target.style('background-color', 'lightblue');
-                                            },
-                                        },
-                                        {
-                                            id: 'color-dark-blue',
-                                            content: 'dark blue',
-                                            tooltipText: 'dark blue',
-                                            onClickFunction: function (event) {
-                                                let target = event.target || event.cyTarget;
-                                                target.style('background-color', 'darkblue');
-                                            },
-                                        },
-                                    ],
-                                },
-                                {
-                                    id: 'color-green',
-                                    content: 'green',
-                                    tooltipText: 'green',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        target.style('background-color', 'green');
-                                    },
-                                },
-                                {
-                                    id: 'color-red',
-                                    content: 'red',
-                                    tooltipText: 'red',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        target.style('background-color', 'red');
-                                    },
-                                },
-                            ]
-                        },
+                          contextMenu.showMenuItem('undo-last-remove');
+                        }
+                      },
                         {
                             id: 'select-all-nodes',
-                            content: 'select all nodes',
+                            content: '全选实体',
                             selector: 'node',
                             coreAsWell: true,
                             show: true,
@@ -425,7 +424,7 @@
                         },
                         {
                             id: 'unselect-all-nodes',
-                            content: 'unselect all nodes',
+                            content: '取消全选实体',
                             selector: 'node',
                             coreAsWell: true,
                             show: false,
@@ -438,11 +437,10 @@
                         },
                         {
                             id: 'select-all-edges',
-                            content: 'select all edges',
+                            content: '全选关系',
                             selector: 'edge',
                             coreAsWell: true,
                             show: true,
-                            hasTrailingDivider: true,
                             onClickFunction: function (event) {
                                 selectAllOfTheSameType('edge');
 
@@ -452,7 +450,7 @@
                         },
                         {
                             id: 'unselect-all-edges',
-                            content: 'unselect all edges',
+                            content: '取消全选关系',
                             selector: 'edge',
                             coreAsWell: true,
                             show: false,
@@ -463,70 +461,17 @@
                                 contextMenu.showMenuItem('select-all-edges');
                                 contextMenu.hideMenuItem('unselect-all-edges');
                             }
-                        // },
-                        // {
-                        //   id: 'exportPng',
-                        //   content: 'exportPng',
-                        //   tooltipText: 'exportPng',
-                        //   selector: 'edge, node',
-                        //   coreAsWell: true,
-                        //   submenu: [
-                        //     {
-                        //       id: 'exportFullPng',
-                        //       content: 'exportFullPng',
-                        //       tooltipText: 'exportFullPng',
-                        //       onClickFunction: function (event) {
-                        //         that.exportPng();
-                        //       }
-                        //     },
-                        //     {
-                        //       id: 'exportCutPng',
-                        //       content: 'exportCutPng',
-                        //       tooltipText: 'exportCutPng',
-                        //       onClickFunction: function (event) {
-                        //         that.exportCutPng();
-                        //       }
-                        //     },
-                        //     {
-                        //       id: 'exportWatermarkPng',
-                        //       content: 'exportWatermarkPng',
-                        //       tooltipText: 'exportWatermarkPng',
-                        //       submenu: [
-                        //         {
-                        //           id: 'exportWatermarkFullPng',
-                        //           content: 'exportWatermarkFullPng',
-                        //           tooltipText: 'exportWatermarkFullPng',
-                        //           onClickFunction: function (event) {
-                        //             that.exportPngAndWatermark();
-                        //           }
-                        //         },
-                        //         {
-                        //           id: 'exportWatermarkCutPng',
-                        //           content: 'exportWatermarkCutPng',
-                        //           tooltipText: 'exportWatermarkCutPng',
-                        //           onClickFunction: function (event) {
-                        //             that.exportCutPng({watermark:true});
-                        //           }
-                        //         },
-                        //       ]
-                        //     }
-                        //   ]
-                        }
+                        },
                     ],
                     // css classes that menu items will have
                     menuItemClasses: [
-                        'custom-menu-item'
-                        // add class names to this list
+                        // add class names to this list, like: 'custom-menu-item'
                     ],
                     // css classes that context menu will have
-                    contextMenuClasses: [
-                        'custom-context-menu'
-                        // add class names to this list
-                    ],
+                    contextMenuClasses: [],
                     // Indicates that the menu item has a submenu. If not provided default one will be used
                     submenuIndicator: {src: '/icons/submenu-indicator-default.svg', width: 12, height: 12}
                 });
-
             },
 
             getGraphJsonObject() {
@@ -550,60 +495,68 @@
     }
 </script>
 
-<style>
+<style lang="less">
+@import "../assets/css/colors";
     #graph {
         width: 100%;
-        height: 800px;
-        /*border: 1px solid pink;*/
+        height: 100%;
+        min-height: 500px;
         cursor: move;
     }
 
+    //菜单
     .cy-context-menus-cxt-menu {
-        display:none;
-        z-index: 1000;
+        z-index: 1001;
         position:absolute;
-        border:1px solid #A0A0A0;
-        padding: 0;
-        margin: 0;
-        width:auto;
+        border:1px solid @separator;
+        border-radius: 3px;
+        background-color: white;
     }
 
+    //菜单条目
     .cy-context-menus-cxt-menuitem {
+        border-radius: 3px;
         display:block;
         width: 100%;
-        padding: 3px 20px;
+        padding: 7px 30px;
         position:relative;
-        margin:0;
-        background-color:#f8f8f8;
-        font-weight:normal;
-        font-size: 12px;
+        background-color: white;
+        font-size: 13px;
         white-space:nowrap;
+        color: @myblack;
         border: 0;
         text-align: left;
+        img{
+            width: 15px;
+            height: 15px;
+        }
     }
 
-    .cy-context-menus-cxt-menuitem:enabled {
-        color: #000000;
-    }
+    //菜单条目：enabled
+    .cy-context-menus-cxt-menuitem:enabled {}
 
+    //菜单条目：focus
     .cy-context-menus-ctx-operation:focus {
-        outline: none;
+        //outline: none;
     }
 
+    //菜单条目：hover
     .cy-context-menus-cxt-menuitem:hover {
-        color: #ffffff;
+        color: @theme;
         text-decoration: none;
-        background-color: #0B9BCD;
+        background-color: @hover;
         background-image: none;
         cursor: pointer;
+        border-radius: 0;
     }
 
+    //？？
     .cy-context-menus-cxt-menuitem[content]:before {
         content:attr(content);
     }
 
     .cy-context-menus-divider {
-        border-bottom:1px solid #A0A0A0;
+        border-bottom:1px solid @separator;
     }
 
     .cy-context-menus-submenu-indicator {
@@ -612,24 +565,4 @@
         top: 50%;
         transform: translateY(-50%);
     }
-
-    .custom-menu-item {
-        border-color: white !important;
-        /*  border-top-left-radius: 5px !important;
-         border-top-right-radius: 5px !important;
-         border-bottom-left-radius: 5px !important;
-         border-bottom-right-radius: 5px !important; */
-        color:white !important;
-        background-color: purple;
-        font-weight: bold !important;
-
-    }
-
-    .custom-context-menu {
-        border-color: purple !important;
-
-    }
-
-
-
 </style>

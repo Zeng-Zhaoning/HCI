@@ -19,7 +19,7 @@ export const workspace = {
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'padding': '25px',
-                    "background-color": "#65b3fc",
+                    "background-color": "#409EFF",
                 }
             },
             {
