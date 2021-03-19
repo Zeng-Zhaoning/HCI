@@ -132,7 +132,7 @@ export default {
             blob.then(res => {
                 //创建下载链接
                 let aLink = document.createElement('a');
-                aLink.download = this.current_project.project_name + '.png';
+                aLink.download = this.generateFileName() + '.png';
                 let url = window.URL.createObjectURL(res);
                 aLink.href = url;
 
@@ -195,7 +195,7 @@ export default {
             this.$message("正在导出json...");
             //有空也可以改成promise式的
             let data = this.getDataJsonObject();
-            let filename =  this.current_project.project_name + '.json';
+            let filename =  this.generateFileName() + '.json';
             if(typeof data === 'object'){
                 data = JSON.stringify(data, undefined, 4)
             }
@@ -206,7 +206,8 @@ export default {
 
             // 将blob转换为地址
             // 创建 URL 的 Blob 对象
-            a.href = window.URL.createObjectURL(blob);
+            let url = window.URL.createObjectURL(blob)
+            a.href = url;
 
             // 标签 data- 嵌入自定义属性  屏蔽后也可正常下载
             a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
@@ -218,6 +219,16 @@ export default {
 
             // 释放掉blob对象
             window.URL.revokeObjectURL(url);
+        },
+        generateFileName(){
+            let name = "";
+            try{
+                name = this.current_project.project_name;
+            }catch (e) {
+                console.log("Error occurs:"+e);
+                name = new Date().getTime();
+            }
+            return name;
         },
 
         /**

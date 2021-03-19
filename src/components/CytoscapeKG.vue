@@ -463,54 +463,54 @@
                                 contextMenu.showMenuItem('select-all-edges');
                                 contextMenu.hideMenuItem('unselect-all-edges');
                             }
-                        },
-                        {
-                          id: 'exportPng',
-                          content: 'exportPng',
-                          tooltipText: 'exportPng',
-                          selector: 'edge, node',
-                          coreAsWell: true,
-                          submenu: [
-                            {
-                              id: 'exportFullPng',
-                              content: 'exportFullPng',
-                              tooltipText: 'exportFullPng',
-                              onClickFunction: function (event) {
-                                that.exportPng();
-                              }
-                            },
-                            {
-                              id: 'exportCutPng',
-                              content: 'exportCutPng',
-                              tooltipText: 'exportCutPng',
-                              onClickFunction: function (event) {
-                                that.exportCutPng();
-                              }
-                            },
-                            {
-                              id: 'exportWatermarkPng',
-                              content: 'exportWatermarkPng',
-                              tooltipText: 'exportWatermarkPng',
-                              submenu: [
-                                {
-                                  id: 'exportWatermarkFullPng',
-                                  content: 'exportWatermarkFullPng',
-                                  tooltipText: 'exportWatermarkFullPng',
-                                  onClickFunction: function (event) {
-                                    that.exportPngAndWatermark();
-                                  }
-                                },
-                                {
-                                  id: 'exportWatermarkCutPng',
-                                  content: 'exportWatermarkCutPng',
-                                  tooltipText: 'exportWatermarkCutPng',
-                                  onClickFunction: function (event) {
-                                    that.exportCutPng({watermark:true});
-                                  }
-                                },
-                              ]
-                            }
-                          ]
+                        // },
+                        // {
+                        //   id: 'exportPng',
+                        //   content: 'exportPng',
+                        //   tooltipText: 'exportPng',
+                        //   selector: 'edge, node',
+                        //   coreAsWell: true,
+                        //   submenu: [
+                        //     {
+                        //       id: 'exportFullPng',
+                        //       content: 'exportFullPng',
+                        //       tooltipText: 'exportFullPng',
+                        //       onClickFunction: function (event) {
+                        //         that.exportPng();
+                        //       }
+                        //     },
+                        //     {
+                        //       id: 'exportCutPng',
+                        //       content: 'exportCutPng',
+                        //       tooltipText: 'exportCutPng',
+                        //       onClickFunction: function (event) {
+                        //         that.exportCutPng();
+                        //       }
+                        //     },
+                        //     {
+                        //       id: 'exportWatermarkPng',
+                        //       content: 'exportWatermarkPng',
+                        //       tooltipText: 'exportWatermarkPng',
+                        //       submenu: [
+                        //         {
+                        //           id: 'exportWatermarkFullPng',
+                        //           content: 'exportWatermarkFullPng',
+                        //           tooltipText: 'exportWatermarkFullPng',
+                        //           onClickFunction: function (event) {
+                        //             that.exportPngAndWatermark();
+                        //           }
+                        //         },
+                        //         {
+                        //           id: 'exportWatermarkCutPng',
+                        //           content: 'exportWatermarkCutPng',
+                        //           tooltipText: 'exportWatermarkCutPng',
+                        //           onClickFunction: function (event) {
+                        //             that.exportCutPng({watermark:true});
+                        //           }
+                        //         },
+                        //       ]
+                        //     }
+                        //   ]
                         }
                     ],
                     // css classes that menu items will have
