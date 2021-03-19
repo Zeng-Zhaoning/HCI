@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <kg-template></kg-template>
+    <kg-template class="kg-template"></kg-template>
     <edit-bar></edit-bar>
   </div>
 </template>
@@ -20,4 +20,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+.container{
+  height: 100%;
+}
+.kg-template{
+  height: 100%;
+}
 </style>

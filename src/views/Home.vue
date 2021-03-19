@@ -4,7 +4,7 @@
       <side-bar class="side-bar"></side-bar>
     </el-aside>
     <el-main>
-      <work-space class="work-space"></work-space>
+      <work-space></work-space>
     </el-main>
   </el-container>
 </template>
@@ -46,5 +46,7 @@ export default {
 .el-main{
   padding: 0;
   background-color: @background;
+  height: 100%;
 }
+
 </style>
