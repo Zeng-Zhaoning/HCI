@@ -253,12 +253,12 @@
                             coreAsWell: true,
                             hasTrailingDivider: true,
                             onClickFunction: function (event) {
-                                // let id = new Date().getTime()+""//不给这个，cy自己也会生成id
+                                let timestamp = new Date().getTime();
 
                                 let data = {
-                                    content: '未定义',
+                                    content: '未定义'+timestamp,
                                     type: 'undefined',
-                                    text: '未定义'
+                                    text: ''
                                 };
 
                                 let pos = event.position || event.cyPosition;
@@ -293,17 +293,19 @@
                                 let sid = starget.data().id;
                                 cy.once('tap', event => {
                                     console.log("start adding an edge");
-                                    let dtarget = event.target || event.cyTarget;
-                                    if (dtarget !== cy && dtarget.group() === 'nodes') {
+                                    let ttarget = event.target || event.cyTarget;
+                                    if (ttarget !== cy && ttarget.group() === 'nodes') {
                                         console.log("before adding edge: edgeCount", cy.edges().length);
                                         console.log("before adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
-                                        let did = dtarget.data().id;
+                                        let tid = ttarget.data().id;
+                                        let timestamp = new Date().getTime();
                                         let newEdge = {
                                             group: 'edges',
                                             data: {
                                                 source: sid,
-                                                target: did,
-                                                label: 'undefined'
+                                                target: tid,
+                                                label: 'undefined'+timestamp,
+                                                type: 'undefined'
                                             },
                                             classes: 'autorotate'
                                         };
@@ -313,7 +315,7 @@
                                     }
                                     starget.style({
                                         "border-width": 0,
-                                        "border-color": starget.style()['background-color']
+                                        "border-color": starget.style('background-color')
                                     });
                                     console.log("finish adding an edge");
                                 });
@@ -331,8 +333,17 @@
                                 const data = target.data()
                                 const name = group === 'nodes' ? 'content' : 'label'
                                 const text = data[name]
-                                let value = prompt("请输入需要修改的名称", text)
-                                if (value !== null && value !== "") {
+                                let value = "";
+                                let propFunc = (val,key)=>val.data(key);
+                                let getNameFunc = ()=>prompt("请输入需要修改的名称", text);
+
+                                //以下取名函数必须保证返回值不是''
+                                if(group==='nodes'){
+                                    value = that.getUniqueNode(cy.nodes(),propFunc,getNameFunc);
+                                }else{
+                                    value = that.getUniqueEdge(data,cy.edges(),propFunc,getNameFunc);
+                                }
+                                if (value !== null) {//取消返回null，空值返回''，其中空值必须以在函数中处理
                                     console.log("before edit: target", target);
                                     let obj = {};
                                     obj[name] = value;
@@ -344,8 +355,6 @@
 
                                     // updateData(group, data, value, that)
                                     // that.submit()
-                                } else if(value!==null) {//取消返回null，空值返回''
-                                    alert("名称无效哦!");
                                 }
                             }
                         },
@@ -527,6 +536,57 @@
                     submenuIndicator: {src: '/icons/submenu-indicator-default.svg', width: 12, height: 12}
                 });
 
+            },
+
+            isUnique(arrays,propFunc,name){
+                for(let i=0;i<arrays.length;i++){
+                    if(propFunc(arrays[i])===name){
+                        return false
+                    }
+                }
+                return true
+            },
+
+            getUniqueNode(nodes,nodePropFunc,getNameFunc){
+                let name = "";
+                let count = 0;
+                let propFunc = val=>nodePropFunc(val,"content");
+                while (1){
+                    name = getNameFunc();
+                    if(name===''){//可扩展为实体名相关的正则表达式
+                        alert("名称无效哦，换一个名字吧，亲~");
+                    } else if(name===null||this.isUnique(nodes,propFunc,name)){//null代表取消
+                        return name;
+                    }else if(count>100){
+                        alert("系统繁忙，请检查输入是否正确，或稍后再试哦");
+                        return null;
+                    }else{
+                        alert("该实体已存在哦，换一个名字吧，亲~");
+                    }
+                    count++;
+                }
+            },
+
+            getUniqueEdge({source,target},edges,edgePropFunc,getNameFunc){
+                let name = "";
+                let dupEdges = [];
+                let count = 0;
+                while (1){
+                    name = getNameFunc();
+                    if(name===null) return name;//null代表取消
+                    if(name===''){//可扩展为关系名相关的正则表达式
+                        alert("名称无效哦，换一个名字吧，亲~");
+                    }else if(count>100){
+                        alert("系统繁忙，请检查输入是否正确，或稍后再试哦");
+                        return null;
+                    }else{
+                        dupEdges = edges.filter(val=>edgePropFunc(val,"source")===source).filter(val=>edgePropFunc(val,"target")===target);
+                        if(dupEdges.length===0) return name;
+                        if(this.isUnique(dupEdges,val=>edgePropFunc(val,"label"),name)) return name;
+                        alert("该边已存在哦，换一个名字吧，亲~");
+                    }
+                    count++;
+                }
             },
 
             getGraphJsonObject() {
