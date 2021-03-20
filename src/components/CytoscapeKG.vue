@@ -425,6 +425,7 @@
                             image: {src: "/icons/add.svg", x: 7, y: 8}, // menu icon
                             onClickFunction: function (event) {
                                 let starget = event.target || event.cyTarget;
+                                let color_before = starget.style('background-color');
                                 starget.style({
                                     //"border-width": 4,
                                     //"border-color": "#847072",
@@ -457,11 +458,7 @@
                                         console.log("after adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
                                         that.rendEdge(cy.edges()[cy.edges().length - 1], that);
                                     }
-                                    starget.style({
-                                        //"border-width": 0,
-                                        "background-color": '#9c8f96',
-                                        //'text-outline-width': 0,
-                                    });
+                                    starget.style({'background-color': color_before});
                                     console.log("finish adding an edge");
                                 });
                             }
