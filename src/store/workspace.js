@@ -54,7 +54,7 @@ export const workspace = {
                     //'background-color': "#65b3fc",
                     'line-color': "#a6c2ce",
                     'font-size': "24px",
-                    'content': 'data(relation)',//这里的content用来显示边的内容
+                    'content': 'data(nameShowed)',//这里的content用来显示边的内容
                     'curve-style': 'bezier',//错开不同的边
                     'control-point-step-size': 100, //从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离
                     "edge-text-rotation": "autorotate",
