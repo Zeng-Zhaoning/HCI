@@ -35,18 +35,18 @@ export default createStore({
         setAllProjects(state, pros) {
             state.all_projects = pros;
         },
-        setProjectGraph(state, data) {
-            let pid = data.pid;
-            let edges = data.edges;
-            let nodes = data.nodes;
+        updateProjectInfo(state, data){
+            //data 包括：pid, project_name, text, edges[], nodes[]
             for (let p of state.all_projects) {
-                if (p.pid === pid) {
-                    p.edges = edges;
-                    p.nodes = nodes;
+                if (p.pid === data.pid) {
+                    p.project_name = data.project_name;
+                    p.text = data.text;
+                    p.edges = data.edges;
+                    p.nodes = data.nodes;
                     return;
                 }
             }
-        },
+        }
     },
 
     actions: {
