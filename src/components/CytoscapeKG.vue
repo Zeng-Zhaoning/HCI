@@ -56,9 +56,6 @@
                     .catch(err => {
                         console.error(err);
                         this.$message.error('文件数据格式不正确');
-                        this.$nextTick(() => {
-                          loading.close();
-                        });
                     })
             },
 
@@ -79,10 +76,14 @@
                   spinner: 'el-icon-loading',
                   background: 'rgba(255, 255,255, 0.8)'
                 });
-                this.graph(that, data);
-                this.$nextTick(() => {
-                    loading.close();
-                });
+                try{
+                    this.graph(that, data);
+                }finally{
+                    this.$nextTick(() => {
+                      loading.close();
+                    });
+                }
+
             },
 
             //让过长的内容作为展示的标题时省略
@@ -185,13 +186,13 @@
                         let target = event.target || event.cyTarget;
                         let name = target.data().relation;
                         target.data({nameShowed: name});
-                        target.style({fontSize: 48, width: 6, color: "#1346c6"});//fontSize仅仅只是取一个较大的数
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
+                        target.style({fontSize: 36, width: 6, color: '#bc5f6a'});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
                     })
                     .on('mouseout', 'edge', event => {
                         let target = event.target || event.cyTarget;
                         that.rendEdge(target,that);
-                        target.style({fontSize: 24, width: 3, color: '#197edd'});//与上文edge的初始配置保持一致
+                        target.style({fontSize: 24, width: 3, color: '#e3a6a1'});//与上文edge的初始配置保持一致
                     })
 
                 // 绑定右键单击的事件
@@ -417,8 +418,11 @@
                             onClickFunction: function (event) {
                                 let starget = event.target || event.cyTarget;
                                 starget.style({
-                                    "border-width": 6,
-                                    "border-color": "rgb(20,248,123)"
+                                    "border-width": 4,
+                                    "border-color": "#847072",
+                                    "background-color": '#dcc1b0',
+                                    'text-outline-color': "#847072",
+                                    'text-outline-width': 4,
                                 });
                                 let sid = starget.data().id;
                                 cy.once('tap', event => {
@@ -447,7 +451,8 @@
                                     }
                                     starget.style({
                                         "border-width": 0,
-                                        "border-color": starget.style('background-color')
+                                        "background-color": '#9c8f96',
+                                        'text-outline-width': 0,
                                     });
                                     console.log("finish adding an edge");
                                 });
