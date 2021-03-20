@@ -20,7 +20,7 @@
       <div class="operations">
         <div class="op" @click="open">
           <input type="file" class="choose-file" style="display: none" @change="getFilePath">
-          <div><img src="../../../public/icons/open1.svg"></div>
+          <div><img src="../../../public/icons/open.png"></div>
           <div class="text-box">打开</div>
         </div>
         <div class="op" @click="save">

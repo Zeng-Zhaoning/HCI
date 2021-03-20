@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "data": {
+        "source": 0,
+        "relation": "导致",
+        "target": 1
+      }
+    },
+    {
+      "data": {
+        "source": 0,
+        "relation": "导致",
+        "target": 2
+      }
+    },
+    {
+      "data": {
+        "source": 1,
+        "relation": "加速",
+        "target": 2
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "data": {
+        "name": "没钱",
+        "id": 0,
+        "type": 0
+      }
+    },
+    {
+      "data": {
+        "name": "饿",
+        "id": 1
+      }
+    },
+    {
+      "data": {
+        "name": "不高兴",
+        "id": 2
+      }
+    }
+  ]
+}

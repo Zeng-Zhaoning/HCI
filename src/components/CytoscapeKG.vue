@@ -56,9 +56,6 @@
                     .catch(err => {
                         console.error(err);
                         this.$message.error('文件数据格式不正确');
-                        this.$nextTick(() => {
-                          loading.close();
-                        });
                     })
             },
 
@@ -79,10 +76,14 @@
                   spinner: 'el-icon-loading',
                   background: 'rgba(255, 255,255, 0.8)'
                 });
-                this.graph(that, data);
-                this.$nextTick(() => {
-                    loading.close();
-                });
+                try{
+                    this.graph(that, data);
+                }finally{
+                    this.$nextTick(() => {
+                      loading.close();
+                    });
+                }
+
             },
 
             //让过长的内容作为展示的标题时省略
