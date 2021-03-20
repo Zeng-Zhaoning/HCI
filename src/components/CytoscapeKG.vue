@@ -8,7 +8,7 @@
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
-    import { mapState,mapMutations } from 'vuex';
+    import { mapState,mapMutations,mapGetters } from 'vuex';
 
     import contextMenus from 'cytoscape-context-menus';
 
@@ -18,21 +18,24 @@
 
     export default {
         name: 'CytoscapeKG',
-        data(){
-            return{
-
-            }
-        },
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
                 cy: state => state.workspace.cy,
                 json_src_path: state => state.workspace.json_src_path,
-            })
+            }),
+            ...mapGetters(['current_project']),
         },
         watch: {
             json_src_path(now, old){
                 this.getData(now);
+            },
+            current_project(now, old){
+                let data = {
+                    edges: this.current_project.edges,
+                    nodes: this.current_project.nodes,
+                };
+                this.dataHandle(data);
             }
         },
         mounted () {
@@ -40,7 +43,6 @@
             document.oncontextmenu = () => {
                 event.returnValue = false;
             }
-            this.getData(this.json_src_path);
         },
         methods: {
             ...mapMutations(['setCy']),
@@ -54,6 +56,9 @@
                     .catch(err => {
                         console.error(err);
                         this.$message.error('文件数据格式不正确');
+                        this.$nextTick(() => {
+                          loading.close();
+                        });
                     })
             },
 
@@ -64,7 +69,7 @@
                     val.classes = 'autorotate'
                 })
                 data.nodes.forEach((val) => {
-                    val.data.text = val.data.content;
+                    val.data.nameShowed = val.data.name;
                 })
                 let that = this;
                 const loading = this.$loading({
@@ -100,9 +105,9 @@
 
             //帮助node合适地展示text
             rendNode(target, that) {
-                let content = target.data().content;
-                const text = that.fontShow(content);
-                target.data({text: text});
+                let name = target.data().name;
+                const text = that.fontShow(name);
+                target.data({nameShowed: text});
                 const style = that.fontStyle(text.length);
                 target.style(style);
             },
@@ -153,9 +158,9 @@
                 console.log("after: cy.autounselectify()", cy.autounselectify());
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
-                    let content = target.data().content;
-                    target.data({text: content});
-                    target.style({fontSize: 48});//此数无意义，仅仅需要比rendNode最大text的36更大即可
+                    let name = target.data().name;
+                    target.data({nameShowed: name});
+                    target.style({fontSize: 48});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
                 })
                     .on('mouseout', 'node', event => {
                         let target = event.target || event.cyTarget;
@@ -164,7 +169,7 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        target.style({fontSize: 48, width: 6, color: "#1346c6"});//此数无意义，仅仅需要比rendNode最大text的36更大即可
+                        target.style({fontSize: 48, width: 6, color: "#1346c6"});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
                     })
                     .on('mouseout', 'edge', event => {
                         let target = event.target || event.cyTarget;
@@ -228,11 +233,11 @@
                                 let target = event.target || event.cyTarget;
                                 const group = target.group()
                                 const data = target.data()
-                                const name = group === 'nodes' ? 'content' : 'label'
-                                const text = data[name]
+                                const name = group === 'nodes' ? 'name' : 'relation'
+                                const nameShowed = data[name]
                                 let value = "";
                                 let propFunc = (val,key)=>val.data(key);
-                                let getNameFunc = ()=>prompt("请输入需要修改的名称", text);
+                                let getNameFunc = ()=>prompt("请输入需要修改的名称", nameShowed);
 
                                 //以下取名函数必须保证返回值不是''
                                 if(group==='nodes'){
@@ -245,7 +250,7 @@
                                     let obj = {};
                                     obj[name] = value;
                                     target.data(obj);
-                                    if (name === 'content') {
+                                    if (name === 'name') {
                                         that.rendNode(target, that);
                                     }
                                     console.log("after edit: target", target);
@@ -271,7 +276,7 @@
                                 content: '天蓝',
                                 onClickFunction: function (event) {
                                   let target = event.target || event.cyTarget;
-                                  target.style('background-color', "#409EFF");//"#65b3fc");
+                                  target.style('background-color', "#409EFF");
                                 },
                               },
                               {
@@ -337,9 +342,9 @@
                                 let timestamp = new Date().getTime();
 
                                 let data = {
-                                    content: '未定义'+timestamp,
+                                    name: '未定义'+timestamp,
                                     type: 'undefined',
-                                    text: ''
+                                    nameShowed: '',
                                 };
 
                                 let pos = event.position || event.cyPosition;
@@ -384,7 +389,7 @@
                                             data: {
                                                 source: sid,
                                                 target: tid,
-                                                label: 'undefined'+timestamp,
+                                                relation: 'undefined'+timestamp,
                                                 type: 'undefined'
                                             },
                                             classes: 'autorotate'
@@ -495,7 +500,7 @@
             getUniqueNode(nodes,nodePropFunc,getNameFunc){
                 let name = "";
                 let count = 0;
-                let propFunc = val=>nodePropFunc(val,"content");
+                let propFunc = val=>nodePropFunc(val,"name");
                 while (1){
                     name = getNameFunc();
                     if(name===''){//可扩展为实体名相关的正则表达式
@@ -527,7 +532,7 @@
                     }else{
                         dupEdges = edges.filter(val=>edgePropFunc(val,"source")===source).filter(val=>edgePropFunc(val,"target")===target);
                         if(dupEdges.length===0) return name;
-                        if(this.isUnique(dupEdges,val=>edgePropFunc(val,"label"),name)) return name;
+                        if(this.isUnique(dupEdges,val=>edgePropFunc(val,"relation"),name)) return name;
                         alert("该边已存在哦，换一个名字吧，亲~");
                     }
                     count++;
@@ -566,6 +571,7 @@
 
     //菜单
     .cy-context-menus-cxt-menu {
+        display: none;
         z-index: 1001;
         position:absolute;
         border:1px solid @separator;

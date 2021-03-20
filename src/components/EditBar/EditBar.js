@@ -171,24 +171,15 @@ export default {
             if (JSON.stringify(eles) !== '{}') {
                 if (eles.edges.length > 0) {
                     eles.edges.forEach(val => {
-                        let data = {};
-                        //data.id = val.data.id;
-                        data.subid = val.data.source;
-                        data.objid = val.data.target;
-                        data.relation = val.data.label;
-                        obj.edges.push(data);
+                        obj.edges.push({data: val.data});
                     });
                 }
                 if (eles.nodes.length > 0) {
                     eles.nodes.forEach(val => {
-                        let data = {};
-                        data.id = val.data.id;
-                        data.name = val.data.content;
-                        obj.nodes.push(data);
+                        obj.nodes.push({data: val.data});
                     });
                 }
             }
-            //console.log("eles_simple_json", obj);
             return obj;
         },
         exportJson(){

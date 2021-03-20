@@ -5,7 +5,7 @@ export const workspace = {
     state: {
         workspace_text: "",  //注意这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
         show_export_panel: true,
-        json_src_path:  '/static_ref1/data/data.json',
+        json_src_path:  '',
         defaultStyle: [
             {
                 selector: 'node',
@@ -15,7 +15,7 @@ export const workspace = {
                     'font-size': "25px",
                     'text-outline-width': 5,
                     'text-outline-color': '#888',
-                    'content': 'data(text)',//这里的content用来显示节点的内容
+                    'content': 'data(nameShowed)',//这里的content用来显示节点的内容
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'padding': '25px',
@@ -54,7 +54,7 @@ export const workspace = {
                     'background-color': "#65b3fc",
                     'line-color': "#13efc4",
                     'font-size': "24px",
-                    'content': 'data(label)',//这里的content用来显示边的内容
+                    'content': 'data(relation)',//这里的content用来显示边的内容
                     'curve-style': 'bezier',//错开不同的边
                     'control-point-step-size': 100, //从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离
                     "edge-text-rotation": "autorotate",

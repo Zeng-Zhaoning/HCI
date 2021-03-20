@@ -25,7 +25,6 @@ export default createStore({
                     return p;
                 }
             }
-            // return false;
         },
     },
 
@@ -44,7 +43,7 @@ export default createStore({
                 if (p.pid === pid) {
                     p.edges = edges;
                     p.nodes = nodes;
-                    // break;
+                    return;
                 }
             }
         },

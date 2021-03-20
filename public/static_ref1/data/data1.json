@@ -1,1 +1,801 @@
-{"edges":[{"target":1,"label":"发行","source":0},{"target":2,"label":"包含","source":1},{"target":3,"label":"债券代码","source":2},{"target":4,"label":"主承销商","source":2},{"target":6,"label":"展望","source":5},{"target":6,"label":"展望","source":2},{"target":7,"label":"是否可以质押","source":2},{"target":8,"label":"发行品种","source":2},{"target":9,"label":"发行量","source":2},{"target":10,"label":"中债估值","source":2},{"target":11,"label":"中证估值","source":2},{"target":12,"label":"票面利率","source":2},{"target":13,"label":"性质","source":0},{"target":14,"label":"别名","source":13},{"target":15,"label":"注册资本","source":13},{"target":17,"label":"起始","source":16},{"target":17,"label":"成立时间","source":13},{"target":18,"label":"公司属性","source":13},{"target":19,"label":"是否上市","source":13},{"target":20,"label":"所在省","source":13},{"target":21,"label":"所在市","source":13},{"target":22,"label":"所在区","source":13},{"target":23,"label":"股东信息","source":0},{"target":24,"label":"包含","source":23},{"target":25,"label":"性质","source":0},{"target":26,"label":"平台属性","source":25},{"target":27,"label":"是否发过公募债","source":25},{"target":28,"label":"主体评级","source":25},{"target":29,"label":"评级机构","source":25},{"target":30,"label":"评级变动方向","source":28},{"target":31,"label":"性质","source":0},{"target":32,"label":"总资产2017.6","source":31},{"target":33,"label":"总资本化比率（最新一期）","source":31},{"target":34,"label":"货币资金/短期债务","source":31},{"target":35,"label":"净资产(亿)最新一期","source":31},{"target":36,"label":"总债务(亿)最新一期","source":31},{"target":37,"label":"收入（亿）2017.6","source":31},{"target":38,"label":"利润总额（亿）2016","source":31},{"target":39,"label":"收入变动率最新一期","source":31},{"target":40,"label":"利润总额变动率2016","source":31},{"target":41,"label":"短期债务最新一期","source":31},{"target":42,"label":"性质","source":0},{"target":43,"label":"包含","source":42},{"target":44,"label":"包含","source":42},{"target":45,"label":"包含","source":42},{"target":46,"label":"性质","source":0},{"target":47,"label":"对外担保余额最新一期","source":46},{"target":48,"label":"对外担保比率最新一期","source":46},{"target":49,"label":"对民企担保比率最新一期","source":46},{"target":50,"label":"性质","source":0},{"target":51,"label":"土地资产规模（亿元）","source":50},{"target":52,"label":"土地资产受限规模（亿元）","source":50},{"target":53,"label":"性质","source":0},{"target":52,"label":"担保方概述","source":53},{"target":5,"label":"包含","source":1},{"target":54,"label":"债券代码","source":5},{"target":55,"label":"主承销商","source":5},{"target":56,"label":"主承销商","source":5},{"target":57,"label":"是否可以质押","source":5},{"target":58,"label":"发行品种","source":5},{"target":59,"label":"发行量","source":5},{"target":60,"label":"中债估值","source":5},{"target":61,"label":"中证估值","source":5},{"target":62,"label":"票面利率","source":5},{"target":63,"label":"工商信息","source":0},{"target":16,"label":"包含","source":63},{"target":64,"label":"终止","source":16},{"target":65,"label":"登记机关","source":63},{"target":66,"label":"核准日期","source":63},{"target":67,"label":"法定代表人","source":63},{"target":68,"label":"登记状态","source":63},{"target":69,"label":"包含","source":1},{"target":70,"label":"发行时间","source":69},{"target":71,"label":"期限","source":69},{"target":72,"label":"金额","source":69},{"target":73,"label":"主承销商","source":69},{"target":74,"label":"主承销商","source":69},{"target":75,"label":"缴款日","source":69},{"target":76,"label":"还本付息","source":69},{"target":7,"label":"担保方","source":69},{"target":77,"label":"信用级别","source":69}],"nodes":[{"type":"公司","id":0,"content":"厦门海沧投资集团有限公司"},{"type":"概念","id":1,"content":"债券"},{"type":"编码","id":2,"content":"16海沧投资MTN001"},{"type":"编码","id":3,"content":"101660074.IB"},{"type":"公司","id":4,"content":"兴业银行股份有限公司"},{"type":"编码","id":5,"content":"16海投债"},{"type":"字符串","id":6,"content":"稳定"},{"type":"字符串","id":7,"content":"无"},{"type":"字符串","id":8,"content":"一般中期票据"},{"type":"数字","id":9,"content":"5"},{"type":"数字","id":10,"content":"5.7419"},{"type":"数字","id":11,"content":"6.708"},{"type":"数字","id":12,"content":"4.59"},{"type":"概念","id":13,"content":"基本要素"},{"type":"公司","id":14,"content":"海投集团"},{"type":"数字","id":15,"content":"26.80402"},{"type":"字符串","id":16,"content":"营业时限"},{"type":"日期","id":17,"content":"1994-05-18"},{"type":"字符串","id":18,"content":"地方国企"},{"type":"字符串","id":19,"content":"否"},{"type":"地名","id":20,"content":"福建省"},{"type":"地名","id":21,"content":"厦门市"},{"type":"地名","id":22,"content":"海沧区"},{"type":"概念","id":23,"content":"股东"},{"type":"字符串","id":24,"content":"厦门市海沧区人民政府"},{"type":"概念","id":25,"content":"平台要素"},{"type":"字符串","id":26,"content":"全覆盖2011-06"},{"type":"字符串","id":27,"content":"是"},{"type":"字符串","id":28,"content":"AA+"},{"type":"公司","id":29,"content":"联合资信评估有限公司"},{"type":"字符串","id":30,"content":"维持"},{"type":"概念","id":31,"content":"财务指标"},{"type":"数字","id":32,"content":"362.2929060845"},{"type":"数字","id":33,"content":"0.7704724408"},{"type":"数字","id":34,"content":"0.4509773024"},{"type":"数字","id":35,"content":"80.1759377452"},{"type":"数字","id":36,"content":"201.9971012912"},{"type":"数字","id":37,"content":"26.0203706998"},{"type":"数字","id":38,"content":"16.8695244239"},{"type":"数字","id":39,"content":"-0.211767"},{"type":"数字","id":40,"content":"0.930338"},{"type":"数字","id":41,"content":"64.4502095396"},{"type":"概念","id":42,"content":"业务部分"},{"type":"字符串","id":43,"content":"贸易"},{"type":"字符串","id":44,"content":"保障房"},{"type":"字符串","id":45,"content":"工程施工"},{"type":"概念","id":46,"content":"对外担保"},{"type":"数字","id":47,"content":"1.51"},{"type":"数字","id":48,"content":"0.0204"},{"type":"数字","id":49,"content":"0"},{"type":"概念","id":50,"content":"土地受限"},{"type":"数字","id":51,"content":"236.18"},{"type":"数字","id":52,"content":"缺失"},{"type":"概念","id":53,"content":"担保方"},{"type":"编码","id":54,"content":"136685.SH"},{"type":"公司","id":55,"content":"兴业证券股份有限公司"},{"type":"公司","id":56,"content":"国信证券股份有限公司"},{"type":"字符串","id":57,"content":"上海63"},{"type":"字符串","id":58,"content":"一般公司债"},{"type":"数字","id":59,"content":"16"},{"type":"数字","id":60,"content":"4.8878"},{"type":"数字","id":61,"content":"6.04"},{"type":"数字","id":62,"content":"3.59"},{"type":"概念","id":63,"content":"营业执照"},{"type":"日期","id":64,"content":"2044-05-18"},{"type":"字符串","id":65,"content":"厦门市海沧区市场监督管理局"},{"type":"日期","id":66,"content":"2017-10-17"},{"type":"字符串","id":67,"content":"李丹"},{"type":"字符串","id":68,"content":"存续（在营、开业、在册）"},{"type":"字符串","id":69,"content":"短融券"},{"type":"日期","id":70,"content":"2017-09-22"},{"type":"数字","id":71,"content":"365天"},{"type":"数字","id":72,"content":"6亿元"},{"type":"公司","id":73,"content":"中国建设银行"},{"type":"公司","id":74,"content":"兴业银行"},{"type":"日期","id":75,"content":"2017-09-25"},{"type":"日期","id":76,"content":"2018-09-25"},{"type":"字符串","id":77,"content":"A-1"}]}
+{
+  "edges": [
+    {
+      "target": 1,
+      "relation": "发行",
+      "source": 0
+    },
+    {
+      "target": 2,
+      "relation": "包含",
+      "source": 1
+    },
+    {
+      "target": 3,
+      "relation": "债券代码",
+      "source": 2
+    },
+    {
+      "target": 4,
+      "relation": "主承销商",
+      "source": 2
+    },
+    {
+      "target": 6,
+      "relation": "展望",
+      "source": 5
+    },
+    {
+      "target": 6,
+      "relation": "展望",
+      "source": 2
+    },
+    {
+      "target": 7,
+      "relation": "是否可以质押",
+      "source": 2
+    },
+    {
+      "target": 8,
+      "relation": "发行品种",
+      "source": 2
+    },
+    {
+      "target": 9,
+      "relation": "发行量",
+      "source": 2
+    },
+    {
+      "target": 10,
+      "relation": "中债估值",
+      "source": 2
+    },
+    {
+      "target": 11,
+      "relation": "中证估值",
+      "source": 2
+    },
+    {
+      "target": 12,
+      "relation": "票面利率",
+      "source": 2
+    },
+    {
+      "target": 13,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 14,
+      "relation": "别名",
+      "source": 13
+    },
+    {
+      "target": 15,
+      "relation": "注册资本",
+      "source": 13
+    },
+    {
+      "target": 17,
+      "relation": "起始",
+      "source": 16
+    },
+    {
+      "target": 17,
+      "relation": "成立时间",
+      "source": 13
+    },
+    {
+      "target": 18,
+      "relation": "公司属性",
+      "source": 13
+    },
+    {
+      "target": 19,
+      "relation": "是否上市",
+      "source": 13
+    },
+    {
+      "target": 20,
+      "relation": "所在省",
+      "source": 13
+    },
+    {
+      "target": 21,
+      "relation": "所在市",
+      "source": 13
+    },
+    {
+      "target": 22,
+      "relation": "所在区",
+      "source": 13
+    },
+    {
+      "target": 23,
+      "relation": "股东信息",
+      "source": 0
+    },
+    {
+      "target": 24,
+      "relation": "包含",
+      "source": 23
+    },
+    {
+      "target": 25,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 26,
+      "relation": "平台属性",
+      "source": 25
+    },
+    {
+      "target": 27,
+      "relation": "是否发过公募债",
+      "source": 25
+    },
+    {
+      "target": 28,
+      "relation": "主体评级",
+      "source": 25
+    },
+    {
+      "target": 29,
+      "relation": "评级机构",
+      "source": 25
+    },
+    {
+      "target": 30,
+      "relation": "评级变动方向",
+      "source": 28
+    },
+    {
+      "target": 31,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 32,
+      "relation": "总资产2017.6",
+      "source": 31
+    },
+    {
+      "target": 33,
+      "relation": "总资本化比率（最新一期）",
+      "source": 31
+    },
+    {
+      "target": 34,
+      "relation": "货币资金/短期债务",
+      "source": 31
+    },
+    {
+      "target": 35,
+      "relation": "净资产(亿)最新一期",
+      "source": 31
+    },
+    {
+      "target": 36,
+      "relation": "总债务(亿)最新一期",
+      "source": 31
+    },
+    {
+      "target": 37,
+      "relation": "收入（亿）2017.6",
+      "source": 31
+    },
+    {
+      "target": 38,
+      "relation": "利润总额（亿）2016",
+      "source": 31
+    },
+    {
+      "target": 39,
+      "relation": "收入变动率最新一期",
+      "source": 31
+    },
+    {
+      "target": 40,
+      "relation": "利润总额变动率2016",
+      "source": 31
+    },
+    {
+      "target": 41,
+      "relation": "短期债务最新一期",
+      "source": 31
+    },
+    {
+      "target": 42,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 43,
+      "relation": "包含",
+      "source": 42
+    },
+    {
+      "target": 44,
+      "relation": "包含",
+      "source": 42
+    },
+    {
+      "target": 45,
+      "relation": "包含",
+      "source": 42
+    },
+    {
+      "target": 46,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 47,
+      "relation": "对外担保余额最新一期",
+      "source": 46
+    },
+    {
+      "target": 48,
+      "relation": "对外担保比率最新一期",
+      "source": 46
+    },
+    {
+      "target": 49,
+      "relation": "对民企担保比率最新一期",
+      "source": 46
+    },
+    {
+      "target": 50,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 51,
+      "relation": "土地资产规模（亿元）",
+      "source": 50
+    },
+    {
+      "target": 52,
+      "relation": "土地资产受限规模（亿元）",
+      "source": 50
+    },
+    {
+      "target": 53,
+      "relation": "性质",
+      "source": 0
+    },
+    {
+      "target": 52,
+      "relation": "担保方概述",
+      "source": 53
+    },
+    {
+      "target": 5,
+      "relation": "包含",
+      "source": 1
+    },
+    {
+      "target": 54,
+      "relation": "债券代码",
+      "source": 5
+    },
+    {
+      "target": 55,
+      "relation": "主承销商",
+      "source": 5
+    },
+    {
+      "target": 56,
+      "relation": "主承销商",
+      "source": 5
+    },
+    {
+      "target": 57,
+      "relation": "是否可以质押",
+      "source": 5
+    },
+    {
+      "target": 58,
+      "relation": "发行品种",
+      "source": 5
+    },
+    {
+      "target": 59,
+      "relation": "发行量",
+      "source": 5
+    },
+    {
+      "target": 60,
+      "relation": "中债估值",
+      "source": 5
+    },
+    {
+      "target": 61,
+      "relation": "中证估值",
+      "source": 5
+    },
+    {
+      "target": 62,
+      "relation": "票面利率",
+      "source": 5
+    },
+    {
+      "target": 63,
+      "relation": "工商信息",
+      "source": 0
+    },
+    {
+      "target": 16,
+      "relation": "包含",
+      "source": 63
+    },
+    {
+      "target": 64,
+      "relation": "终止",
+      "source": 16
+    },
+    {
+      "target": 65,
+      "relation": "登记机关",
+      "source": 63
+    },
+    {
+      "target": 66,
+      "relation": "核准日期",
+      "source": 63
+    },
+    {
+      "target": 67,
+      "relation": "法定代表人",
+      "source": 63
+    },
+    {
+      "target": 68,
+      "relation": "登记状态",
+      "source": 63
+    },
+    {
+      "target": 69,
+      "relation": "包含",
+      "source": 1
+    },
+    {
+      "target": 70,
+      "relation": "发行时间",
+      "source": 69
+    },
+    {
+      "target": 71,
+      "relation": "期限",
+      "source": 69
+    },
+    {
+      "target": 72,
+      "relation": "金额",
+      "source": 69
+    },
+    {
+      "target": 73,
+      "relation": "主承销商",
+      "source": 69
+    },
+    {
+      "target": 74,
+      "relation": "主承销商",
+      "source": 69
+    },
+    {
+      "target": 75,
+      "relation": "缴款日",
+      "source": 69
+    },
+    {
+      "target": 76,
+      "relation": "还本付息",
+      "source": 69
+    },
+    {
+      "target": 7,
+      "relation": "担保方",
+      "source": 69
+    },
+    {
+      "target": 77,
+      "relation": "信用级别",
+      "source": 69
+    }
+  ],
+  "nodes": [
+    {
+      "type": "公司",
+      "id": 0,
+      "name": "厦门海沧投资集团有限公司"
+    },
+    {
+      "type": "概念",
+      "id": 1,
+      "name": "债券"
+    },
+    {
+      "type": "编码",
+      "id": 2,
+      "name": "16海沧投资MTN001"
+    },
+    {
+      "type": "编码",
+      "id": 3,
+      "name": "101660074.IB"
+    },
+    {
+      "type": "公司",
+      "id": 4,
+      "name": "兴业银行股份有限公司"
+    },
+    {
+      "type": "编码",
+      "id": 5,
+      "name": "16海投债"
+    },
+    {
+      "type": "字符串",
+      "id": 6,
+      "name": "稳定"
+    },
+    {
+      "type": "字符串",
+      "id": 7,
+      "name": "无"
+    },
+    {
+      "type": "字符串",
+      "id": 8,
+      "name": "一般中期票据"
+    },
+    {
+      "type": "数字",
+      "id": 9,
+      "name": "5"
+    },
+    {
+      "type": "数字",
+      "id": 10,
+      "name": "5.7419"
+    },
+    {
+      "type": "数字",
+      "id": 11,
+      "name": "6.708"
+    },
+    {
+      "type": "数字",
+      "id": 12,
+      "name": "4.59"
+    },
+    {
+      "type": "概念",
+      "id": 13,
+      "name": "基本要素"
+    },
+    {
+      "type": "公司",
+      "id": 14,
+      "name": "海投集团"
+    },
+    {
+      "type": "数字",
+      "id": 15,
+      "name": "26.80402"
+    },
+    {
+      "type": "字符串",
+      "id": 16,
+      "name": "营业时限"
+    },
+    {
+      "type": "日期",
+      "id": 17,
+      "name": "1994-05-18"
+    },
+    {
+      "type": "字符串",
+      "id": 18,
+      "name": "地方国企"
+    },
+    {
+      "type": "字符串",
+      "id": 19,
+      "name": "否"
+    },
+    {
+      "type": "地名",
+      "id": 20,
+      "name": "福建省"
+    },
+    {
+      "type": "地名",
+      "id": 21,
+      "name": "厦门市"
+    },
+    {
+      "type": "地名",
+      "id": 22,
+      "name": "海沧区"
+    },
+    {
+      "type": "概念",
+      "id": 23,
+      "name": "股东"
+    },
+    {
+      "type": "字符串",
+      "id": 24,
+      "name": "厦门市海沧区人民政府"
+    },
+    {
+      "type": "概念",
+      "id": 25,
+      "name": "平台要素"
+    },
+    {
+      "type": "字符串",
+      "id": 26,
+      "name": "全覆盖2011-06"
+    },
+    {
+      "type": "字符串",
+      "id": 27,
+      "name": "是"
+    },
+    {
+      "type": "字符串",
+      "id": 28,
+      "name": "AA+"
+    },
+    {
+      "type": "公司",
+      "id": 29,
+      "name": "联合资信评估有限公司"
+    },
+    {
+      "type": "字符串",
+      "id": 30,
+      "name": "维持"
+    },
+    {
+      "type": "概念",
+      "id": 31,
+      "name": "财务指标"
+    },
+    {
+      "type": "数字",
+      "id": 32,
+      "name": "362.2929060845"
+    },
+    {
+      "type": "数字",
+      "id": 33,
+      "name": "0.7704724408"
+    },
+    {
+      "type": "数字",
+      "id": 34,
+      "name": "0.4509773024"
+    },
+    {
+      "type": "数字",
+      "id": 35,
+      "name": "80.1759377452"
+    },
+    {
+      "type": "数字",
+      "id": 36,
+      "name": "201.9971012912"
+    },
+    {
+      "type": "数字",
+      "id": 37,
+      "name": "26.0203706998"
+    },
+    {
+      "type": "数字",
+      "id": 38,
+      "name": "16.8695244239"
+    },
+    {
+      "type": "数字",
+      "id": 39,
+      "name": "-0.211767"
+    },
+    {
+      "type": "数字",
+      "id": 40,
+      "name": "0.930338"
+    },
+    {
+      "type": "数字",
+      "id": 41,
+      "name": "64.4502095396"
+    },
+    {
+      "type": "概念",
+      "id": 42,
+      "name": "业务部分"
+    },
+    {
+      "type": "字符串",
+      "id": 43,
+      "name": "贸易"
+    },
+    {
+      "type": "字符串",
+      "id": 44,
+      "name": "保障房"
+    },
+    {
+      "type": "字符串",
+      "id": 45,
+      "name": "工程施工"
+    },
+    {
+      "type": "概念",
+      "id": 46,
+      "name": "对外担保"
+    },
+    {
+      "type": "数字",
+      "id": 47,
+      "name": "1.51"
+    },
+    {
+      "type": "数字",
+      "id": 48,
+      "name": "0.0204"
+    },
+    {
+      "type": "数字",
+      "id": 49,
+      "name": "0"
+    },
+    {
+      "type": "概念",
+      "id": 50,
+      "name": "土地受限"
+    },
+    {
+      "type": "数字",
+      "id": 51,
+      "name": "236.18"
+    },
+    {
+      "type": "数字",
+      "id": 52,
+      "name": "缺失"
+    },
+    {
+      "type": "概念",
+      "id": 53,
+      "name": "担保方"
+    },
+    {
+      "type": "编码",
+      "id": 54,
+      "name": "136685.SH"
+    },
+    {
+      "type": "公司",
+      "id": 55,
+      "name": "兴业证券股份有限公司"
+    },
+    {
+      "type": "公司",
+      "id": 56,
+      "name": "国信证券股份有限公司"
+    },
+    {
+      "type": "字符串",
+      "id": 57,
+      "name": "上海63"
+    },
+    {
+      "type": "字符串",
+      "id": 58,
+      "name": "一般公司债"
+    },
+    {
+      "type": "数字",
+      "id": 59,
+      "name": "16"
+    },
+    {
+      "type": "数字",
+      "id": 60,
+      "name": "4.8878"
+    },
+    {
+      "type": "数字",
+      "id": 61,
+      "name": "6.04"
+    },
+    {
+      "type": "数字",
+      "id": 62,
+      "name": "3.59"
+    },
+    {
+      "type": "概念",
+      "id": 63,
+      "name": "营业执照"
+    },
+    {
+      "type": "日期",
+      "id": 64,
+      "name": "2044-05-18"
+    },
+    {
+      "type": "字符串",
+      "id": 65,
+      "name": "厦门市海沧区市场监督管理局"
+    },
+    {
+      "type": "日期",
+      "id": 66,
+      "name": "2017-10-17"
+    },
+    {
+      "type": "字符串",
+      "id": 67,
+      "name": "李丹"
+    },
+    {
+      "type": "字符串",
+      "id": 68,
+      "name": "存续（在营、开业、在册）"
+    },
+    {
+      "type": "字符串",
+      "id": 69,
+      "name": "短融券"
+    },
+    {
+      "type": "日期",
+      "id": 70,
+      "name": "2017-09-22"
+    },
+    {
+      "type": "数字",
+      "id": 71,
+      "name": "365天"
+    },
+    {
+      "type": "数字",
+      "id": 72,
+      "name": "6亿元"
+    },
+    {
+      "type": "公司",
+      "id": 73,
+      "name": "中国建设银行"
+    },
+    {
+      "type": "公司",
+      "id": 74,
+      "name": "兴业银行"
+    },
+    {
+      "type": "日期",
+      "id": 75,
+      "name": "2017-09-25"
+    },
+    {
+      "type": "日期",
+      "id": 76,
+      "name": "2018-09-25"
+    },
+    {
+      "type": "字符串",
+      "id": 77,
+      "name": "A-1"
+    }
+  ]
+}
