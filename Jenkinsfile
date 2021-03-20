@@ -23,7 +23,7 @@ node {
 
         echo 'buid start'
 
-        sh 'JENKINS_NODE_COOKIE=dontKillMe sh ./run_build.sh'
+        sh 'JENKINS_NODE_COOKIE=dontKillMe ./run_build.sh'
 
 
     }
