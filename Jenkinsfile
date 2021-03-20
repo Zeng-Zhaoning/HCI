@@ -15,7 +15,6 @@ node {
 
     stage('Npm Install') {
         echo 'install start'
-
         sh 'npm install'
     }
 
