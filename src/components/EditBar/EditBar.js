@@ -40,7 +40,7 @@ export default {
         }
     },
     methods:{
-        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath']),
+        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo']),
         ...mapActions(['postText']),
 
         analyse(){
@@ -94,6 +94,7 @@ export default {
             }
             setGraphAPI(data).then(res => {
                 if(res.success){
+                    this.updateProjectInfo(data);
                     this.$message.success('保存成功')
                 }else{
                     this.$message.error( '保存失败')
@@ -169,12 +170,12 @@ export default {
             let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
             let obj = {"edges": [], "nodes": []};
             if (JSON.stringify(eles) !== '{}') {
-                if (eles.edges.length > 0) {
+                if (eles.edges !== undefined && eles.edges.length > 0) {
                     eles.edges.forEach(val => {
                         obj.edges.push({data: val.data});
                     });
                 }
-                if (eles.nodes.length > 0) {
+                if (eles.nodes !== undefined && eles.nodes.length > 0) {
                     eles.nodes.forEach(val => {
                         obj.nodes.push({data: val.data});
                     });
