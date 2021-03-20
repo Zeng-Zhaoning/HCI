@@ -169,11 +169,11 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        target.style({fontSize: 48, width: 6, color: "#1346c6"});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        target.style({fontSize: 36, width: 6, color: '#bc5f6a'});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
                     })
                     .on('mouseout', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        target.style({fontSize: 24, width: 3, color: '#197edd'});//与上文edge的初始配置保持一致
+                        target.style({fontSize: 24, width: 3, color: '#e3a6a1'});//与上文edge的初始配置保持一致
                     })
 
                 // 绑定右键单击的事件

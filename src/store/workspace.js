@@ -11,15 +11,15 @@ export const workspace = {
                 selector: 'node',
                 css: {
                     'color': 'white',
-                    'font-weight': 600,
+                    'font-weight': 400,
                     'font-size': "25px",
-                    'text-outline-width': 5,
+                    'text-outline-width': 2,
                     'text-outline-color': '#888',
                     'content': 'data(nameShowed)',//这里的content用来显示节点的内容
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'padding': '25px',
-                    "background-color": "#409EFF",
+                    "background-color": "#9c8f96",
                 }
             },
             {
@@ -34,14 +34,14 @@ export const workspace = {
             {
                 "selector": ".autorotate",
                 "style": {
-                    "color": "black",
+                    //"color": "black",
                     "text-opacity": 1,
                     "text-valign": "center",
                     "text-halign": "center",
-                    "text-border-color": "#4aa0ff",
+                    "text-border-color": "#eea39d",
                     "text-border-opacity": "1",
                     "text-border-width": "2px",
-                    "text-background-color": "#c6fff0",
+                    "text-background-color": "#f1f1f5",
                     "text-background-shape": "roundrectangle",
                     "text-background-padding": "5px",
                     "text-background-opacity": "1",
@@ -50,17 +50,17 @@ export const workspace = {
             {
                 selector: 'edge',
                 css: {
-                    'color': '#197edd',
-                    'background-color': "#65b3fc",
-                    'line-color': "#13efc4",
+                    'color': '#eea39d',
+                    //'background-color': "#65b3fc",
+                    'line-color': "#a6c2ce",
                     'font-size': "24px",
                     'content': 'data(relation)',//这里的content用来显示边的内容
                     'curve-style': 'bezier',//错开不同的边
                     'control-point-step-size': 100, //从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离
                     "edge-text-rotation": "autorotate",
                     'width': 3,
-                    'target-arrow-shape': 'triangle',
-                    'target-arrow-color': '#ffcb67',
+                    'target-arrow-shape': 'triangle-backcurve',
+                    'target-arrow-color': '#eea39d',
                     'arrow-scale': 2
                 }
                 // Bezier edges
@@ -74,9 +74,12 @@ export const workspace = {
                 //“选中”的样式要避免和“变色”、“强调”和“源节点”的样式冲突
                 selector: 'node:selected',
                 css: {
-                    "color": '#f62f2f',
-                    'text-outline-color': "rgb(255,251,0)",
-                    'text-outline-width': 8,
+                    "color": 'white',
+                    'text-outline-color': "#847072",
+                    'text-outline-width': 4,
+                    "background-color": '#dcc1b0',
+                    "border-width": '4px',
+                    "border-color": '#847072'
                 }
             },
             {
@@ -84,14 +87,14 @@ export const workspace = {
                 //所以在这里不能动
                 selector: 'edge:selected',
                 css: {
-                    'line-color': "rgb(255,251,0)",
-                    // 'text-outline-color': "rgb(255,251,0)",
-                    // 'text-outline-width': 4,
-                    "text-border-color": "#f62f2f",
-                    "text-border-width": "4px",
+                    'line-color': "#ca884b",
+                    "text-border-color": "#bc5f6a",
+                    "text-border-width": "5px",
                     // "text-background-padding": "6px",
+                    //'text-outline-color': "rgb(255,251,0)",
+                    //'text-outline-width': 4,
                 }
-            }
+            },
         ],
         cy: null, //注：cy在组件方法中通过函数cytoscape()创建，属性均为private。因此无法直接用赋值修改其属性。
     },

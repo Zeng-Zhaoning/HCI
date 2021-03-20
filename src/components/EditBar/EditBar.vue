@@ -20,15 +20,15 @@
       <div class="operations">
         <div class="op" @click="open">
           <input type="file" class="choose-file" style="display: none" @change="getFilePath">
-          <div><img src="../../../public/icons/open.png"></div>
+          <div><img src="../../../public/icons/open1.svg"></div>
           <div class="text-box">打开</div>
         </div>
         <div class="op" @click="save">
-          <div><img src="../../../public/icons/save.png"></div>
+          <div><img src="../../../public/icons/save1.svg"></div>
           <div class="text-box">保存</div>
         </div>
         <div class="op" @click="changeExportState">
-          <div class="img-box"><img src="../../../public/icons/export.png"></div>
+          <div class="img-box"><img src="../../../public/icons/export1.svg"></div>
           <div class="text-box">导出</div>
           <div class="choose-format-box" :class="{collapsed:!showExportOps, expanded:showExportOps}">
             <div @click="exportPng" class="export-op">图片</div>
@@ -52,7 +52,7 @@
           v-model="text">
       </el-input>
       <div class="analyse-btn-box">
-        <el-button disabled type="primary" :loading="false" @click="analyse">保存并解析</el-button>
+        <el-button disabled  :loading="false" @click="analyse">保存并解析</el-button>
       </div>
     </div>
 
