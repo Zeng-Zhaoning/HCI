@@ -77,8 +77,8 @@ export const workspace = {
                     "color": 'white',
                     'text-outline-color': "#847072",
                     'text-outline-width': 4,
-                    "background-color": '#dcc1b0',
-                    "border-width": '4px',
+                    //"background-color": '#dcc1b0',
+                    "border-width": '6px',
                     "border-color": '#847072'
                 }
             },

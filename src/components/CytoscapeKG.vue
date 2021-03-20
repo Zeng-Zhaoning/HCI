@@ -358,6 +358,14 @@
                               target.style('background-color', 'red');
                             },
                           },
+                          {
+                            id: 'color-brown',
+                            content: '棕',
+                            onClickFunction: function (event) {
+                              let target = event.target || event.cyTarget;
+                              target.style('background-color', '#9c8f96');
+                            },
+                          },
                         ]
                       },
                         {
@@ -418,11 +426,11 @@
                             onClickFunction: function (event) {
                                 let starget = event.target || event.cyTarget;
                                 starget.style({
-                                    "border-width": 4,
-                                    "border-color": "#847072",
+                                    //"border-width": 4,
+                                    //"border-color": "#847072",
                                     "background-color": '#dcc1b0',
-                                    'text-outline-color': "#847072",
-                                    'text-outline-width': 4,
+                                    //'text-outline-color': "#847072",
+                                    //'text-outline-width': 4,
                                 });
                                 let sid = starget.data().id;
                                 cy.once('tap', event => {
@@ -450,9 +458,9 @@
                                         that.rendEdge(cy.edges()[cy.edges().length - 1], that);
                                     }
                                     starget.style({
-                                        "border-width": 0,
+                                        //"border-width": 0,
                                         "background-color": '#9c8f96',
-                                        'text-outline-width': 0,
+                                        //'text-outline-width': 0,
                                     });
                                     console.log("finish adding an edge");
                                 });
