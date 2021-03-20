@@ -80,18 +80,26 @@ export default {
         },
 
         save(){
+            let data = {};
+            try{
+                data = {
+                    project_name: this.current_project.project_name,
+                    pid: this.current_pid,
+                    text: this.current_project.text,
+                    ...this.getDataJsonObject()
+                }
+            }catch (e) {
+                console.log("Error occurs:"+e);
+                alert("保存不了哦，请检查是否连接到Server");
+                return false;
+            }
+
             const loading = this.$loading({
                 lock: true,
                 text: '...保存中...',
                 spinner: 'el-icon-loading',
                 background: 'rgba(255, 255,255, 0.8)'
             });
-            let data = {
-                project_name: this.current_project.project_name,
-                pid: this.current_pid,
-                text: this.current_project.text,
-                ...this.getDataJsonObject()
-            }
             setGraphAPI(data).then(res => {
                 if(res.success){
                     this.updateProjectInfo(data);
@@ -172,12 +180,22 @@ export default {
             if (JSON.stringify(eles) !== '{}') {
                 if (eles.edges !== undefined && eles.edges.length > 0) {
                     eles.edges.forEach(val => {
-                        obj.edges.push({data: val.data});
+                        let newData = {
+                            id: val.data.id,
+                            source: val.data.source,
+                            target: val.data.target,
+                            relation: val.data.relation
+                        };
+                        obj.edges.push({data: newData});
                     });
                 }
                 if (eles.nodes !== undefined && eles.nodes.length > 0) {
                     eles.nodes.forEach(val => {
-                        obj.nodes.push({data: val.data});
+                        let newData = {
+                            id: val.data.id,
+                            name: val.data.name
+                        };
+                        obj.nodes.push({data: newData});
                     });
                 }
             }
@@ -212,12 +230,14 @@ export default {
             // 释放掉blob对象
             window.URL.revokeObjectURL(url);
         },
+
         generateFileName(){
             let name = "";
             try{
                 name = this.current_project.project_name;
             }catch (e) {
                 console.log("Error occurs:"+e);
+                console.log("可能未连接到Server");
                 name = new Date().getTime();
             }
             return name;

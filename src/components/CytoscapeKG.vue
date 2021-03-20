@@ -283,10 +283,11 @@
                                         that.rendEdge(target,that);
                                         for(let i=0;i<removed.length;i++){
                                             let val = removed[i];
+                                            let valData = val.data();
                                             if(val.group()==='edges'
-                                                &&val.data().source===data.source
-                                                &&val.data().target===data.target
-                                                &&val.data()[name]===value){
+                                                &&valData.source===data.source
+                                                &&valData.target===data.target
+                                                &&valData[name]===value){
                                                 conflict = true;
                                                 break;
                                             }
