@@ -416,8 +416,11 @@
                             onClickFunction: function (event) {
                                 let starget = event.target || event.cyTarget;
                                 starget.style({
-                                    "border-width": 6,
-                                    "border-color": "rgb(20,248,123)"
+                                    "border-width": 4,
+                                    "border-color": "#847072",
+                                    "background-color": '#dcc1b0',
+                                    'text-outline-color': "#847072",
+                                    'text-outline-width': 4,
                                 });
                                 let sid = starget.data().id;
                                 cy.once('tap', event => {
@@ -446,7 +449,8 @@
                                     }
                                     starget.style({
                                         "border-width": 0,
-                                        "border-color": starget.style('background-color')
+                                        "background-color": '#9c8f96',
+                                        'text-outline-width': 0,
                                     });
                                     console.log("finish adding an edge");
                                 });
