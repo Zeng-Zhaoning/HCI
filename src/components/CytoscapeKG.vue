@@ -66,7 +66,8 @@
             dataHandle(data) {
                 // this.data = JSON.parse(JSON.stringify(data))
                 data.edges.forEach((val) => {
-                    val.classes = 'autorotate'
+                    val.classes = 'autorotate';
+                    val.data.nameShowed = val.data.relation;
                 })
                 data.nodes.forEach((val) => {
                     val.data.nameShowed = val.data.name;
@@ -112,6 +113,15 @@
                 target.style(style);
             },
 
+            rendEdge(target,that){
+                let name = target.data().relation;
+                const text = that.fontShow(name);
+                target.data({nameShowed: text});
+                // const style = that.fontStyle(text.length);
+                // target.style(style);
+                // target.addClass('autorotate');
+            },
+
             //作图有关的设置
             graph(that, data) {
                 let cy = cytoscape({
@@ -149,6 +159,10 @@
                     that.rendNode(val, that);
                 });
 
+                cy.edges().forEach(val => {
+                    that.rendEdge(val, that);
+                });
+
                 // //为节点与边的数量计数，以便于分配id，暂时不用
                 // cy.data({nodeCount:cy.nodes().length,edgeCount:cy.edges().length});
                 // console.log("cy.data(): ",cy.data());
@@ -169,10 +183,14 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        target.style({fontSize: 48, width: 6, color: "#1346c6"});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        let name = target.data().relation;
+                        target.data({nameShowed: name});
+                        target.style({fontSize: 48, width: 6, color: "#1346c6"});//fontSize仅仅只是取一个较大的数
+                        //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
                     })
                     .on('mouseout', 'edge', event => {
                         let target = event.target || event.cyTarget;
+                        that.rendEdge(target,that);
                         target.style({fontSize: 24, width: 3, color: '#197edd'});//与上文edge的初始配置保持一致
                     })
 
@@ -250,8 +268,11 @@
                                     let obj = {};
                                     obj[name] = value;
                                     target.data(obj);
+                                    //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
                                     if (name === 'name') {
                                         that.rendNode(target, that);
+                                    }else{
+                                        that.rendEdge(target,that);
                                     }
                                     console.log("after edit: target", target);
 
@@ -343,8 +364,8 @@
 
                                 let data = {
                                     name: '未定义'+timestamp,
-                                    type: 'undefined',
-                                    nameShowed: '',
+                                    // type: 'undefined',
+                                    nameShowed: '未定义'+timestamp
                                 };
 
                                 let pos = event.position || event.cyPosition;
@@ -387,16 +408,18 @@
                                         let newEdge = {
                                             group: 'edges',
                                             data: {
+                                                relation: '未定义'+timestamp,
                                                 source: sid,
+                                                // type: 'undefined',
                                                 target: tid,
-                                                relation: 'undefined'+timestamp,
-                                                type: 'undefined'
+                                                nameShowed: '未定义'+timestamp
                                             },
                                             classes: 'autorotate'
                                         };
                                         cy.add(newEdge);
                                         console.log("after adding edge: edgeCount", cy.edges().length);
                                         console.log("after adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
+                                        that.rendEdge(cy.edges()[cy.edges().length - 1], that);
                                     }
                                     starget.style({
                                         "border-width": 0,
