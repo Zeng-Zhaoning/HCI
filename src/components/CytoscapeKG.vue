@@ -312,51 +312,36 @@
                         hasTrailingDivider: true,
                         submenu: [
                           {
-                            id: 'color-blue',
-                            content: '蓝',
-                            tooltipText: 'blue',
-                            submenu: [
-                              {
-                                id: 'color-normal-blue',
-                                content: '天蓝',
-                                onClickFunction: function (event) {
-                                  let target = event.target || event.cyTarget;
-                                  target.style('background-color', "#409EFF");
-                                },
-                              },
-                              {
-                                id: 'color-light-blue',
-                                content: '浅蓝',
-                                onClickFunction: function (event) {
-                                  let target = event.target || event.cyTarget;
-                                  target.style('background-color', 'lightblue');
-                                },
-                              },
-                              {
-                                id: 'color-dark-blue',
-                                content: '深蓝',
-                                onClickFunction: function (event) {
-                                  let target = event.target || event.cyTarget;
-                                  target.style('background-color', 'darkblue');
-                                },
-                              },
-                            ],
-                          },
-                          {
-                            id: 'color-green',
-                            content: '绿',
-                            onClickFunction: function (event) {
-                              let target = event.target || event.cyTarget;
-                              target.style('background-color', 'green');
-                            },
-                          },
-                          {
                             id: 'color-red',
                             content: '红',
                             onClickFunction: function (event) {
                               let target = event.target || event.cyTarget;
-                              target.style('background-color', 'red');
+                              target.style('background-color', '#e89d96');
                             },
+                          },
+                          {
+                            id: 'color-yellow',
+                            content: '黄',
+                            onClickFunction: function (event) {
+                              let target = event.target || event.cyTarget;
+                              target.style('background-color', '#ebc57c');
+                            },
+                          },
+                          {
+                            id: 'color-light-blue',
+                            content: '浅蓝',
+                            onClickFunction: function (event) {
+                              let target = event.target || event.cyTarget;
+                              target.style('background-color', 'lightblue');
+                            },
+                          },
+                          {
+                              id: 'color-blue-slate',
+                              content: '靛青',
+                              onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                target.style('background-color', '#6a85ce');
+                              }
                           },
                           {
                             id: 'color-brown',
