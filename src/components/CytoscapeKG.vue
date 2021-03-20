@@ -238,7 +238,7 @@
                 };
 
 
-                let removed;  //为了撤销删除而使用的缓存，以后可以改成数组等等，恢复多次
+                let removed = [];  //为了撤销删除而使用的缓存，以后可以改成数组等等，恢复多次
 
                 let contextMenu = cy.contextMenus({
                     menuItems: [
@@ -269,13 +269,35 @@
                                     obj[name] = value;
                                     target.data(obj);
                                     //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
-                                    if (name === 'name') {
+                                    let conflict = false;
+                                    if (group==='nodes') {
                                         that.rendNode(target, that);
+                                        for(let i=0;i<removed.length;i++){
+                                            let val = removed[i];
+                                            if(val.group()==='nodes'&&val.data()[name]===value){
+                                                conflict = true;
+                                                break;
+                                            }
+                                        }
                                     }else{
                                         that.rendEdge(target,that);
+                                        for(let i=0;i<removed.length;i++){
+                                            let val = removed[i];
+                                            if(val.group()==='edges'
+                                                &&val.data().source===data.source
+                                                &&val.data().target===data.target
+                                                &&val.data()[name]===value){
+                                                conflict = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(conflict){
+                                        console.log("conflict in removed, delete it all");
+                                        contextMenu.hideMenuItem('undo-last-remove');
+                                        removed = [];
                                     }
                                     console.log("after edit: target", target);
-
                                     // updateData(group, data, value, that)
                                     // that.submit()
                                 }
@@ -347,6 +369,7 @@
                                     console.log("before undoing remove: nodeCount", cy.nodes().length);
                                     console.log("before undoing remove: edgeCount", cy.edges().length);
                                     removed.restore();
+                                    removed = [];
                                     console.log("after undoing remove: nodeCount", cy.nodes().length);
                                     console.log("after undoing remove: edgeCount", cy.edges().length);
                                 }
