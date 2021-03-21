@@ -2,7 +2,7 @@ import axios from "axios";
 
 export {createProjectAPI, getProjectAPI, getAllProjectsAPI}
 
-let base =  '/api/project';
+let base =  '/demo/api/project';
 
 function createProjectAPI(uid, projectName){
     return axios.post( base + '/create_new_project/' + uid, { projectName })
