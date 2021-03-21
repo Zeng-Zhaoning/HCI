@@ -3,7 +3,7 @@ import axios from "axios";
 
 export {setTextAPI, getGraphAPI, setGraphAPI}
 
-let base =  '/api/basic';
+let base =  '/demo/api/basic';
 
 function setTextAPI(pid, text){
 

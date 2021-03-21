@@ -2,7 +2,7 @@ import axios from "axios";
 
 export {registerAPI, createProjectAPI}
 
-let base =  '/api/user';
+let base =  '/demo/api/user';
 
 function registerAPI(userForm){
     return axios.post( base + '/register', {userForm})
