@@ -14,6 +14,6 @@ module.exports = {
         },
         //下面这段用来实现 修改代码实时刷新浏览器
         open: true,
-        port: 8070
+        port: 8090
     }
 };
