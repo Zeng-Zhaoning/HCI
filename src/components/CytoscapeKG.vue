@@ -11,8 +11,12 @@
     import { mapState,mapMutations,mapGetters } from 'vuex';
 
     import contextMenus from 'cytoscape-context-menus';
-
     cytoscape.use(contextMenus);
+
+    import popper from 'cytoscape-popper';
+    cytoscape.use( popper );
+    import tippy,{sticky} from 'tippy.js';
+    import 'tippy.js/dist/tippy.css';
 
     window.jQuery = window.$ = $
 
@@ -21,6 +25,8 @@
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
+                shapeType: state => state.workspace.shapeType,
+                lineStyleType: state => state.workspace.lineStyleType,
                 cy: state => state.workspace.cy,
                 json_src_path: state => state.workspace.json_src_path,
             }),
@@ -37,6 +43,10 @@
                 };
                 this.dataHandle(data);
             }
+        },
+        //方便调试而添加，最后删掉
+        created() {
+            this.getData("/static_ref1/data/data.json");
         },
         mounted () {
             //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
@@ -65,9 +75,11 @@
                 data.edges.forEach((val) => {
                     val.classes = 'autorotate';
                     val.data.nameShowed = val.data.relation;
+                    val.data.type = val.data.type || 'default';
                 })
                 data.nodes.forEach((val) => {
                     val.data.nameShowed = val.data.name;
+                    val.data.type = val.data.type || 'default';
                 })
                 let that = this;
                 const loading = this.$loading({
@@ -107,17 +119,19 @@
 
             //帮助node合适地展示text
             rendNode(target, that) {
-                let name = target.data().name;
-                const text = that.fontShow(name);
+                let data = target.data();
+                const text = that.fontShow(data.name);
                 target.data({nameShowed: text});
-                const style = that.fontStyle(text.length);
+                let style = that.fontStyle(text.length);
+                style.shape = this.shapeType[data.type];
                 target.style(style);
             },
 
             rendEdge(target,that){
-                let name = target.data().relation;
-                const text = that.fontShow(name);
+                let data = target.data();
+                const text = that.fontShow(data.relation);
                 target.data({nameShowed: text});
+                target.style({'line-style':this.lineStyleType[data.type]});
                 // const style = that.fontStyle(text.length);
                 // target.style(style);
                 // target.addClass('autorotate');
@@ -128,7 +142,7 @@
                 let cy = cytoscape({
                   container: $('#graph'),
                   boxSelectionEnabled: false,
-                  autounselectify: true,
+                  autounselectify: false,
                   style: this.defaultStyle,
                   elements: data,
                   hideLabelsOnViewPort: false,
@@ -164,21 +178,56 @@
                     that.rendEdge(val, that);
                 });
 
-                // //为节点与边的数量计数，以便于分配id，暂时不用
-                // cy.data({nodeCount:cy.nodes().length,edgeCount:cy.edges().length});
-                // console.log("cy.data(): ",cy.data());
+                var makeTippy = function(ele, text){
+                    var ref = ele.popperRef();
 
-                console.log("before: cy.autounselectify()", cy.autounselectify());
-                cy.autounselectify(false);
-                console.log("after: cy.autounselectify()", cy.autounselectify());
+                    // Since tippy constructor requires DOM element/elements, create a placeholder
+                    var dummyDomEle = document.createElement('div');
+
+                    var tip = tippy( dummyDomEle, {
+                        getReferenceClientRect: ref.getBoundingClientRect,
+                        trigger: 'manual', // mandatory
+                        // dom element inside the tippy:
+                        content: function(){ // function can be better for performance
+                            var div = document.createElement('div');
+
+                            div.innerHTML = text;
+
+                            return div;
+                        },
+                        // your own preferences:
+                        arrow: true,
+                        placement: 'bottom',
+                        hideOnClick: false,
+                        sticky: true,
+                        plugins: [sticky],
+
+
+                        // if interactive:
+                        interactive: true,
+                        appendTo: document.body // or append dummyDomEle to document.body
+                    } );
+
+                    return tip;
+                };
+
+
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
                     let name = target.data().name;
                     target.data({nameShowed: name});
+                    if(!target.scratch('tip')){
+                        target.scratch('tip',makeTippy(target,target.data("type")));
+                    }
+                    target.scratch('tip').show();
                     target.style({fontSize: 48});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
                 })
                     .on('mouseout', 'node', event => {
                         let target = event.target || event.cyTarget;
+                        if(target.scratch('tip')){
+                            target.scratch('tip').hide();
+                            console.log('here')
+                        }
                         that.rendNode(target, that);
                     })
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）

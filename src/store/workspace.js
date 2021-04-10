@@ -9,12 +9,14 @@ export const workspace = {
             {
                 selector: 'node',
                 css: {
+                    //目前仍然搞不懂label和content区别，姑且先用label
+                    'label': 'data(nameShowed)',
+                    // 'content': 'data(nameShowed)',//这里的content用来显示节点的内容
                     'color': 'white',
                     'font-weight': 400,
                     'font-size': "25px",
                     'text-outline-width': 2,
                     'text-outline-color': '#888',
-                    'content': 'data(nameShowed)',//这里的content用来显示节点的内容
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'padding': '25px',
@@ -49,11 +51,13 @@ export const workspace = {
             {
                 selector: 'edge',
                 css: {
+                    //目前仍然搞不懂label和content区别，姑且先用label
+                    'label': 'data(nameShowed)',
+                    // 'content': 'data(nameShowed)',//这里的content用来显示边的内容
                     'color': '#eea39d',
                     //'background-color': "#65b3fc",
                     'line-color': "#a6c2ce",
                     'font-size': "24px",
-                    'content': 'data(nameShowed)',//这里的content用来显示边的内容
                     'curve-style': 'bezier',//错开不同的边
                     'control-point-step-size': 100, //从源到目标的垂直线，这个值指定连续的贝塞尔边缘之间的距离
                     "edge-text-rotation": "autorotate",
@@ -71,6 +75,7 @@ export const workspace = {
             },
             {
                 //“选中”的样式要避免和“变色”、“强调”和“源节点”的样式冲突
+                //据说'overlay-color'属性专门用于:active状态，然而我好像没成功，写个注释表示自己努力过了
                 selector: 'node:selected',
                 css: {
                     "color": 'white',
@@ -96,6 +101,19 @@ export const workspace = {
             },
         ],
         cy: null, //注：cy在组件方法中通过函数cytoscape()创建，属性均为private。因此无法直接用赋值修改其属性。
+
+        //下面两表均附有标准中文译名,CytoscapeKG.vue中dataHandle(data)有引用此处"default"
+        shapeType: {
+        "individual": "ellipse",//个体
+        "organization": "barrel",//团体
+        "thing": "round-diamond",//事物
+        "default": "triangle"//未知
+        },
+        lineStyleType:{
+            "connection": "solid",//关联
+            "inheritance": "dashed",//继承
+            "default": "dotted"//未知
+        }
     },
 
     getters: {

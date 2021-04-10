@@ -4,133 +4,152 @@
             "data": {
                 "source": 0,
                 "relation": "学生",
-                "target": 1
+                "target": 1,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 0,
                 "relation": "学生",
-                "target": 2
+                "target": 2,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 0,
                 "relation": "学生",
-                "target": 3
+                "target": 3,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 1,
                 "relation": "作",
-                "target": 4
+                "target": 4,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 2,
                 "relation": "作",
-                "target": 5
+                "target": 5,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 3,
                 "relation": "作",
-                "target": 6
+                "target": 6,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 0,
                 "relation": "成",
-                "target": 7
+                "target": 7,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 0,
                 "relation": "收编",
-                "target": 8
+                "target": 8,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 9,
                 "relation": "成员",
-                "target": 0
+                "target": 0,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 9,
                 "relation": "成员",
-                "target": 1
+                "target": 1,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 9,
                 "relation": "成员",
-                "target": 2
+                "target": 2,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 9,
                 "relation": "成员",
-                "target": 3
+                "target": 3,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 9,
                 "relation": "成员",
-                "target": 10
+                "target": 10,
+                "type": "connection"
             }
         },
         {
             "data": {
-                "source": 11,
-                "relation": "包含",
-                "target": 7
+                "source": 7,
+                "relation": "属于",
+                "target": 11,
+                "type": "inheritance"
             }
         },
         {
             "data": {
-                "source": 11,
-                "relation": "包含",
-                "target": 5
+                "source": 5,
+                "relation": "属于",
+                "target": 11,
+                "type": "inheritance"
             }
         },
         {
             "data": {
-                "source": 11,
-                "relation": "包含",
-                "target": 6
+                "source": 6,
+                "relation": "属于",
+                "target": 11,
+                "type": "inheritance"
             }
         },
         {
             "data": {
-                "source": 11,
-                "relation": "包含",
-                "target": 4
+                "source": 4,
+                "relation": "属于",
+                "target": 11,
+                "type": "inheritance"
             }
         },
         {
             "data": {
                 "source": 0,
                 "relation": "尊称",
-                "target": 12
+                "target": 12,
+                "type": "connection"
             }
         },
         {
             "data": {
                 "source": 1,
                 "relation": "尊称",
-                "target": 13
+                "target": 13,
+                "type": "connection"
             }
         }
     ],
@@ -139,85 +158,98 @@
             "data": {
                 "name": "孔子哈哈哈哈哈哈",
                 "id": 0,
-                "type": 0
+                "type": "individual"
             }
         },
         {
             "data": {
                 "name": "孟子",
-                "id": 1
+                "id": 1,
+                "type": "individual"
             }
         },
         {
             "data": {
                 "name": "曾子",
-                "id": 2
+                "id": 2,
+                "type": "individual"
             }
         },
         {
             "data": {
                 "name": "子思",
-                "id": 3
+                "id": 3,
+                "type": "individual"
             }
         },
         {
             "data": {
                 "name": "《孟子》",
-                "id": 4
+                "id": 4,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "《大学》",
-                "id": 5
+                "id": 5,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "《中庸》",
-                "id": 6
+                "id": 6,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "《论语》",
-                "id": 7
+                "id": 7,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "《诗经》",
-                "id": 8
+                "id": 8,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "儒家",
-                "id": 9
+                "id": 9,
+                "type": "organization"
             }
         },
         {
             "data": {
                 "name": "董仲舒",
-                "id": 10
+                "id": 10,
+                "type": "individual"
             }
         },
         {
             "data": {
                 "name": "四书",
-                "id": 11
+                "id": 11,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "圣人",
-                "id": 12
+                "id": 12,
+                "type": "thing"
             }
         },
         {
             "data": {
                 "name": "亚圣",
-                "id": 13
+                "id": 13,
+                "type": "thing"
             }
         }
     ]
