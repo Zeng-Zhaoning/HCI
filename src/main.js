@@ -9,6 +9,8 @@ import 'dayjs/locale/zh-cn'
 import locale from 'element-plus/lib/locale/lang/zh-cn'
 
 import './assets/css/all.css'
+import './assets/iconfont/iconfont.css'
+import './assets/iconfont/iconfont'
 
 createApp(App)
     .use(store)

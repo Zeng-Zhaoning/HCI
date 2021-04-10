@@ -20,15 +20,21 @@
       <div class="operations">
         <div class="op" @click="open">
           <input type="file" class="choose-file" style="display: none" @change="getFilePath">
-          <div><img src="../../../public/icons/open.png"></div>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#iconfile-open"></use>
+          </svg>
           <div class="text-box">打开</div>
         </div>
         <div class="op" @click="save">
-          <div><img src="../../../public/icons/save1.svg"></div>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#iconsave"></use>
+          </svg>
           <div class="text-box">保存</div>
         </div>
         <div class="op" @click="changeExportState">
-          <div class="img-box"><img src="../../../public/icons/export1.svg"></div>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#iconshare"></use>
+          </svg>
           <div class="text-box">导出</div>
           <div class="choose-format-box" :class="{collapsed:!showExportOps, expanded:showExportOps}">
             <div @click="exportPng" class="export-op">图片</div>
@@ -68,7 +74,6 @@
 
   </div>
 </template>
-
 
 
 <script src="./EditBar.js"></script>

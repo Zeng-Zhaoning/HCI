@@ -40,9 +40,9 @@
         },
         mounted () {
             //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
-            document.oncontextmenu = () => {
-                event.returnValue = false;
-            }
+            // document.oncontextmenu = () => {
+            //     event.returnValue = false;
+            // }
         },
         methods: {
             ...mapMutations(['setCy']),

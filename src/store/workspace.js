@@ -4,7 +4,6 @@ import {setTextAPI} from "@/api/basicAPI"
 export const workspace = {
     state: {
         workspace_text: "",  //注意这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
-        show_export_panel: true,
         json_src_path:  '',
         defaultStyle: [
             {
