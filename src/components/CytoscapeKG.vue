@@ -178,70 +178,46 @@
                     that.rendEdge(val, that);
                 });
 
-                var makeTippy = function(ele, text){
-                    var ref = ele.popperRef();
-
-                    // Since tippy constructor requires DOM element/elements, create a placeholder
-                    var dummyDomEle = document.createElement('div');
-
-                    var tip = tippy( dummyDomEle, {
-                        getReferenceClientRect: ref.getBoundingClientRect,
-                        trigger: 'manual', // mandatory
-                        // dom element inside the tippy:
-                        content: function(){ // function can be better for performance
-                            var div = document.createElement('div');
-
-                            div.innerHTML = text;
-
-                            return div;
-                        },
-                        // your own preferences:
-                        arrow: true,
-                        placement: 'bottom',
-                        hideOnClick: false,
-                        sticky: true,
-                        plugins: [sticky],
-
-
-                        // if interactive:
-                        interactive: true,
-                        appendTo: document.body // or append dummyDomEle to document.body
-                    } );
-
-                    return tip;
-                };
-
 
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
-                    let name = target.data().name;
-                    target.data({nameShowed: name});
+                    target.data({nameShowed: target.data("name")});
+                    target.style({fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大nameShowed的36更大即可
                     if(!target.scratch('tip')){
-                        target.scratch('tip',makeTippy(target,target.data("type")));
+                        target.scratch('tip',that.makeTippy(target,target.data("type")));
                     }
                     target.scratch('tip').show();
-                    target.style({fontSize: 48});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
                 })
                     .on('mouseout', 'node', event => {
                         let target = event.target || event.cyTarget;
-                        if(target.scratch('tip')){
-                            target.scratch('tip').hide();
-                            console.log('here')
-                        }
                         that.rendNode(target, that);
+                        if(target.scratch('tip')){
+                            target.scratch('tip').destroy();
+                            target.removeScratch('tip');
+                            // console.log(target.scratch());
+                        }
+                        target.style({'z-index':0});
                     })
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        let name = target.data().relation;
-                        target.data({nameShowed: name});
+                        target.data({nameShowed: target.data("relation")});
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
-                        target.style({fontSize: 36, width: 6, color: '#bc5f6a'});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        target.style({fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        if(!target.scratch('tip')){
+                            target.scratch('tip',that.makeTippy(target,target.data("type")));
+                        }
+                        target.scratch('tip').show();
                     })
                     .on('mouseout', 'edge', event => {
                         let target = event.target || event.cyTarget;
                         that.rendEdge(target,that);
-                        target.style({fontSize: 24, width: 3, color: '#e3a6a1'});//与上文edge的初始配置保持一致
+                        target.style({fontSize: 24, width: 3, color: '#e3a6a1','z-index':0});//与上文edge的初始配置保持一致
+                        if(target.scratch('tip')){
+                            target.scratch('tip').destroy();
+                            target.removeScratch('tip');
+                            // console.log(target.scratch());
+                        }
                     })
 
                 // 绑定右键单击的事件
@@ -467,14 +443,14 @@
                                     //'text-outline-color': "#847072",
                                     //'text-outline-width': 4,
                                 });
-                                let sid = starget.data().id;
+                                let sid = starget.data("id");
                                 cy.once('tap', event => {
                                     console.log("start adding an edge");
                                     let ttarget = event.target || event.cyTarget;
                                     if (ttarget !== cy && ttarget.group() === 'nodes') {
                                         console.log("before adding edge: edgeCount", cy.edges().length);
                                         console.log("before adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
-                                        let tid = ttarget.data().id;
+                                        let tid = ttarget.data("id");
                                         let timestamp = new Date().getTime();
                                         let newEdge = {
                                             group: 'edges',
@@ -628,6 +604,45 @@
                     }
                     count++;
                 }
+            },
+
+            makeTippy(ele, text){//ele需传入cy的ele
+                var ref = ele.popperRef();
+
+                // Since tippy constructor requires DOM element/elements, create a placeholder
+                var dummyDomEle = document.createElement('div');
+
+                var tip = tippy( dummyDomEle, {
+                    getReferenceClientRect: ref.getBoundingClientRect,
+                    trigger: 'manual', // mandatory
+                    // dom element inside the tippy:
+                    content: function(){ // function can be better for performance
+                        var div = document.createElement('div');
+
+                        div.innerHTML = text;
+
+                        return div;
+                    },
+                    // your own preferences:
+                    arrow: true,
+                    placement: 'bottom',
+                    offset: [20, 30],
+                    hideOnClick: false,
+                    // enable it
+                    // sticky: true,
+                    // only check the "reference" rect for changes
+                    sticky: 'reference',
+                    // only check the "popper" rect for changes
+                    // sticky: 'popper',
+                    plugins: [sticky],
+
+
+                    // if interactive:
+                    interactive: true,
+                    appendTo: document.body // or append dummyDomEle to document.body
+                } );
+
+                return tip;
             },
 
             getGraphJsonObject() {
