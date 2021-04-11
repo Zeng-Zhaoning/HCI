@@ -113,7 +113,19 @@ export const workspace = {
             "connection": "solid",//关联
             "inheritance": "dashed",//继承
             "default": "dotted"//未知
-        }
+        },
+        nodeType:[
+            {label:"个体",value:"individual"},
+            {label:"团体",value:"organization"},
+            {label:"事物",value:"thing"},
+            {label:"未知",value:"default"}
+        ],
+        edgeType:[
+            {label:"关联",value:"connection"},
+            {label:"继承",value:"inheritance"},
+            {label:"未知",value:"default"}
+        ]
+
     },
 
     getters: {
