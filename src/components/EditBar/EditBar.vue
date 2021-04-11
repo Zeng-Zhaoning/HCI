@@ -1,54 +1,36 @@
-<template class="container">
+<template>
   <div class="edit-bar-container" :class="{ hideEditBarAni: !showEditBar, ShowEditBarAni: showEditBar }">
     <span class="control-edit-bar" @click="changeEditBarState">
       <i :class="{'el-icon-arrow-right': showEditBar, 'el-icon-arrow-left': !showEditBar}"></i>
     </span>
 
-    <div class="edit-block">
-      <div class="title">操作</div>
+    <edit-bar-block block-name="操作">
       <el-popover
           placement="bottom"
           title="操作说明"
           :width="180"
           trigger="hover"
-          :content="opInfo"
-      >
+          :content="opInfo">
         <template #reference>
           <i class="el-icon-info op-info"></i>
         </template>
       </el-popover>
       <div class="operations">
-        <div class="op" @click="open">
+        <op-item op-name="打开" icon="#iconfile-open" @click="open">
           <input type="file" class="choose-file" style="display: none" @change="getFilePath">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#iconfile-open"></use>
-          </svg>
-          <div class="text-box">打开</div>
-        </div>
-        <div class="op" @click="save">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#iconsave"></use>
-          </svg>
-          <div class="text-box">保存</div>
-        </div>
-        <div class="op" @click="changeExportState">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#iconshare"></use>
-          </svg>
-          <div class="text-box">导出</div>
+        </op-item>
+        <op-item op-name="保存" icon="#iconsave" @click="save"></op-item>
+        <op-item op-name="导出" icon="#iconshare" @click="changeExportState">
           <div class="choose-format-box" :class="{collapsed:!showExportOps, expanded:showExportOps}">
             <div @click="exportPng" class="export-op">图片</div>
             <div class="separator"></div>
             <div @click="exportJson" class="export-op">json</div>
           </div>
-        </div>
+        </op-item>
       </div>
-    </div>
+    </edit-bar-block>
 
-    <div class="edit-block">
-      <div class="title">
-        待解析文本
-      </div>
+    <edit-bar-block block-name="待解析文本">
       <el-input
           disabled
           class="el-input"
@@ -58,19 +40,32 @@
           v-model="text">
       </el-input>
       <div class="analyse-btn-box">
-        <el-button disabled  :loading="false" @click="analyse">保存并解析</el-button>
+        <el-button disabled :loading="false" @click="saveAndAnalyse">保存并解析</el-button>
       </div>
-    </div>
+    </edit-bar-block>
 
-    <div class="edit-block graph-area">
-      <div class="title">
-        知识结构
-      </div>
-      <el-tree :data="tree"
-               :props="defaultProps">
-      </el-tree>
-
-    </div>
+    <edit-bar-block block-name="统计">
+      <div class="table_name">| 实体</div>
+      <el-table
+          :data="getNodesData"
+          size="mini">
+        <el-table-column prop="individual" label="个体" min-width="1"></el-table-column>
+        <el-table-column prop="organization" label="团体" min-width="1"></el-table-column>
+        <el-table-column prop="thing" label="事物" min-width="1"></el-table-column>
+        <el-table-column prop="default" label="未知" min-width="1"></el-table-column>
+        <el-table-column prop="total" label="合计" min-width="1"></el-table-column>
+      </el-table>
+      <div class="table_name">| 关系</div>
+      <el-table
+          :data="relations_data"
+          size="mini"
+          >
+        <el-table-column prop="connection" label="关联" min-width="1"></el-table-column>
+        <el-table-column prop="inheritance" label="继承" min-width="1"></el-table-column>
+        <el-table-column prop="default" label="未知" min-width="1"></el-table-column>
+        <el-table-column prop="total" label="合计" min-width="1"></el-table-column>
+      </el-table>
+    </edit-bar-block>
 
   </div>
 </template>

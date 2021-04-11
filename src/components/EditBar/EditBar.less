@@ -44,24 +44,12 @@
   left: -20px;
   box-shadow:-40px 0 40px #e6e6e6;
   border-left: 3px solid @theme;
+  z-index: 1;
 }
 .control-edit-bar:hover{
   cursor: pointer;
 }
-.title{
-  color: @theme;
-  font-weight: bold;
-  font-size: 15px;
-  font-family: 微软雅黑;
-  margin-bottom: @len1;
-}
-.edit-block{
-  padding: @len2;
-  margin-bottom: 5px;
-  border-radius: 4px;
-  background-color: white;
-  box-shadow: -5px 0 10px #e6e6e6;
-}
+
 .analyse-btn-box{
   display: flex;
   flex-direction: row-reverse;
@@ -71,7 +59,7 @@
     font-size: 13px;
     min-height: 20px;
     width: 100px;
-    margin: @len1 0 -3px 0;
+    margin: @len1 0 0 0;
     color: @theme;
   }
 }
@@ -92,71 +80,19 @@
     color: @theme;
   }
 }
-.op{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  border: none;
-  font-family: 幼圆;
-  color: #909399;
-  font-weight: bold;
-  font-size: 13px;
-  margin: @len2 @len2 @len1 @len2;
-  position: relative;
-  text-align: center;
-  svg{
-    height: 30px;
-    width: 30px;
-  }
-}
-.op:hover{
-  cursor: pointer;
-  .text-box{
-    color: @myblack;
-  }
-}
-
-@len3: 42.22px;
-.choose-format-box{
-  transform: translate3d(0,0,0);  //硬件加速
-  height: @len3;
-  border: 1px solid @separator;
-  border-radius: 4px;
-  border-left: none;
-  position: absolute;
-  left: @len3 - 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  .export-op{
-    height: @len3;
-    line-height: @len3;
-    width: @len3+10px;
-    text-align: center;
-    color: @prompt;
-    font-size: 13px;
-  }
-  .export-op:hover{
-    background-color: #f0f7ff;
-    color: @theme;
-  }
-  overflow: hidden;
-}
-.collapsed {
-  transition: max-width 0.35s cubic-bezier(0, 1, 0, 1);
-  max-width: 0;
-  border-right: none;
-}
-.expanded {
-  max-width: 999px;
-  transition: max-width 0.35s cubic-bezier(0.75, 0, 0.9, 0);
-}
-.graph-area{
-  flex-grow: 1;
-}
 
 .separator{
   height: 20px;
   width: 0.5px;
   background-color: @separator;
+}
+
+.table_name{
+  font-size: 14px;
+  color: @theme;
+  font-weight: bold;
+}
+
+.el-table{
+  margin-bottom: @len1;
 }

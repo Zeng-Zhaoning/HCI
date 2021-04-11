@@ -1,27 +1,27 @@
 import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
 import { setGraphAPI } from "../../api/basicAPI";
+import OpItem from './OpItem';
+import EditBarBlock from "./EditBarBlock";
 
 export default {
     name: "EditBar",
+    components: {OpItem,EditBarBlock},
     data(){
         return{
             showEditBar: true,
             showExportOps: false,
-            tree: [{
-                label: '一级 1',
-                children: [{
-                    label: '二级 1-1',
-                    children: [{
-                        label: '三级 1-1-1'
-                    }]
-                }]
-            }],
-            defaultProps: {
-                children: 'children',
-                label: 'label'
-            },
-            opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n'
+            opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
+            relations_data: [{
+                connection: 0,
+                inheritance: 0,
+                default: 0,
+                total: 0
+            }]
         }
+    },
+    watch: {
+
+
     },
     computed: {
         ...mapState({
@@ -29,7 +29,7 @@ export default {
             workspace_text: state => state.workspace.workspace_text,
             cy: state => state.workspace.cy,
         }),
-        ...mapGetters(['current_project']),
+        ...mapGetters(['current_project','getNodesData']),
         text: {
             get(){
                 return this.workspace_text;
@@ -37,30 +37,17 @@ export default {
             set(value){
                 this.setWorkspaceText(value);
             }
+        },
+        entities_data(){
+
         }
     },
     methods:{
         ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo']),
         ...mapActions(['postText']),
 
-        analyse(){
-            let data = {
-                pid: this.current_pid,
-                text: this.workspace_text
-            }
-            this.postText(data).then(res => {
-                this.$message({
-                    message: '保存文本成功',
-                    type: 'success',
-                    duration: 1500
-                })
-            }).catch(err => {
-                this.$message({
-                    message: '保存文本失败',
-                    type: 'error',
-                    duration: 1500
-                });
-            })
+        changeEditBarState(){
+            this.showEditBar = !this.showEditBar;
         },
 
         open(){
@@ -112,10 +99,6 @@ export default {
             }).finally(() => {
                 loading.close();
             })
-        },
-
-        changeEditBarState(){
-            this.showEditBar = !this.showEditBar;
         },
 
         changeExportState(){
@@ -255,6 +238,30 @@ export default {
                 this.exportPng();
                 (remove && remove.length) && (remove.restore()); // 恢复删除内容
             }
+        },
+
+
+        /**
+         * 保存输入的文本并解析成图
+         */
+        saveAndAnalyse(){
+            let data = {
+                pid: this.current_pid,
+                text: this.workspace_text
+            }
+            this.postText(data).then(res => {
+                this.$message({
+                    message: '保存文本成功',
+                    type: 'success',
+                    duration: 1500
+                })
+            }).catch(err => {
+                this.$message({
+                    message: '保存文本失败',
+                    type: 'error',
+                    duration: 1500
+                });
+            })
         },
     }
 }
