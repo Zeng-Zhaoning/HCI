@@ -1,7 +1,7 @@
 <template>
     <div class='knowledge-graph-cy'>
         <div id="graph">
-            <el-button type="text" @click="addFormVisible = true">打开嵌套表单的 Dialog</el-button>
+<!--            <el-button type="text" @click="addFormVisible = true">打开嵌套表单的 Dialog</el-button>-->
 
             <el-dialog title="添加元素" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
                 <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth" class="demo-ruleForm"><!-- class="demo-ruleForm"意义何在？-->
