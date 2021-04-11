@@ -10,10 +10,10 @@
                     </el-form-item>
                     <el-form-item label="类型" prop="type">
                         <el-select v-model="form.type" placeholder="请选择类型" style="width:90%">
-                            <el-option v-for="item in form.type" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                            <el-option v-for="item in givenType" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="属性" prop="properties" collapse-tags>
+                    <el-form-item label="属性" prop="properties" v-if="node0Edge1===0">
                         <el-select
                                 v-model="form.properties"
                                 style="width:90%"
@@ -48,6 +48,22 @@
 <!--                        <el-button v-else size="small" @click="showTagInput">新增＋</el-button>-->
 <!--                        </el-template>-->
                     </el-form-item>
+
+<!--                    <el-form-item label="活动区域">-->
+<!--                        <el-select v-model="sizeForm.region" placeholder="请选择活动区域">-->
+<!--                            <el-option label="区域一" value="shanghai"></el-option>-->
+<!--                            <el-option label="区域二" value="beijing"></el-option>-->
+<!--                        </el-select>-->
+<!--                    </el-form-item>-->
+<!--                    <el-form-item label="活动时间">-->
+<!--                        <el-col :span="11">-->
+<!--                            <el-date-picker type="date" placeholder="选择日期" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>-->
+<!--                        </el-col>-->
+<!--                        <el-col class="line" :span="2">-</el-col>-->
+<!--                        <el-col :span="11">-->
+<!--                            <el-time-picker placeholder="选择时间" v-model="sizeForm.date2" style="width: 100%;"></el-time-picker>-->
+<!--                        </el-col>-->
+<!--                    </el-form-item>-->
 
                 </el-form>
                 <template #footer>
@@ -98,23 +114,20 @@
         data() {
             let nameCheck = (rule,value,callback) => {
                 console.log('nameCheck');
-                console.log(this.form);
-                let nameValid = /\s*(\S+)\s*/;
+                let nameValid = /\S/;
                 if(!nameValid.test(value)){//可添加正则表达式等逻辑
                     return callback(new Error('名称不能为空哟'));
                 }
                 let validName = value.trim();
-                console.log(this.node0Edge1)
                 if(this.node0Edge1===0){
-                    if(this.isUnique(cy.nodes(),val=>val.data("name"),validName)){
+                    if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
                         callback();
                     }else {
-                        console.log("?")
                         callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
                     }
                 }else{
-                    let {source,target} = this.edgeCondition;
-                    let dupEdges = edges.filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
+                    let {source,target} = this.form.edgeCondition;
+                    let dupEdges = this.cy.edges().filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
                     if(dupEdges.length===0||this.isUnique(dupEdges,val=>val.data("relation"),validName)){
                         callback();
                     }else{
@@ -127,14 +140,22 @@
                 console.log('propLenCheck');
                 let len = 0;
                 const limit = 255;
-                value.forEach(val=>{
-                    len += val.length+1;
-                })
-                if(len>limit){
-                    callback("属性值数据量太大啦，麻烦去掉长度过长的属性哟~");
-                }else if(value[value.length-1]){
-
-                } else{
+                let invalid = false;
+                let errorReg = /\s/;
+                for(let i = 0;i < value.length;i++){
+                    if(errorReg.test(value[i])){
+                        invalid = true;
+                        break;
+                    }
+                    len += value[i]+1;
+                }
+                len-=1;
+                if(invalid){
+                    callback(new Error("属性中不能含有空哟~"));
+                }else if(len>limit){
+                    callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
+                }else{
+                    console.log("没事")
                     callback();
                 }
             };
@@ -144,9 +165,11 @@
                 typeFormVisible: false,
                 form: {
                     name: '',
-                    type: 'default',
-                    properties: ['a']
-                },
+                    type: '',
+                    properties: [],
+                    edgeCondition:{source:'',target:''},
+                    formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
+                },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
                 givenType: [],
                 formLabelWidth: '120px',
                 tagInputVisible: false,
@@ -155,14 +178,13 @@
                     name:[
                         {validator:nameCheck, trigger:'blur'}
                     ],
-                    type:[
+                    type:[//由于设置了初始值，这里似乎没被用到
                         {required:true,message:'请选择类型',trigger:'change'}
                     ],
                     properties:[
                         {validator:propLenCheck,trigger:'change'}
                     ]
-                },
-                edgeCondition:{source:'',target:''}
+                }
                 // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
                 // https://github.com/yiminghe/async-validator
             };
@@ -576,31 +598,27 @@
                             hasTrailingDivider: true,
                             onClickFunction: function (event) {
                                 that.node0Edge1 = 0;
+                                that.givenType = that.nodeType;
                                 that.addFormVisible = true;
-
-                                let data = {
-                                    name: '未定义'+timestamp,
-                                    // type: 'undefined',
-                                    nameShowed: '未定义'+timestamp
+                                that.form.formCallback = addForm => {
+                                    let pos = event.position || event.cyPosition;
+                                    let newObj = {
+                                        group: 'nodes',
+                                        data: {
+                                            name:addForm.name,
+                                            type:addForm.type,
+                                            properties:addForm.properties,
+                                            nameShowed: '未渲染'
+                                        },
+                                        position: {
+                                            x: pos.x,
+                                            y: pos.y
+                                        }
+                                    };
+                                    let collection = cy.add(newObj);
+                                    that.rendNode(collection[0], that);
+                                    that.trigger_statistic_data_change();
                                 };
-                                let pos = event.position || event.cyPosition;
-                                let newObj = {
-                                    group: 'nodes',
-                                    data: data,
-                                    position: {
-                                        x: pos.x,
-                                        y: pos.y
-                                    }
-                                };
-                                console.log("before adding node: nodeCount", cy.nodes().length);
-                                console.log("before adding node: lastItem", cy.nodes()[cy.nodes().length - 1]);
-                                let collection = cy.add(newObj);
-                                that.rendNode(collection[0], that);
-                                console.log("after adding node: nodeCount", cy.nodes().length);
-                                console.log("before adding node: lastItem", cy.nodes()[cy.nodes().length - 1]);
-
-                                that.trigger_statistic_data_change();
-
                             }
                         },
                         {
@@ -623,26 +641,27 @@
                                     console.log("start adding an edge");
                                     let ttarget = event.target || event.cyTarget;
                                     if (ttarget !== cy && ttarget.group() === 'nodes') {
-                                        console.log("before adding edge: edgeCount", cy.edges().length);
-                                        console.log("before adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
                                         let tid = ttarget.data("id");
-                                        let timestamp = new Date().getTime();
-                                        let newEdge = {
-                                            group: 'edges',
-                                            data: {
-                                                relation: '未定义'+timestamp,
-                                                source: sid,
-                                                // type: 'undefined',
-                                                target: tid,
-                                                nameShowed: '未定义'+timestamp
-                                            },
-                                            classes: 'autorotate'
+                                        that.node0Edge1 = 1;
+                                        that.givenType = that.edgeType;
+                                        that.form.edgeCondition = {source:sid,target:tid};
+                                        that.addFormVisible = true;
+                                        that.form.formCallback = addForm => {
+                                            let newEdge = {
+                                                group: 'edges',
+                                                data: {
+                                                    relation: addForm.name,
+                                                    source: addForm.edgeCondition.source,
+                                                    target: addForm.edgeCondition.target,
+                                                    type: addForm.type,
+                                                    nameShowed: '未渲染'
+                                                },
+                                                classes: 'autorotate'
+                                            };
+                                            let collection = cy.add(newEdge);
+                                            that.rendEdge(collection[0], that);
+                                            that.trigger_statistic_data_change();
                                         };
-                                        cy.add(newEdge);
-                                        console.log("after adding edge: edgeCount", cy.edges().length);
-                                        console.log("after adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
-                                        that.rendEdge(cy.edges()[cy.edges().length - 1], that);
-                                        that.trigger_statistic_data_change();
                                     }
                                     starget.style({'background-color': color_before});
                                     console.log("finish adding an edge");
@@ -785,9 +804,11 @@
 
             //dialog组件
             handleClose(done) {
+                let that = this;
                 this.$confirm('确认关闭？')
                     .then(_ => {
                         done();
+                        that.$refs['ruleForm'].resetFields();
                     })
                     .catch(_ => {});
             },
@@ -813,18 +834,17 @@
             addCancel(){
                 this.addFormVisible = false;
                 this.$refs['ruleForm'].resetFields();
-            }
-            ,
+            },
             addConfirm(){
-                this.addFormVisible = false;
-                //根据变量确认当前是节点还是边后再执行不同代码
                 this.$refs['ruleForm'].validate((valid) => {
                     if (valid) {
-                        alert('submit!');
-                        return true;
+                        this.addFormVisible = false;
+                        let addForm = JSON.parse(JSON.stringify(this.form));//深拷贝后传参，不破坏原来的值//可能没必要
+                        addForm.name = addForm.name.trim();//名称和校验时一样前后无空格
+                        this.form.formCallback(addForm);
+                        this.$refs['ruleForm'].resetFields();
                     } else {
-                        console.log('error submit!!');
-                        return false;
+                        alert('好像哪里有问题，添加失败了呢……');
                     }
                 });
             },
@@ -858,6 +878,7 @@
                     // only check the "popper" rect for changes
                     // sticky: 'popper',
                     plugins: [sticky],
+                    zIndex: 10,//默认9999，修改小些避免遮住弹窗
 
 
                     // if interactive:
