@@ -5,6 +5,7 @@ export const workspace = {
     state: {
         workspace_text: "",  //注意这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
         json_src_path:  '',
+        statistic_data_change: false,
         defaultStyle: [
             {
                 selector: 'node',
@@ -116,10 +117,6 @@ export const workspace = {
         }
     },
 
-    getters: {
-
-    },
-
     mutations: {
         setWorkspaceText(state, text) {
             state.workspace_text = text;
@@ -130,6 +127,9 @@ export const workspace = {
         setJsonSrcPath(state, path){
             state.json_src_path = path;
         },
+        trigger_statistic_data_change(state){
+            state.statistic_data_change = ! state.statistic_data_change;
+        }
     },
 
     actions: {

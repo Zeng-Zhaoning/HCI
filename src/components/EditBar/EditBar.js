@@ -11,25 +11,26 @@ export default {
             showEditBar: true,
             showExportOps: false,
             opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
-            relations_data: [{
-                connection: 0,
-                inheritance: 0,
-                default: 0,
-                total: 0
-            }]
+            entities_data: [],
+            relations_data: []
         }
     },
     watch: {
-
-
+        cy(newValue, oldValue){
+            this.get_statistic_data();
+        },
+        statistic_data_change(newValue, oldValue){
+            this.get_statistic_data();
+        }
     },
     computed: {
         ...mapState({
             current_pid: state => state.current_pid,
             workspace_text: state => state.workspace.workspace_text,
             cy: state => state.workspace.cy,
+            statistic_data_change: state => state.workspace.statistic_data_change,
         }),
-        ...mapGetters(['current_project','getNodesData']),
+        ...mapGetters(['current_project']),
         text: {
             get(){
                 return this.workspace_text;
@@ -38,9 +39,7 @@ export default {
                 this.setWorkspaceText(value);
             }
         },
-        entities_data(){
 
-        }
     },
     methods:{
         ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo']),
@@ -164,10 +163,7 @@ export default {
                 if (eles.edges !== undefined && eles.edges.length > 0) {
                     eles.edges.forEach(val => {
                         let newData = {
-                            id: val.data.id,
-                            source: val.data.source,
-                            target: val.data.target,
-                            relation: val.data.relation
+                            ...val.data
                         };
                         obj.edges.push({data: newData});
                     });
@@ -175,8 +171,7 @@ export default {
                 if (eles.nodes !== undefined && eles.nodes.length > 0) {
                     eles.nodes.forEach(val => {
                         let newData = {
-                            id: val.data.id,
-                            name: val.data.name
+                            ...val.data
                         };
                         obj.nodes.push({data: newData});
                     });
@@ -263,5 +258,36 @@ export default {
                 });
             })
         },
+
+
+        /**
+         * 获取统计数据，即给 data 中的 entities_data 和 relaions_data 赋值
+         */
+        get_statistic_data(){
+            let data = this.getDataJsonObject();
+            let nodes = data.nodes,
+                edges = data.edges;
+            let EData = {
+                individual: 0,
+                organization: 0,
+                thing: 0,
+                default: 0,
+                total: nodes.length
+            };
+            for (let node of nodes){
+                EData[node.data.type] ++;
+            }
+            let RData = {
+                connection: 0,
+                inheritance: 0,
+                default: 0,
+                total: edges.length
+            }
+            for (let edge of edges){
+                RData[edge.data.type] ++;
+            }
+            this.entities_data = [EData];
+            this.relations_data = [RData];
+        }
     }
 }

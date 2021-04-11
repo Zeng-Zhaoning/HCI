@@ -55,7 +55,7 @@
             // }
         },
         methods: {
-            ...mapMutations(['setCy']),
+            ...mapMutations(['setCy','trigger_statistic_data_change']),
 
             //读数据，然后交给dataHandle
             getData(url) {
@@ -393,6 +393,8 @@
                                     console.log("after undoing remove: nodeCount", cy.nodes().length);
                                     console.log("after undoing remove: edgeCount", cy.edges().length);
                                 }
+
+                                that.trigger_statistic_data_change();
                                 contextMenu.hideMenuItem('undo-last-remove');
                             }
                         },
@@ -404,13 +406,11 @@
                             hasTrailingDivider: true,
                             onClickFunction: function (event) {
                                 let timestamp = new Date().getTime();
-
                                 let data = {
                                     name: '未定义'+timestamp,
                                     // type: 'undefined',
                                     nameShowed: '未定义'+timestamp
                                 };
-
                                 let pos = event.position || event.cyPosition;
                                 let newObj = {
                                     group: 'nodes',
@@ -426,6 +426,7 @@
                                 console.log("after adding node: nodeCount", cy.nodes().length);
                                 console.log("before adding node: lastItem", cy.nodes()[cy.nodes().length - 1]);
                                 that.rendNode(cy.nodes()[cy.nodes().length - 1], that);
+                                that.trigger_statistic_data_change();
                             }
                         },
                         {
@@ -467,6 +468,7 @@
                                         console.log("after adding edge: edgeCount", cy.edges().length);
                                         console.log("after adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
                                         that.rendEdge(cy.edges()[cy.edges().length - 1], that);
+                                        that.trigger_statistic_data_change();
                                     }
                                     starget.style({'background-color': color_before});
                                     console.log("finish adding an edge");
@@ -487,6 +489,7 @@
                                 console.log("after remove: nodeCount", cy.nodes().length);
                                 console.log("after remove: edgeCount", cy.edges().length);
 
+                                that.trigger_statistic_data_change();
                                 contextMenu.showMenuItem('undo-last-remove');
                             }
                         },
