@@ -1,6 +1,7 @@
 import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
 import { setGraphAPI } from "../../api/basicAPI";
 
+
 export default {
     name: "EditBar",
     data(){
@@ -20,14 +21,106 @@ export default {
                 children: 'children',
                 label: 'label'
             },
-            opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n'
+            opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
+
+            ////////////////////////此处为搜索相关代码段////////////////////
+            showEnabled: false,
+            search_type: '',
+            search_text: '',
+            selects: null,
+            select_value: '',
+            types: [
+                {
+                    value: '1',
+                    label: '节点'
+                },
+                {
+                    value: '2',
+                    label: '关系'
+                }
+            ],
+            select_disabled: true,
+            default_node_types: [
+                {
+                    value: '1',
+                    label: 'individual'
+                },
+                {
+                    value: '2',
+                    label: 'organization'
+                },
+                {
+                    value: '3',
+                    label: 'thing'
+                },
+                {
+                    value: '4',
+                    label: 'default'
+                }
+            ],
+            default_edge_types: [
+                {
+                    value: '1',
+                    label: 'connection'
+                },
+                {
+                    value: '2',
+                    label: 'inheritance'
+                },
+                {
+                    value: '3',
+                    label: 'default'
+                }
+            ],
+
+            //搜索历史
+            searchLog: [],
+
+            //当前搜索
+            currentSearch: {
+                params: {},
+                result: []
+            },
+
+            properties: {
+                node: [],
+                edge: []
+            }
+            ////////////////////////////////////////////////////////////
         }
     },
+    ////////////////////////此处为搜索相关代码段////////////////////
+    watch: {
+        search_type(newVal, oldVal) {
+            console.log(newVal);
+            if (newVal === '') {
+                this.select_disabled = true;
+            }
+            else {
+                this.select_disabled = false;
+                if (newVal === '1') {
+                    this.selects = this.default_node_types;
+                    console.log(this.default_node_types)
+                }
+                else  if (newVal === '2') {
+                    this.selects = this.default_edge_types;
+                    console.log(this.default_edge_types)
+                }
+                else {
+                    console.log('类型错误！！！')
+                }
+                console.log(this.selects);
+            }
+        },
+    },
+    ////////////////////////////////////////////////////////////
     computed: {
         ...mapState({
             current_pid: state => state.current_pid,
             workspace_text: state => state.workspace.workspace_text,
             cy: state => state.workspace.cy,
+            ////////////////////////此处为搜索相关代码段////////////////////
+            ////////////////////////////////////////////////////////////
         }),
         ...mapGetters(['current_project']),
         text: {
@@ -37,10 +130,13 @@ export default {
             set(value){
                 this.setWorkspaceText(value);
             }
-        }
+        },
+
+        ////////////////////////此处为搜索相关代码段////////////////////
+        ////////////////////////////////////////////////////////////
     },
     methods:{
-        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo']),
+        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult']),
         ...mapActions(['postText']),
 
         analyse(){
@@ -256,5 +352,193 @@ export default {
                 (remove && remove.length) && (remove.restore()); // 恢复删除内容
             }
         },
+
+        ///////////////////////////////////此处为搜索相关代码段///////////////////////////////////
+        getSearchType(search_type) {
+            return search_type === '1' ? this.cy.nodes() : this.cy.edges();
+        },
+
+        getDisplay(search_type) {
+            return search_type === '1' ? this.nodeDisplay : this.edgeDisplay;
+        },
+
+        getRender(search_type) {
+            return search_type === '1' ? this.rendNode : this.rendEdge;
+        },
+
+        getName(search_type, val) {
+            return search_type === '1' ? val.data().name : val.data().relation;
+        },
+
+        setSearchParams() {
+            this.currentSearch.params = {
+                search_text: this.search_text,
+                search_type: this.search_type,
+                select_value: this.select_value
+            }
+        },
+
+        clearSearchContent() {
+            this.search_text = '';
+            this.search_type = '';
+            this.select_value = '';
+        },
+
+        //根据具体搜索条件还需进行修改
+        search() {
+            //保存搜索参数
+            this.setSearchParams();
+
+            //搜索
+            let params = this.currentSearch.params;
+            let target = this.getSearchType(params.search_type);
+            let name;
+            let count = 0;
+            console.log(target)
+            target.forEach((val) =>{
+                console.log(val);
+                name = this.getName(params.search_type, val);
+                console.log(name);
+                let flagName = this.fuzzyMatch(name, params.search_text);
+
+                let flagProperty;
+                flagProperty = val.data().property.includes(params.select_value);
+
+                if (flagName && flagProperty) {
+                    count++;
+                    this.currentSearch.result.push(val.data());
+                    val.addClass('searched');
+                }
+            });
+
+            console.log(this.currentSearch)
+
+            if (count > 0) {
+                let display = this.getDisplay(params.search_type);
+                this.searchDisplay(display);
+                this.$message({
+                    message: '搜索完毕',
+                    type: 'success',
+                    duration: 1500
+                });
+            }
+            else {
+                this.$message({
+                    message: '未找到符合条件的结果',
+                    type: 'error',
+                    duration: 1500
+                });
+            }
+
+            this.showEnabled = true;
+
+        },
+
+        fuzzyMatch(str, key){
+            let index = -1, flag = false;
+            for(let i = 0, arr = key.split(""); i < arr.length; i++ ){
+            //有一个关键字都没匹配到，则没有匹配到数据
+                if(str.indexOf(arr[i]) < 0){
+                    break;
+                }else{
+                    let match = str.matchAll(arr[i]);
+                    let next = match.next();
+                    while (!next.done){
+                        if(next.value.index > index){
+                            index = next.value.index;
+                            if(i === arr.length - 1){
+                                flag = true
+                            }
+                            break;
+                        }
+                        next = match.next();
+                    }
+                }
+            }
+            return flag;
+        },
+
+        searchDisplay(display) {
+            let params = this.currentSearch.params;
+            let target = this.getSearchType(params.search_type);
+
+            target.forEach((val) => {
+                if (val.hasClass('searched')) {
+                    display(val);
+                }
+            });
+        },
+
+        nodeDisplay(val) {
+            val.style('background-color', '#ebc57c');
+        },
+
+        edgeDisplay(val) {
+            val.style('color', '#ebc57c');
+        },
+
+        desearch() {
+            let params = this.currentSearch.params;
+            let target = this.getSearchType(params.search_type);
+
+            let render = this.getRender(params.search_type);
+
+            target.forEach((val) =>{
+
+                if (val.hasClass('searched')) {
+                    console.log(val);
+                    val.removeClass('searched');
+                    render(val);
+                }
+            });
+
+            this.clearSearchContent();
+
+            this.showEnabled = false;
+
+            this.searchLog.push(this.currentSearch);
+
+            console.log('searchLog', this.searchLog)
+        },
+
+
+
+        ///////////////////////////////////////////////////希望之后能进行复用////////////////////////////////////////////
+        //让过长的内容作为展示的标题时省略
+        fontShow(text) {
+            if (text && text.length > 5) {
+                return text.substring(0, 5) + "..."
+            }
+            return text
+        },
+
+        //根据内容设置字体大小，使之不会超出节点（未验证）
+        fontStyle(length) {
+            let fontSize = 30 - (length - 2) * 6
+            if (!fontSize || fontSize < 12) {
+                fontSize = 12
+            }
+            return {
+                "font-size": fontSize + "px"
+            };
+        },
+
+        //帮助node合适地展示text
+        rendNode(target) {
+            let name = target.data().name;
+            const text = this.fontShow(name);
+            target.data({nameShowed: text});
+            const style = this.fontStyle(text.length);
+            target.style(style);
+            target.style('background-color', '#9c8f96');
+        },
+
+        rendEdge(target){
+            let name = target.data().relation;
+            const text = this.fontShow(name);
+            target.data({nameShowed: text});
+            target.style('color', '#eea39d');
+        },
+        //////////////////////////////////////////////////////////////////////////////////////
     }
 }

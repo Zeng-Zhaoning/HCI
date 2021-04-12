@@ -97,6 +97,7 @@ export const workspace = {
             },
         ],
         cy: null, //注：cy在组件方法中通过函数cytoscape()创建，属性均为private。因此无法直接用赋值修改其属性。
+
     },
 
     getters: {
