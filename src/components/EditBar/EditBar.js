@@ -35,11 +35,15 @@ export default {
             searchLog: [],
 
 
-            filter_type: '',
+            filter_type: '1',
             filter_specific_type: '',
             specific_types: null,
-            filter_disabled: true
+            filter_disabled: false,
+            filterShowEnabled: false
         }
+    },
+    mounted() {
+        this.specific_types = this.nodeType;
     },
     watch: {
         cy(newValue, oldValue){
@@ -51,10 +55,10 @@ export default {
         filter_type(newVal, oldVal) {
             console.log(newVal);
             if (newVal === '') {
-                this.filter_disabled = true;
+                //this.filter_disabled = true;
             }
             else {
-                this.filter_disabled = false;
+                //this.filter_disabled = false;
                 if (newVal === '1') {
                     this.specific_types = this.nodeType;
                     console.log(this.nodeType)
@@ -549,8 +553,76 @@ export default {
         //////////////////////////////////////////////////////////////////////////////////////
 
         ///////////////////////////////////此处为过滤代码///////////////////////////////////////
+        /*
+        * 不知该如何取得node所连边，暂时注释通过关系过滤节点的相关方法
+        * 不过我觉得这样也还好，本来也没要求
+        * */
         filter() {
+            console.log("execute filter")
+            console.log(this.filter_type)
+            console.log(this.filter_specific_type)
+            let value = this.filter_specific_type;
 
+            if (value === '') {
+                this.$message({
+                    message: '请选择过滤类型',
+                    type: 'error',
+                    duration: 1500
+                });
+                return;
+            }
+
+
+
+            if (this.filter_type === '1') {
+                console.log(value);
+                let target_nodes = this.cy.nodes().filter(function (ele) {
+                    console.log(ele.data('type') !== value);
+                    return ele.data('type') !== value;
+                });
+                for (let node of target_nodes) {
+                    node.addClass('filtered');
+                    node.style('display', 'none');
+                    console.log(node);
+                }
+            }
+            // else {
+            //     let target_edges = this.cy.edges().filter(function (ele) {
+            //         return ele.data('type') !== value;
+            //     })
+            //     for (let edge of target_edges) {
+            //         console.log(edge);
+            //         edge.addClass('filtered');
+            //         edge.style('display', 'none');
+            //     }
+                // for (let node of this.cy.nodes()) {
+                //     let flag = true;
+                //     console.log("node",node);
+                //     console.log(node.edges());
+                //     for (let edge of node.edges()) {
+                //         console.log("edge", edge);
+                //         if (!edge.hasClass('filtered')) {
+                //             console.log('here')
+                //             flag = false;
+                //             break;
+                //         }
+                //     }
+                //     if (flag) {
+                //         node.style('display', 'none');
+                //     }
+                // }
+            //}
+            this.filterShowEnabled = true;
+        },
+
+        defilter() {
+            for (let node of this.cy.nodes()) {
+                if (node.hasClass('filtered')) {
+                    node.removeStyle('display');
+                    node.removeClass('filtered');
+                }
+            }
+            this.filterShowEnabled = false;
         }
         /////////////////////////////////////////////////////////////////////////////////////
     }

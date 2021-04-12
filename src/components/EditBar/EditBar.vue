@@ -71,7 +71,7 @@
 <!--      <edit-bar-block style="height: 1000px"></edit-bar-block>-->
 
     <!--///////////////////////////////////此处为搜索相关代码段///////////////////////////////////////-->
-      <edit-bar-block block-name="节点搜索">
+      <edit-bar-block block-name="图谱搜索">
         <el-input
             class="el-input"
             clearable
@@ -102,15 +102,15 @@
     <!--/////////////////////////////////////////////////////////////////////////////////////////-->
 
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
-      <edit-bar-block block-name="图谱过滤">
-        <el-select v-model="filter_type" clearable placeholder="请选择类型">
-          <el-option
-              v-for="type in types"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value">
-          </el-option>
-        </el-select>
+      <edit-bar-block block-name="节点过滤">
+<!--        <el-select v-model="filter_type" clearable placeholder="请选择类型">-->
+<!--          <el-option-->
+<!--              v-for="type in types"-->
+<!--              :key="type.value"-->
+<!--              :label="type.label"-->
+<!--              :value="type.value">-->
+<!--          </el-option>-->
+<!--        </el-select>-->
         <el-select v-model="filter_specific_type" :disabled="filter_disabled" clearable placeholder="请选择类型">
           <el-option
               v-for="type in specific_types"
@@ -121,6 +121,7 @@
         </el-select>
         <div class="analyse-btn-box">
           <el-button @click="filter">过滤</el-button>
+          <el-button @click="defilter" v-show="filterShowEnabled">撤销</el-button>
         </div>
       </edit-bar-block>
     <!--////////////////////////////////////////////////////////////////////////////////////////-->
