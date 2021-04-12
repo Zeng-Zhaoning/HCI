@@ -191,11 +191,9 @@
                 // this.data = JSON.parse(JSON.stringify(data))
                 data.edges.forEach((val) => {
                     val.classes = 'autorotate';
-                    val.data.nameShowed = val.data.relation; //需要先分配nameShowed字段是因为defaultStyle里有使用label(nameShowed)
                     val.data.type = val.data.type || 'default';
                 })
                 data.nodes.forEach((val) => {
-                    val.data.nameShowed = val.data.name;  //需要先分配nameShowed字段是因为defaultStyle里有使用label(nameShowed)
                     val.data.type = val.data.type || 'default';
                 })
                 let that = this;
@@ -238,17 +236,16 @@
             rendNode(target, that) {
                 let data = target.data();
                 const text = that.fontShow(data.name);
-                target.data({nameShowed: text});
                 let style = that.fontStyle(text.length);
                 style.shape = this.shapeType[data.type];
+                style.label = text;
                 target.style(style);
             },
 
             rendEdge(target,that){
                 let data = target.data();
                 const text = that.fontShow(data.relation);
-                target.data({nameShowed: text});
-                target.style({'line-style':this.lineStyleType[data.type]});
+                target.style({label:text,'line-style':this.lineStyleType[data.type]});
                 // const style = that.fontStyle(text.length);
                 // target.style(style);
                 // target.addClass('autorotate');
@@ -300,8 +297,7 @@
 
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
-                    target.data({nameShowed: target.data("name")});
-                    target.style({fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大nameShowed的36更大即可
+                    target.style({label:target.data("name"),fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大label的36更大即可
                     if(!target.scratch('tip')){
                         target.scratch('tip',that.makeTippy(target,target.data("type")));
                     }
@@ -320,9 +316,8 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        target.data({nameShowed: target.data("relation")});
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
-                        target.style({fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        target.style({label:target.data("relation"),fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大label的36更大即可
                         if(!target.scratch('tip')){
                             target.scratch('tip',that.makeTippy(target,target.data("type")));
                         }
@@ -543,13 +538,10 @@
                                     newObj.data = {
                                         name:addForm.name,
                                         type:addForm.type,
-                                        properties:addForm.properties,
-                                        nameShowed: '未渲染'
+                                        properties:addForm.properties
                                     };
-                                    that.batch(cy,()=>{
-                                        let collection = cy.add(newObj);
-                                        that.rendNode(collection[0], that);
-                                    });
+                                    let collection = cy.add(newObj);
+                                    that.rendNode(collection[0], that);
                                     that.trigger_statistic_data_change();
                                 };
                             }
@@ -588,13 +580,10 @@
                                                 relation: addForm.name,
                                                 source: addForm.edgeCondition.source,
                                                 target: addForm.edgeCondition.target,
-                                                type: addForm.type,
-                                                nameShowed: '未渲染'
+                                                type: addForm.type
                                             };
-                                            that.batch(cy,()=>{
-                                                let collection = cy.add(newEdge);
-                                                that.rendEdge(collection[0], that);
-                                            });
+                                            let collection = cy.add(newEdge);
+                                            that.rendEdge(collection[0], that);
                                             that.trigger_statistic_data_change();
                                         };
                                     }

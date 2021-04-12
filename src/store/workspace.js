@@ -10,8 +10,8 @@ export const workspace = {
             {
                 selector: 'node',
                 css: {
-                    //目前仍然搞不懂label和content区别，姑且先用label
-                    'label': 'data(nameShowed)',
+                    //目前仍然搞不懂label和content区别，姑且先用label,并且是动态添加而不是在这里设定
+                    // 'label': 'data(nameShowed)',
                     // 'content': 'data(nameShowed)',//这里的content用来显示节点的内容
                     'color': 'white',
                     'font-weight': 400,
@@ -52,8 +52,8 @@ export const workspace = {
             {
                 selector: 'edge',
                 css: {
-                    //目前仍然搞不懂label和content区别，姑且先用label
-                    'label': 'data(nameShowed)',
+                    //目前仍然搞不懂label和content区别，姑且先用label，并且是动态添加而不是在这里设定
+                    // 'label': 'data(nameShowed)',
                     // 'content': 'data(nameShowed)',//这里的content用来显示边的内容
                     'color': '#eea39d',
                     //'background-color': "#65b3fc",
