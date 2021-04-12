@@ -103,22 +103,19 @@
 
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
       <edit-bar-block block-name="节点过滤">
-        <el-select v-model="filter_type" clearable placeholder="请选择类型">
-          <el-option
-              v-for="type in types"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value">
-          </el-option>
-        </el-select>
-        <el-select v-model="filter_specific_type" :disabled="filter_disabled" clearable placeholder="请选择类型">
-          <el-option
-              v-for="type in specific_types"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value">
-          </el-option>
-        </el-select>
+        <el-checkbox v-model="filter_node_checked">节点</el-checkbox>
+        <el-checkbox-group v-model="filter_node_checkList" :disabled="node_checkList_disabled">
+          <el-checkbox label="individual">个体</el-checkbox>
+          <el-checkbox label="organization">团体</el-checkbox>
+          <el-checkbox label="thing">事务</el-checkbox>
+          <el-checkbox label="default">未知</el-checkbox>
+        </el-checkbox-group>
+        <el-checkbox v-model="filter_edge_checked">关系</el-checkbox>
+        <el-checkbox-group v-model="filter_edge_checkList" :disabled="edge_checkList_disabled">
+          <el-checkbox label="connection">关联</el-checkbox>
+          <el-checkbox label="inheritance">继承</el-checkbox>
+          <el-checkbox label="default">未知</el-checkbox>
+        </el-checkbox-group>
         <div class="analyse-btn-box">
           <el-button @click="filter">过滤</el-button>
           <el-button @click="defilter" v-show="filterShowEnabled">撤销</el-button>

@@ -35,16 +35,15 @@ export default {
             searchLog: [],
 
 
-            filter_type: '',
-            filter_specific_type: '',
-            specific_types: null,
             filter_disabled: true,
-            filterShowEnabled: false
+            filterShowEnabled: false,
+
+            filter_node_checked: false,
+            filter_node_checkList: [],
+            filter_edge_checked: false,
+            filter_edge_checkList: [],
         }
     },
-    // mounted() {
-    //     this.specific_types = this.nodeType;
-    // },
     watch: {
         cy(newValue, oldValue){
             this.get_statistic_data();
@@ -95,7 +94,18 @@ export default {
                 this.setWorkspaceText(value);
             }
         },
+        node_checkList_disabled: {
+            get() {
+                return !this.filter_node_checked;
+            }
 
+        },
+        edge_checkList_disabled: {
+            get() {
+                return !this.filter_edge_checked;
+            }
+
+        }
     },
     methods:{
         ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult']),
@@ -553,17 +563,13 @@ export default {
         //////////////////////////////////////////////////////////////////////////////////////
 
         ///////////////////////////////////此处为过滤代码///////////////////////////////////////
-        /*
-        * 不知该如何取得node所连边，暂时注释通过关系过滤节点的相关方法
-        * 不过我觉得这样也还好，本来也没要求
-        * */
+
         filter() {
             console.log("execute filter")
-            console.log(this.filter_type)
-            console.log(this.filter_specific_type)
-            let value = this.filter_specific_type;
 
-            if (value === '') {
+            let flag = this.filter_node_checked || this.filter_edge_checked;
+            console.log(flag)
+            if (!flag) {
                 this.$message({
                     message: '请选择过滤类型',
                     type: 'error',
@@ -574,25 +580,25 @@ export default {
 
 
 
-            if (this.filter_type === '1') {
-                console.log(value);
+            if (this.filter_node_checked) {
+                let checkList = this.filter_node_checkList;
                 let target_nodes = this.cy.nodes().filter(function (ele) {
-                    console.log(ele.data('type') !== value);
-                    return ele.data('type') !== value;
+                    return !checkList.includes(ele.data('type'));
                 });
                 for (let node of target_nodes) {
-                    node.addClass('filteredNode');
+                    node.addClass('filtered');
                     node.style('display', 'none');
                     console.log(node);
                 }
             }
-            else {
+            if (this.filter_edge_checked) {
+                let checkList = this.filter_edge_checkList;
                 let target_edges = this.cy.edges().filter(function (ele) {
-                    return ele.data('type') !== value;
+                    return !checkList.includes(ele.data('type'));
                 })
                 for (let edge of target_edges) {
                     console.log(edge);
-                    edge.addClass('filteredEdge');
+                    edge.addClass('filtered');
                     edge.style('display', 'none');
                 }
                 for (let node of this.cy.nodes()) {
@@ -601,14 +607,14 @@ export default {
                     console.log(node.connectedEdges());
                     for (let edge of node.connectedEdges()) {
                         console.log("edge", edge);
-                        if (!edge.hasClass('filteredEdge')) {
+                        if (!edge.hasClass('filtered')) {
                             console.log('here')
                             flag = false;
                             break;
                         }
                     }
                     if (flag) {
-                        node.addClass('filteredEdge');
+                        node.addClass('filtered');
                         node.style('display', 'none');
                     }
                 }
@@ -617,26 +623,20 @@ export default {
         },
 
         defilter() {
-            if (this.filter_type === '1') {
-                for (let node of this.cy.nodes()) {
-                    if (node.hasClass('filteredNode')) {
-                        node.removeStyle('display');
-                        node.removeClass('filteredNode');
-                    }
-                }
+            for (let target of this.cy.elements()) {
+                target.removeStyle('display');
+                target.removeClass('filtered');
             }
-            else {
-                for (let target of this.cy.elements()) {
-                    if (target.hasClass('filteredEdge')) {
-                        target.removeClass('filteredEdge');
-                        target.removeStyle('display');
-                    }
-                }
-            }
-
             this.filterShowEnabled = false;
-            this.filter_specific_type = '';
-            this.filter_type = '';
+
+            this.clearFilterParams();
+        },
+
+        clearFilterParams() {
+            this.filter_node_checkList = [];
+            this.filter_edge_checkList = [];
+            this.filter_node_checked = false;
+            this.filter_edge_checked = false;
         }
         /////////////////////////////////////////////////////////////////////////////////////
     }
