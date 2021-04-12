@@ -68,53 +68,63 @@
         </el-table>
       </edit-bar-block>
 
-      <edit-bar-block style="height: 1000px"></edit-bar-block>
+<!--      <edit-bar-block style="height: 1000px"></edit-bar-block>-->
 
     <!--///////////////////////////////////此处为搜索相关代码段///////////////////////////////////////-->
-    <div class="edit-block">
-      <div class="title">
-        图谱搜索
-      </div>
-      <el-input
-          class="el-input"
-          clearable
-          :rows="1"
-          placeholder="请输入搜索内容"
-          v-model="search_text">
-      </el-input>
-      <el-select v-model="search_type" clearable placeholder="请选择类型">
-        <el-option
-            v-for="type in types"
-            :key="type.value"
-            :label="type.label"
-            :value="type.value">
-        </el-option>
-      </el-select>
-      <el-input
-          class="el-input"
-          clearable
-          :rows="1"
-          placeholder="请输入搜索内容"
-          v-model="select_value"
-          :disabled="select_disabled">
-      </el-input>
-      <div class="analyse-btn-box">
-        <el-button @click="search">搜索</el-button>
-        <el-button v-show="showEnabled" @click="desearch">取消</el-button>
-      </div>
-    </div>
+      <edit-bar-block block-name="节点搜索">
+        <el-input
+            class="el-input"
+            clearable
+            :rows="1"
+            placeholder="请输入搜索内容"
+            v-model="search_text">
+        </el-input>
+        <el-select v-model="search_type" clearable placeholder="请选择类型">
+          <el-option
+              v-for="type in types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value">
+          </el-option>
+        </el-select>
+        <el-input
+            class="el-input"
+            clearable
+            :rows="1"
+            placeholder="请输入搜索属性"
+            v-model="select_value">
+        </el-input>
+        <div class="analyse-btn-box">
+          <el-button @click="search">搜索</el-button>
+          <el-button v-show="showEnabled" @click="desearch">取消</el-button>
+        </div>
+      </edit-bar-block>
     <!--/////////////////////////////////////////////////////////////////////////////////////////-->
 
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
-    <div class="edit-block graph-area">
-      <div class="title">
-        图谱过滤
-      </div>
-      <el-tree :data="tree"
-               :props="defaultProps">
-      </el-tree>
-    </div>
+      <edit-bar-block block-name="图谱过滤">
+        <el-select v-model="filter_type" clearable placeholder="请选择类型">
+          <el-option
+              v-for="type in types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value">
+          </el-option>
+        </el-select>
+        <el-select v-model="filter_specific_type" :disabled="filter_disabled" clearable placeholder="请选择类型">
+          <el-option
+              v-for="type in specific_types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value">
+          </el-option>
+        </el-select>
+        <div class="analyse-btn-box">
+          <el-button @click="filter">过滤</el-button>
+        </div>
+      </edit-bar-block>
     <!--////////////////////////////////////////////////////////////////////////////////////////-->
+  </div>
   </div>
 </template>
 

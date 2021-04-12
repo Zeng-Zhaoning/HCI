@@ -12,7 +12,33 @@ export default {
             showExportOps: false,
             opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
             entities_data: [],
-            relations_data: []
+            relations_data: [],
+
+            search_text: '',
+            search_type: '',
+            select_value: '',
+            showEnabled: false,
+            types: [
+                {
+                    label: '节点',
+                    value: '1'
+                },
+                {
+                    label: '关系',
+                    value: '2'
+                }
+            ],
+            currentSearch: {
+                params: {},
+                result: []
+            },
+            searchLog: [],
+
+
+            filter_type: '',
+            filter_specific_type: '',
+            specific_types: null,
+            filter_disabled: true
         }
     },
     watch: {
@@ -22,25 +48,25 @@ export default {
         statistic_data_change(newValue, oldValue){
             this.get_statistic_data();
         },
-        search_type(newVal, oldVal) {
+        filter_type(newVal, oldVal) {
             console.log(newVal);
             if (newVal === '') {
-                this.select_disabled = true;
+                this.filter_disabled = true;
             }
             else {
-                this.select_disabled = false;
+                this.filter_disabled = false;
                 if (newVal === '1') {
-                    this.selects = this.default_node_types;
-                    console.log(this.default_node_types)
+                    this.specific_types = this.nodeType;
+                    console.log(this.nodeType)
                 }
                 else  if (newVal === '2') {
-                    this.selects = this.default_edge_types;
-                    console.log(this.default_edge_types)
+                    this.specific_types = this.edgeType;
+                    console.log(this.edgeType)
                 }
                 else {
                     console.log('类型错误！！！')
                 }
-                console.log(this.selects);
+                console.log(this.specific_types);
             }
         },
     },
@@ -53,6 +79,8 @@ export default {
             workspace_text: state => state.workspace.workspace_text,
             cy: state => state.workspace.cy,
             statistic_data_change: state => state.workspace.statistic_data_change,
+            nodeType: state => state.workspace.nodeType,
+            edgeType: state => state.workspace.edgeType
         }),
         ...mapGetters(['current_project']),
         text: {
@@ -312,7 +340,7 @@ export default {
             }
             this.entities_data = [EData];
             this.relations_data = [RData];
-        }
+        },
 
         ///////////////////////////////////此处为搜索相关代码段///////////////////////////////////
         getSearchType(search_type) {
@@ -345,8 +373,26 @@ export default {
             this.select_value = '';
         },
 
+        checkParams() {
+            if (this.search_type === '') {
+                this.$message({
+                    message: '请选择搜索类型',
+                    type: 'error',
+                    duration: 1500
+                });
+                return false;
+            }
+
+            return true;
+        },
+
         //根据具体搜索条件还需进行修改
         search() {
+            let flag = this.checkParams();
+
+            if (!flag) {
+                return;
+            }
             //保存搜索参数
             this.setSearchParams();
 
@@ -360,11 +406,11 @@ export default {
                 console.log(val);
                 name = this.getName(params.search_type, val);
                 console.log(name);
-                let flagName = this.fuzzyMatch(name, params.search_text);
-
+                let flagName = params.search_text === '' ? true : this.fuzzyMatch(name, params.search_text);
+                console.log('flagName', flagName)
                 let flagProperty;
-                flagProperty = val.data().property.includes(params.select_value);
-
+                flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
+                console.log('flagProperty', flagProperty)
                 if (flagName && flagProperty) {
                     count++;
                     this.currentSearch.result.push(val.data());
@@ -501,5 +547,11 @@ export default {
             target.style('color', '#eea39d');
         },
         //////////////////////////////////////////////////////////////////////////////////////
+
+        ///////////////////////////////////此处为过滤代码///////////////////////////////////////
+        filter() {
+
+        }
+        /////////////////////////////////////////////////////////////////////////////////////
     }
 }
