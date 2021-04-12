@@ -40,8 +40,6 @@
 </template>
 
 <script>
-    import TagEditor from "./PropEditTool/TagEditor";
-
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -59,13 +57,9 @@
 
     export default {
         name: 'CytoscapeKG',
-        components:{
-          TagEditor
-        },
         data() {
             let nameCheck = (rule,value,callback) => {
                 console.log('nameCheck');
-                console.log(this.form);
                 let validName = value.trim();
                 if(this.form.nameNow&&this.form.nameNow===validName){
                     return callback();
@@ -197,11 +191,11 @@
                 // this.data = JSON.parse(JSON.stringify(data))
                 data.edges.forEach((val) => {
                     val.classes = 'autorotate';
-                    val.data.nameShowed = val.data.relation;
+                    val.data.nameShowed = val.data.relation; //需要先分配nameShowed字段是因为defaultStyle里有使用label(nameShowed)
                     val.data.type = val.data.type || 'default';
                 })
                 data.nodes.forEach((val) => {
-                    val.data.nameShowed = val.data.name;
+                    val.data.nameShowed = val.data.name;  //需要先分配nameShowed字段是因为defaultStyle里有使用label(nameShowed)
                     val.data.type = val.data.type || 'default';
                 })
                 let that = this;
@@ -293,12 +287,14 @@
                 });
                 this.setCy(cy);
 
-                cy.nodes().forEach(val => {
-                    that.rendNode(val, that);
-                });
+                this.batch(cy,()=>{
+                    cy.nodes().forEach(val => {
+                        that.rendNode(val, that);
+                    });
 
-                cy.edges().forEach(val => {
-                    that.rendEdge(val, that);
+                    cy.edges().forEach(val => {
+                        that.rendEdge(val, that);
+                    });
                 });
 
 
@@ -550,8 +546,10 @@
                                         properties:addForm.properties,
                                         nameShowed: '未渲染'
                                     };
-                                    let collection = cy.add(newObj);
-                                    that.rendNode(collection[0], that);
+                                    that.batch(cy,()=>{
+                                        let collection = cy.add(newObj);
+                                        that.rendNode(collection[0], that);
+                                    });
                                     that.trigger_statistic_data_change();
                                 };
                             }
@@ -593,8 +591,10 @@
                                                 type: addForm.type,
                                                 nameShowed: '未渲染'
                                             };
-                                            let collection = cy.add(newEdge);
-                                            that.rendEdge(collection[0], that);
+                                            that.batch(cy,()=>{
+                                                let collection = cy.add(newEdge);
+                                                that.rendEdge(collection[0], that);
+                                            });
                                             that.trigger_statistic_data_change();
                                         };
                                     }
@@ -763,6 +763,20 @@
 
                 return tip;
             },
+
+            // **Allow for manipulation of elements without triggering multiple style calculations or multiple redraws.**
+            batch(cy,func){
+                cy.startBatch();
+                func();
+                cy.endBatch();
+            },
+            // A batch should correspond to a single visual operation. Usually a batch should contain calls only to the following functions:
+            // Modifying state: eles.data(), eles.scratch(), eles.addClass(), eles.removeClass(), etc.
+            // Building collections: eles.union(), eles.difference(), eles.intersection(), etc.
+            // Comparison: eles.same(), eles.some(), etc.
+            // Iteration: eles.forEach(), eles.empty(), etc.
+            // Traversal: node.outgoers(), eles.bfs(), etc.
+            // Algorithms: eles.dijkstra(), eles.degreeCentrality(), etc.
 
             getGraphJsonObject() {
                 let eles = JSON.parse(JSON.stringify(this.cy.json().elements));

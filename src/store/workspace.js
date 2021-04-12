@@ -108,7 +108,7 @@ export const workspace = {
         "individual": "ellipse",//个体
         "organization": "barrel",//团体
         "thing": "round-diamond",//事物
-        "default": "round-rectangle"//未知
+        "default": "pentagon"//未知
         },
         lineStyleType:{
             "connection": "solid",//关联
