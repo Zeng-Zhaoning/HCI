@@ -1,6 +1,95 @@
 <template>
     <div class='knowledge-graph-cy'>
-        <div id="graph"></div>
+        <div id="graph">
+<!--            <el-button type="text" @click="addFormVisible = true">打开嵌套表单的 Dialog</el-button>-->
+
+            <el-dialog title="添加元素" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
+                <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth" class="demo-ruleForm"><!-- class="demo-ruleForm"意义何在？-->
+                    <el-form-item label="名称" prop="name" required>
+                        <el-input v-model="form.name" autocomplete="off" style="width:90%"></el-input>
+                    </el-form-item>
+                    <el-form-item label="类型" prop="type">
+                        <el-select v-model="form.type" placeholder="请选择类型" style="width:90%">
+                            <el-option v-for="item in givenType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="属性" prop="properties" v-if="node0Edge1===0">
+                        <el-select
+                                v-model="form.properties"
+                                style="width:90%"
+                                multiple
+                                filterable
+                                allow-create
+                                default-first-option
+                                no-data-text="输入已存在的属性会取消勾选哦"
+                                placeholder="在这里可以输入属性哦">
+                        </el-select>
+
+<!--                        <el-template>-->
+<!--                        <el-tag :key="tag"-->
+<!--                                v-for="tag in form.properties"-->
+<!--                                closable-->
+<!--                                style="margin-right: 1%;max-width:90%;"-->
+<!--                                @close="form.properties.splice(form.properties.indexOf(tag), 1)">-->
+<!--                            <el-span style="display:inline-flex;max-width:90%;overflow:hidden;text-overflow:ellipsis;">-->
+<!--                                {{tag}}-->
+<!--                            </el-span>-->
+<!--                        </el-tag>-->
+<!--                        <el-input-->
+<!--                                v-if="tagInputVisible"-->
+<!--                                v-model="tagInputValue"-->
+<!--                                ref="saveTagInput"-->
+<!--                                size="small"-->
+<!--                                style="width: 10%;"-->
+<!--                                @keyup.enter.native="handleTagInputConfirm"-->
+<!--                                @blur="handleTagInputConfirm"-->
+<!--                        >-->
+<!--                        </el-input>-->
+<!--                        <el-button v-else size="small" @click="showTagInput">新增＋</el-button>-->
+<!--                        </el-template>-->
+                    </el-form-item>
+
+<!--                    <el-form-item label="活动区域">-->
+<!--                        <el-select v-model="sizeForm.region" placeholder="请选择活动区域">-->
+<!--                            <el-option label="区域一" value="shanghai"></el-option>-->
+<!--                            <el-option label="区域二" value="beijing"></el-option>-->
+<!--                        </el-select>-->
+<!--                    </el-form-item>-->
+<!--                    <el-form-item label="活动时间">-->
+<!--                        <el-col :span="11">-->
+<!--                            <el-date-picker type="date" placeholder="选择日期" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>-->
+<!--                        </el-col>-->
+<!--                        <el-col class="line" :span="2">-</el-col>-->
+<!--                        <el-col :span="11">-->
+<!--                            <el-time-picker placeholder="选择时间" v-model="sizeForm.date2" style="width: 100%;"></el-time-picker>-->
+<!--                        </el-col>-->
+<!--                    </el-form-item>-->
+
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="addCancel">取 消</el-button>
+                        <el-button type="primary" @click="addConfirm">确 定</el-button>
+                    </span>
+                </template>
+            </el-dialog>
+
+            <el-dialog title="类型选择" v-model="typeFormVisible" :before-close="handleClose" :append-to-body="true">
+                <el-form :model="form">
+                    <el-form-item label="可选类型" :label-width="formLabelWidth">
+                        <el-select v-model="form.type" placeholder="请选择类型">
+                            <el-option v-for="item in givenType" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="typeFormVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="typeFormVisible = false">确 定</el-button>
+                    </span>
+                </template>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -11,16 +100,102 @@
     import { mapState,mapMutations,mapGetters } from 'vuex';
 
     import contextMenus from 'cytoscape-context-menus';
-
     cytoscape.use(contextMenus);
+
+    import popper from 'cytoscape-popper';
+    cytoscape.use( popper );
+    import tippy,{sticky} from 'tippy.js';
+    import 'tippy.js/dist/tippy.css';
 
     window.jQuery = window.$ = $
 
     export default {
         name: 'CytoscapeKG',
+        data() {
+            let nameCheck = (rule,value,callback) => {
+                console.log('nameCheck');
+                let nameValid = /\S/;
+                if(!nameValid.test(value)){//可添加正则表达式等逻辑
+                    return callback(new Error('名称不能为空哟'));
+                }
+                let validName = value.trim();
+                if(this.node0Edge1===0){
+                    if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
+                        callback();
+                    }else {
+                        callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
+                    }
+                }else{
+                    let {source,target} = this.form.edgeCondition;
+                    let dupEdges = this.cy.edges().filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
+                    if(dupEdges.length===0||this.isUnique(dupEdges,val=>val.data("relation"),validName)){
+                        callback();
+                    }else{
+                        callback(new Error('该关系已存在哦，换一个名字吧，亲~'));
+                    }
+                }
+
+            };
+            let propLenCheck = (rule,value,callback) => {
+                console.log('propLenCheck');
+                let len = 0;
+                const limit = 255;
+                let invalid = false;
+                let errorReg = /\s/;
+                for(let i = 0;i < value.length;i++){
+                    if(errorReg.test(value[i])){
+                        invalid = true;
+                        break;
+                    }
+                    len += value[i]+1;
+                }
+                len-=1;
+                if(invalid){
+                    callback(new Error("属性中不能含有空哟~"));
+                }else if(len>limit){
+                    callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
+                }else{
+                    console.log("没事")
+                    callback();
+                }
+            };
+            return {
+                node0Edge1: 0,
+                addFormVisible : false,
+                typeFormVisible: false,
+                form: {
+                    name: '',
+                    type: '',
+                    properties: [],
+                    edgeCondition:{source:'',target:''},
+                    formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
+                },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
+                givenType: [],
+                formLabelWidth: '120px',
+                tagInputVisible: false,
+                tagInputValue: '',
+                rules:{
+                    name:[
+                        {validator:nameCheck, trigger:'blur'}
+                    ],
+                    type:[//由于设置了初始值，这里似乎没被用到
+                        {required:true,message:'请选择类型',trigger:'change'}
+                    ],
+                    properties:[
+                        {validator:propLenCheck,trigger:'change'}
+                    ]
+                }
+                // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
+                // https://github.com/yiminghe/async-validator
+            };
+        },
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
+                shapeType: state => state.workspace.shapeType,
+                lineStyleType: state => state.workspace.lineStyleType,
+                nodeType: state => state.workspace.nodeType,
+                edgeType: state => state.workspace.edgeType,
                 cy: state => state.workspace.cy,
                 json_src_path: state => state.workspace.json_src_path,
             }),
@@ -38,14 +213,18 @@
                 this.dataHandle(data);
             }
         },
+        //方便调试而添加，最后删掉
+        created() {
+            this.getData("/static_ref1/data/data.json");
+        },
         mounted () {
             //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
-            document.oncontextmenu = () => {
-                event.returnValue = false;
-            }
+            // document.oncontextmenu = () => {
+            //     event.returnValue = false;
+            // }
         },
         methods: {
-            ...mapMutations(['setCy']),
+            ...mapMutations(['setCy','trigger_statistic_data_change']),
 
             //读数据，然后交给dataHandle
             getData(url) {
@@ -65,9 +244,11 @@
                 data.edges.forEach((val) => {
                     val.classes = 'autorotate';
                     val.data.nameShowed = val.data.relation;
+                    val.data.type = val.data.type || 'default';
                 })
                 data.nodes.forEach((val) => {
                     val.data.nameShowed = val.data.name;
+                    val.data.type = val.data.type || 'default';
                 })
                 let that = this;
                 const loading = this.$loading({
@@ -107,17 +288,19 @@
 
             //帮助node合适地展示text
             rendNode(target, that) {
-                let name = target.data().name;
-                const text = that.fontShow(name);
+                let data = target.data();
+                const text = that.fontShow(data.name);
                 target.data({nameShowed: text});
-                const style = that.fontStyle(text.length);
+                let style = that.fontStyle(text.length);
+                style.shape = this.shapeType[data.type];
                 target.style(style);
             },
 
             rendEdge(target,that){
-                let name = target.data().relation;
-                const text = that.fontShow(name);
+                let data = target.data();
+                const text = that.fontShow(data.relation);
                 target.data({nameShowed: text});
+                target.style({'line-style':this.lineStyleType[data.type]});
                 // const style = that.fontStyle(text.length);
                 // target.style(style);
                 // target.addClass('autorotate');
@@ -128,7 +311,7 @@
                 let cy = cytoscape({
                   container: $('#graph'),
                   boxSelectionEnabled: false,
-                  autounselectify: true,
+                  autounselectify: false,
                   style: this.defaultStyle,
                   elements: data,
                   hideLabelsOnViewPort: false,
@@ -164,35 +347,46 @@
                     that.rendEdge(val, that);
                 });
 
-                // //为节点与边的数量计数，以便于分配id，暂时不用
-                // cy.data({nodeCount:cy.nodes().length,edgeCount:cy.edges().length});
-                // console.log("cy.data(): ",cy.data());
 
-                console.log("before: cy.autounselectify()", cy.autounselectify());
-                cy.autounselectify(false);
-                console.log("after: cy.autounselectify()", cy.autounselectify());
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
-                    let name = target.data().name;
-                    target.data({nameShowed: name});
-                    target.style({fontSize: 48});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                    target.data({nameShowed: target.data("name")});
+                    target.style({fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大nameShowed的36更大即可
+                    if(!target.scratch('tip')){
+                        target.scratch('tip',that.makeTippy(target,target.data("type")));
+                    }
+                    target.scratch('tip').show();
                 })
                     .on('mouseout', 'node', event => {
                         let target = event.target || event.cyTarget;
                         that.rendNode(target, that);
+                        if(target.scratch('tip')){
+                            target.scratch('tip').destroy();
+                            target.removeScratch('tip');
+                            // console.log(target.scratch());
+                        }
+                        target.style({'z-index':0});
                     })
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
-                        let name = target.data().relation;
-                        target.data({nameShowed: name});
+                        target.data({nameShowed: target.data("relation")});
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
-                        target.style({fontSize: 36, width: 6, color: '#bc5f6a'});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        target.style({fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大nameShowed的36更大即可
+                        if(!target.scratch('tip')){
+                            target.scratch('tip',that.makeTippy(target,target.data("type")));
+                        }
+                        target.scratch('tip').show();
                     })
                     .on('mouseout', 'edge', event => {
                         let target = event.target || event.cyTarget;
                         that.rendEdge(target,that);
-                        target.style({fontSize: 24, width: 3, color: '#e3a6a1'});//与上文edge的初始配置保持一致
+                        target.style({fontSize: 24, width: 3, color: '#e3a6a1','z-index':0});//与上文edge的初始配置保持一致
+                        if(target.scratch('tip')){
+                            target.scratch('tip').destroy();
+                            target.removeScratch('tip');
+                            // console.log(target.scratch());
+                        }
                     })
 
                 // 绑定右键单击的事件
@@ -245,65 +439,88 @@
                     menuItems: [
                         {
                             id: 'edit',
-                            content: '命名',
+                            content: '编辑',
                             selector: 'node, edge',
                             hasTrailingDivider: false,
-                            onClickFunction: function (event) {
-                                let target = event.target || event.cyTarget;
-                                const group = target.group()
-                                const data = target.data()
-                                const name = group === 'nodes' ? 'name' : 'relation'
-                                const nameShowed = data[name]
-                                let value = "";
-                                let propFunc = (val,key)=>val.data(key);
-                                let getNameFunc = ()=>prompt("请输入需要修改的名称", nameShowed);
+                            submenu: [
+                                {
+                                    id: 'rename',
+                                    content: '重命名',
+                                    onClickFunction: function (event) {
+                                        let target = event.target || event.cyTarget;
+                                        const group = target.group()
+                                        const data = target.data()
+                                        const name = group === 'nodes' ? 'name' : 'relation'
+                                        const nameShowed = data[name]
+                                        let value = "";
+                                        let propFunc = (val,key)=>val.data(key);
+                                        let getNameFunc = ()=>prompt("请输入需要修改的名称", nameShowed);
 
-                                //以下取名函数必须保证返回值不是''
-                                if(group==='nodes'){
-                                    value = that.getUniqueNode(cy.nodes(),propFunc,getNameFunc);
-                                }else{
-                                    value = that.getUniqueEdge(data,cy.edges(),propFunc,getNameFunc);
-                                }
-                                if (value !== null) {//取消返回null，空值返回''，其中空值必须以在函数中处理
-                                    console.log("before edit: target", target);
-                                    let obj = {};
-                                    obj[name] = value;
-                                    target.data(obj);
-                                    //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
-                                    let conflict = false;
-                                    if (group==='nodes') {
-                                        that.rendNode(target, that);
-                                        for(let i=0;i<removed.length;i++){
-                                            let val = removed[i];
-                                            if(val.group()==='nodes'&&val.data()[name]===value){
-                                                conflict = true;
-                                                break;
-                                            }
+                                        //以下取名函数必须保证返回值不是''
+                                        if(group==='nodes'){
+                                            value = that.getUniqueNode(cy.nodes(),propFunc,getNameFunc);
+                                        }else{
+                                            value = that.getUniqueEdge(data,cy.edges(),propFunc,getNameFunc);
                                         }
-                                    }else{
-                                        that.rendEdge(target,that);
-                                        for(let i=0;i<removed.length;i++){
-                                            let val = removed[i];
-                                            let valData = val.data();
-                                            if(val.group()==='edges'
-                                                &&valData.source===data.source
-                                                &&valData.target===data.target
-                                                &&valData[name]===value){
-                                                conflict = true;
-                                                break;
+                                        if (value !== null) {//取消返回null，空值返回''，其中空值必须以在函数中处理
+                                            console.log("before edit: target", target);
+                                            let obj = {};
+                                            obj[name] = value;
+                                            target.data(obj);
+                                            //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
+                                            let conflict = false;
+                                            if (group==='nodes') {
+                                                that.rendNode(target, that);
+                                                for(let i=0;i<removed.length;i++){
+                                                    let val = removed[i];
+                                                    if(val.group()==='nodes'&&val.data()[name]===value){
+                                                        conflict = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }else{
+                                                that.rendEdge(target,that);
+                                                for(let i=0;i<removed.length;i++){
+                                                    let val = removed[i];
+                                                    let valData = val.data();
+                                                    if(val.group()==='edges'
+                                                        &&valData.source===data.source
+                                                        &&valData.target===data.target
+                                                        &&valData[name]===value){
+                                                        conflict = true;
+                                                        break;
+                                                    }
+                                                }
                                             }
+                                            if(conflict){
+                                                console.log("conflict in removed, delete it all");
+                                                contextMenu.hideMenuItem('undo-last-remove');
+                                                removed = [];
+                                            }
+                                            console.log("after edit: target", target);
+                                            // updateData(group, data, value, that)
+                                            // that.submit()
                                         }
                                     }
-                                    if(conflict){
-                                        console.log("conflict in removed, delete it all");
-                                        contextMenu.hideMenuItem('undo-last-remove');
-                                        removed = [];
-                                    }
-                                    console.log("after edit: target", target);
-                                    // updateData(group, data, value, that)
-                                    // that.submit()
+                                },
+                                {
+                                    id: 'change-type',
+                                    content: '改变类型',
+                                    onClickFunction: function (event) {
+                                        let target = event.target || event.cyTarget;
+                                        const group = target.group();
+                                        const data = target.data();
+                                        const name = group === 'nodes' ? 'name' : 'relation';
+                                    },
+                                },
+                                {
+                                    id: 'edit-properties',
+                                    content: '编辑属性',
+                                    onClickFunction: function (event) {
+                                        let target = event.target || event.cyTarget;
+                                    },
                                 }
-                            }
+                            ]
                         },
                         {
                         id: 'color',
@@ -368,6 +585,8 @@
                                     console.log("after undoing remove: nodeCount", cy.nodes().length);
                                     console.log("after undoing remove: edgeCount", cy.edges().length);
                                 }
+
+                                that.trigger_statistic_data_change();
                                 contextMenu.hideMenuItem('undo-last-remove');
                             }
                         },
@@ -378,29 +597,28 @@
                             coreAsWell: true,
                             hasTrailingDivider: true,
                             onClickFunction: function (event) {
-                                let timestamp = new Date().getTime();
-
-                                let data = {
-                                    name: '未定义'+timestamp,
-                                    // type: 'undefined',
-                                    nameShowed: '未定义'+timestamp
+                                that.node0Edge1 = 0;
+                                that.givenType = that.nodeType;
+                                that.addFormVisible = true;
+                                that.form.formCallback = addForm => {
+                                    let pos = event.position || event.cyPosition;
+                                    let newObj = {
+                                        group: 'nodes',
+                                        data: {
+                                            name:addForm.name,
+                                            type:addForm.type,
+                                            properties:addForm.properties,
+                                            nameShowed: '未渲染'
+                                        },
+                                        position: {
+                                            x: pos.x,
+                                            y: pos.y
+                                        }
+                                    };
+                                    let collection = cy.add(newObj);
+                                    that.rendNode(collection[0], that);
+                                    that.trigger_statistic_data_change();
                                 };
-
-                                let pos = event.position || event.cyPosition;
-                                let newObj = {
-                                    group: 'nodes',
-                                    data: data,
-                                    position: {
-                                        x: pos.x,
-                                        y: pos.y
-                                    }
-                                };
-                                console.log("before adding node: nodeCount", cy.nodes().length);
-                                console.log("before adding node: lastItem", cy.nodes()[cy.nodes().length - 1]);
-                                cy.add(newObj);
-                                console.log("after adding node: nodeCount", cy.nodes().length);
-                                console.log("before adding node: lastItem", cy.nodes()[cy.nodes().length - 1]);
-                                that.rendNode(cy.nodes()[cy.nodes().length - 1], that);
                             }
                         },
                         {
@@ -418,30 +636,32 @@
                                     //'text-outline-color': "#847072",
                                     //'text-outline-width': 4,
                                 });
-                                let sid = starget.data().id;
+                                let sid = starget.data("id");
                                 cy.once('tap', event => {
                                     console.log("start adding an edge");
                                     let ttarget = event.target || event.cyTarget;
                                     if (ttarget !== cy && ttarget.group() === 'nodes') {
-                                        console.log("before adding edge: edgeCount", cy.edges().length);
-                                        console.log("before adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
-                                        let tid = ttarget.data().id;
-                                        let timestamp = new Date().getTime();
-                                        let newEdge = {
-                                            group: 'edges',
-                                            data: {
-                                                relation: '未定义'+timestamp,
-                                                source: sid,
-                                                // type: 'undefined',
-                                                target: tid,
-                                                nameShowed: '未定义'+timestamp
-                                            },
-                                            classes: 'autorotate'
+                                        let tid = ttarget.data("id");
+                                        that.node0Edge1 = 1;
+                                        that.givenType = that.edgeType;
+                                        that.form.edgeCondition = {source:sid,target:tid};
+                                        that.addFormVisible = true;
+                                        that.form.formCallback = addForm => {
+                                            let newEdge = {
+                                                group: 'edges',
+                                                data: {
+                                                    relation: addForm.name,
+                                                    source: addForm.edgeCondition.source,
+                                                    target: addForm.edgeCondition.target,
+                                                    type: addForm.type,
+                                                    nameShowed: '未渲染'
+                                                },
+                                                classes: 'autorotate'
+                                            };
+                                            let collection = cy.add(newEdge);
+                                            that.rendEdge(collection[0], that);
+                                            that.trigger_statistic_data_change();
                                         };
-                                        cy.add(newEdge);
-                                        console.log("after adding edge: edgeCount", cy.edges().length);
-                                        console.log("after adding edge: lastEdge:", cy.edges()[cy.edges().length - 1]);
-                                        that.rendEdge(cy.edges()[cy.edges().length - 1], that);
                                     }
                                     starget.style({'background-color': color_before});
                                     console.log("finish adding an edge");
@@ -462,6 +682,7 @@
                                 console.log("after remove: nodeCount", cy.nodes().length);
                                 console.log("after remove: edgeCount", cy.edges().length);
 
+                                that.trigger_statistic_data_change();
                                 contextMenu.showMenuItem('undo-last-remove');
                             }
                         },
@@ -581,6 +802,93 @@
                 }
             },
 
+            //dialog组件
+            handleClose(done) {
+                let that = this;
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                        that.$refs['ruleForm'].resetFields();
+                    })
+                    .catch(_ => {});
+            },
+
+            //tag组件 op
+            showTagInput() {
+                this.tagInputVisible = true;
+                this.$nextTick(_ => {
+                    this.$refs.saveTagInput.$refs.input.focus();
+                });
+            },
+            handleTagInputConfirm() {
+                let tagInputValue = this.tagInputValue;
+                if (tagInputValue) {
+                    this.form.properties.push(tagInputValue);
+                }
+                this.tagInputVisible = false;
+                this.tagInputValue = '';
+            },
+            //ed
+
+            //addForm组件
+            addCancel(){
+                this.addFormVisible = false;
+                this.$refs['ruleForm'].resetFields();
+            },
+            addConfirm(){
+                this.$refs['ruleForm'].validate((valid) => {
+                    if (valid) {
+                        this.addFormVisible = false;
+                        let addForm = JSON.parse(JSON.stringify(this.form));//深拷贝后传参，不破坏原来的值//可能没必要
+                        addForm.name = addForm.name.trim();//名称和校验时一样前后无空格
+                        this.form.formCallback(addForm);
+                        this.$refs['ruleForm'].resetFields();
+                    } else {
+                        alert('好像哪里有问题，添加失败了呢……');
+                    }
+                });
+            },
+
+            makeTippy(ele, text){//ele需传入cy的ele
+                var ref = ele.popperRef();
+
+                // Since tippy constructor requires DOM element/elements, create a placeholder
+                var dummyDomEle = document.createElement('div');
+
+                var tip = tippy( dummyDomEle, {
+                    getReferenceClientRect: ref.getBoundingClientRect,
+                    trigger: 'manual', // mandatory
+                    // dom element inside the tippy:
+                    content: function(){ // function can be better for performance
+                        var div = document.createElement('div');
+
+                        div.innerHTML = text;
+
+                        return div;
+                    },
+                    // your own preferences:
+                    arrow: true,
+                    placement: 'bottom',
+                    offset: [20, 30],
+                    hideOnClick: false,
+                    // enable it
+                    // sticky: true,
+                    // only check the "reference" rect for changes
+                    sticky: 'reference',
+                    // only check the "popper" rect for changes
+                    // sticky: 'popper',
+                    plugins: [sticky],
+                    zIndex: 10,//默认9999，修改小些避免遮住弹窗
+
+
+                    // if interactive:
+                    interactive: true,
+                    appendTo: document.body // or append dummyDomEle to document.body
+                } );
+
+                return tip;
+            },
+
             getGraphJsonObject() {
                 let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
                 console.log("eles_json", eles);
@@ -673,4 +981,5 @@
         top: 50%;
         transform: translateY(-50%);
     }
+
 </style>

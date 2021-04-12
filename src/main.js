@@ -10,6 +10,7 @@ import locale from 'element-plus/lib/locale/lang/zh-cn'
 
 import './assets/css/all.css'
 
+
 createApp(App)
     .use(store)
     .use(router)

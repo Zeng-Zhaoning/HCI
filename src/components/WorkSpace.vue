@@ -9,12 +9,22 @@
 import EditBar from "./EditBar/EditBar.vue";
 import { mapState } from "vuex";
 import kgTemplate from "./CytoscapeKG"
+import axios from "axios";
 
 export default {
   name: "WorkSpace",
   components: {EditBar,kgTemplate},
   computed: {
     ...mapState(['current_pid']),
+  },
+  watch: {
+    json_src_path(now, old) {
+      axios.get(now)
+          .then(res => {
+            this.dataHandle(res.data)
+          })
+          .catch(err => {})
+    },
   }
 }
 </script>

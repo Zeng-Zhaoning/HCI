@@ -1,96 +1,27 @@
 import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
 import { setGraphAPI } from "../../api/basicAPI";
-
+import OpItem from './OpItem';
+import EditBarBlock from "./EditBarBlock";
 
 export default {
     name: "EditBar",
+    components: {OpItem,EditBarBlock},
     data(){
         return{
             showEditBar: true,
             showExportOps: false,
-            tree: [{
-                label: '一级 1',
-                children: [{
-                    label: '二级 1-1',
-                    children: [{
-                        label: '三级 1-1-1'
-                    }]
-                }]
-            }],
-            defaultProps: {
-                children: 'children',
-                label: 'label'
-            },
             opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
-
-            ////////////////////////此处为搜索相关代码段////////////////////
-            showEnabled: false,
-            search_type: '',
-            search_text: '',
-            selects: null,
-            select_value: '',
-            types: [
-                {
-                    value: '1',
-                    label: '节点'
-                },
-                {
-                    value: '2',
-                    label: '关系'
-                }
-            ],
-            select_disabled: true,
-            default_node_types: [
-                {
-                    value: '1',
-                    label: 'individual'
-                },
-                {
-                    value: '2',
-                    label: 'organization'
-                },
-                {
-                    value: '3',
-                    label: 'thing'
-                },
-                {
-                    value: '4',
-                    label: 'default'
-                }
-            ],
-            default_edge_types: [
-                {
-                    value: '1',
-                    label: 'connection'
-                },
-                {
-                    value: '2',
-                    label: 'inheritance'
-                },
-                {
-                    value: '3',
-                    label: 'default'
-                }
-            ],
-
-            //搜索历史
-            searchLog: [],
-
-            //当前搜索
-            currentSearch: {
-                params: {},
-                result: []
-            },
-
-            properties: {
-                node: [],
-                edge: []
-            }
-            ////////////////////////////////////////////////////////////
+            entities_data: [],
+            relations_data: []
         }
     },
-    ////////////////////////此处为搜索相关代码段////////////////////
     watch: {
+        cy(newValue, oldValue){
+            this.get_statistic_data();
+        },
+        statistic_data_change(newValue, oldValue){
+            this.get_statistic_data();
+        },
         search_type(newVal, oldVal) {
             console.log(newVal);
             if (newVal === '') {
@@ -113,14 +44,15 @@ export default {
             }
         },
     },
+    ////////////////////////此处为搜索相关代码段////////////////////
+
     ////////////////////////////////////////////////////////////
     computed: {
         ...mapState({
             current_pid: state => state.current_pid,
             workspace_text: state => state.workspace.workspace_text,
             cy: state => state.workspace.cy,
-            ////////////////////////此处为搜索相关代码段////////////////////
-            ////////////////////////////////////////////////////////////
+            statistic_data_change: state => state.workspace.statistic_data_change,
         }),
         ...mapGetters(['current_project']),
         text: {
@@ -132,31 +64,13 @@ export default {
             }
         },
 
-        ////////////////////////此处为搜索相关代码段////////////////////
-        ////////////////////////////////////////////////////////////
     },
     methods:{
         ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult']),
         ...mapActions(['postText']),
 
-        analyse(){
-            let data = {
-                pid: this.current_pid,
-                text: this.workspace_text
-            }
-            this.postText(data).then(res => {
-                this.$message({
-                    message: '保存文本成功',
-                    type: 'success',
-                    duration: 1500
-                })
-            }).catch(err => {
-                this.$message({
-                    message: '保存文本失败',
-                    type: 'error',
-                    duration: 1500
-                });
-            })
+        changeEditBarState(){
+            this.showEditBar = !this.showEditBar;
         },
 
         open(){
@@ -208,10 +122,6 @@ export default {
             }).finally(() => {
                 loading.close();
             })
-        },
-
-        changeEditBarState(){
-            this.showEditBar = !this.showEditBar;
         },
 
         changeExportState(){
@@ -277,10 +187,7 @@ export default {
                 if (eles.edges !== undefined && eles.edges.length > 0) {
                     eles.edges.forEach(val => {
                         let newData = {
-                            id: val.data.id,
-                            source: val.data.source,
-                            target: val.data.target,
-                            relation: val.data.relation
+                            ...val.data
                         };
                         obj.edges.push({data: newData});
                     });
@@ -288,8 +195,7 @@ export default {
                 if (eles.nodes !== undefined && eles.nodes.length > 0) {
                     eles.nodes.forEach(val => {
                         let newData = {
-                            id: val.data.id,
-                            name: val.data.name
+                            ...val.data
                         };
                         obj.nodes.push({data: newData});
                     });
@@ -352,6 +258,61 @@ export default {
                 (remove && remove.length) && (remove.restore()); // 恢复删除内容
             }
         },
+
+
+        /**
+         * 保存输入的文本并解析成图
+         */
+        saveAndAnalyse(){
+            let data = {
+                pid: this.current_pid,
+                text: this.workspace_text
+            }
+            this.postText(data).then(res => {
+                this.$message({
+                    message: '保存文本成功',
+                    type: 'success',
+                    duration: 1500
+                })
+            }).catch(err => {
+                this.$message({
+                    message: '保存文本失败',
+                    type: 'error',
+                    duration: 1500
+                });
+            })
+        },
+
+
+        /**
+         * 获取统计数据，即给 data 中的 entities_data 和 relaions_data 赋值
+         */
+        get_statistic_data(){
+            let data = this.getDataJsonObject();
+            let nodes = data.nodes,
+                edges = data.edges;
+            let EData = {
+                individual: 0,
+                organization: 0,
+                thing: 0,
+                default: 0,
+                total: nodes.length
+            };
+            for (let node of nodes){
+                EData[node.data.type] ++;
+            }
+            let RData = {
+                connection: 0,
+                inheritance: 0,
+                default: 0,
+                total: edges.length
+            }
+            for (let edge of edges){
+                RData[edge.data.type] ++;
+            }
+            this.entities_data = [EData];
+            this.relations_data = [RData];
+        }
 
         ///////////////////////////////////此处为搜索相关代码段///////////////////////////////////
         getSearchType(search_type) {
