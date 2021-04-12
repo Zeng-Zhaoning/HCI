@@ -35,16 +35,16 @@ export default {
             searchLog: [],
 
 
-            filter_type: '1',
+            filter_type: '',
             filter_specific_type: '',
             specific_types: null,
-            filter_disabled: false,
+            filter_disabled: true,
             filterShowEnabled: false
         }
     },
-    mounted() {
-        this.specific_types = this.nodeType;
-    },
+    // mounted() {
+    //     this.specific_types = this.nodeType;
+    // },
     watch: {
         cy(newValue, oldValue){
             this.get_statistic_data();
@@ -55,10 +55,10 @@ export default {
         filter_type(newVal, oldVal) {
             console.log(newVal);
             if (newVal === '') {
-                //this.filter_disabled = true;
+                this.filter_disabled = true;
             }
             else {
-                //this.filter_disabled = false;
+                this.filter_disabled = false;
                 if (newVal === '1') {
                     this.specific_types = this.nodeType;
                     console.log(this.nodeType)
@@ -581,48 +581,62 @@ export default {
                     return ele.data('type') !== value;
                 });
                 for (let node of target_nodes) {
-                    node.addClass('filtered');
+                    node.addClass('filteredNode');
                     node.style('display', 'none');
                     console.log(node);
                 }
             }
-            // else {
-            //     let target_edges = this.cy.edges().filter(function (ele) {
-            //         return ele.data('type') !== value;
-            //     })
-            //     for (let edge of target_edges) {
-            //         console.log(edge);
-            //         edge.addClass('filtered');
-            //         edge.style('display', 'none');
-            //     }
-                // for (let node of this.cy.nodes()) {
-                //     let flag = true;
-                //     console.log("node",node);
-                //     console.log(node.edges());
-                //     for (let edge of node.edges()) {
-                //         console.log("edge", edge);
-                //         if (!edge.hasClass('filtered')) {
-                //             console.log('here')
-                //             flag = false;
-                //             break;
-                //         }
-                //     }
-                //     if (flag) {
-                //         node.style('display', 'none');
-                //     }
-                // }
-            //}
+            else {
+                let target_edges = this.cy.edges().filter(function (ele) {
+                    return ele.data('type') !== value;
+                })
+                for (let edge of target_edges) {
+                    console.log(edge);
+                    edge.addClass('filteredEdge');
+                    edge.style('display', 'none');
+                }
+                for (let node of this.cy.nodes()) {
+                    let flag = true;
+                    console.log("node",node);
+                    console.log(node.connectedEdges());
+                    for (let edge of node.connectedEdges()) {
+                        console.log("edge", edge);
+                        if (!edge.hasClass('filteredEdge')) {
+                            console.log('here')
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        node.addClass('filteredEdge');
+                        node.style('display', 'none');
+                    }
+                }
+            }
             this.filterShowEnabled = true;
         },
 
         defilter() {
-            for (let node of this.cy.nodes()) {
-                if (node.hasClass('filtered')) {
-                    node.removeStyle('display');
-                    node.removeClass('filtered');
+            if (this.filter_type === '1') {
+                for (let node of this.cy.nodes()) {
+                    if (node.hasClass('filteredNode')) {
+                        node.removeStyle('display');
+                        node.removeClass('filteredNode');
+                    }
                 }
             }
+            else {
+                for (let target of this.cy.elements()) {
+                    if (target.hasClass('filteredEdge')) {
+                        target.removeClass('filteredEdge');
+                        target.removeStyle('display');
+                    }
+                }
+            }
+
             this.filterShowEnabled = false;
+            this.filter_specific_type = '';
+            this.filter_type = '';
         }
         /////////////////////////////////////////////////////////////////////////////////////
     }

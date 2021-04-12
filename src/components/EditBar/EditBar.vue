@@ -103,14 +103,14 @@
 
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
       <edit-bar-block block-name="节点过滤">
-<!--        <el-select v-model="filter_type" clearable placeholder="请选择类型">-->
-<!--          <el-option-->
-<!--              v-for="type in types"-->
-<!--              :key="type.value"-->
-<!--              :label="type.label"-->
-<!--              :value="type.value">-->
-<!--          </el-option>-->
-<!--        </el-select>-->
+        <el-select v-model="filter_type" clearable placeholder="请选择类型">
+          <el-option
+              v-for="type in types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value">
+          </el-option>
+        </el-select>
         <el-select v-model="filter_specific_type" :disabled="filter_disabled" clearable placeholder="请选择类型">
           <el-option
               v-for="type in specific_types"
@@ -125,6 +125,10 @@
         </div>
       </edit-bar-block>
     <!--////////////////////////////////////////////////////////////////////////////////////////-->
+
+      <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->
+
+      <!--////////////////////////////////////////////////////////////////////////////////////-->
   </div>
   </div>
 </template>
