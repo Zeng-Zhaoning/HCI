@@ -253,34 +253,51 @@
 
             //作图有关的设置
             graph(that, data) {
-                let cy = cytoscape({
-                  container: $('#graph'),
-                  boxSelectionEnabled: false,
-                  autounselectify: false,
-                  style: this.defaultStyle,
-                  elements: data,
-                  hideLabelsOnViewPort: false,
-                  minZoom: 0.15,
-                  maxZoom: 8,
-                  wheelSensitivity: 0.1,   //warning
-                  layout: {
+                let bfLayout = {
                     name: 'breadthfirst',
-                    minDist: 40,
-                    fit: true,
-                    padding: 30,
-                    boundingBox: undefined,
-                    animate: false,
-                    animationDuration: 500,
-                    animationEasing: undefined,
-                    animateFilter: function (node, i) {
-                      return true;
+                        minDist: 40,
+                        fit: true,
+                        padding: 30,
+                        boundingBox: undefined,
+                        animate: false,
+                        animationDuration: 500,
+                        animationEasing: undefined,
+                        animateFilter: function (node, i) {
+                        return true;
                     },
                     ready: undefined,
-                    stop: undefined,
-                    transform: (node, position) => {
-                      return position
+                        stop: undefined,
+                        transform: (node, position) => {
+                        return position
                     }
-                  }
+                };
+                let presetLayout = {
+                    name: 'preset',
+
+                    positions: undefined, // map of (node id) => (position obj); or function(node){ return somPos; }
+                    zoom: undefined, // the zoom level to set (prob want fit = false if set)
+                    pan: undefined, // the pan level to set (prob want fit = false if set)
+                    fit: true, // whether to fit to viewport
+                    padding: 30, // padding on fit
+                    animate: false, // whether to transition the node positions
+                    animationDuration: 500, // duration of animation in ms if enabled
+                    animationEasing: undefined, // easing of animation if enabled
+                    animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+                    ready: undefined, // callback on layoutready
+                    stop: undefined, // callback on layoutstop
+                    transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+                };
+                let cy = cytoscape({
+                    container: $('#graph'),
+                    boxSelectionEnabled: false,
+                    autounselectify: false,
+                    style: this.defaultStyle,
+                    elements: data,
+                    hideLabelsOnViewPort: false,
+                    minZoom: 0.15,
+                    maxZoom: 8,
+                    wheelSensitivity: 0.1,   //warning
+                    layout: presetLayout
                 });
                 this.setCy(cy);
 
