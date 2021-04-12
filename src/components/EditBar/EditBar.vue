@@ -124,6 +124,31 @@
     <!--////////////////////////////////////////////////////////////////////////////////////////-->
 
       <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->
+      <edit-bar-block block-name="视图调整">
+        <el-select v-model="layout_type" placeholder="请选择布局类型">
+          <el-option
+              v-for="type in layout_types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value">
+          </el-option>
+        </el-select>
+        <div>是否显示关系</div>
+        <el-radio-group v-model="relation_label_enabled">
+          <el-radio :label="1">是</el-radio>
+          <el-radio :label="2">否</el-radio>
+        </el-radio-group>
+        <el-input
+            placeholder="请输入字体大小"
+            v-model="font_size"
+            clearable>
+        </el-input>
+        <el-input
+            placeholder="请输入节点直径"
+            v-model="node_radius"
+            clearable>
+        </el-input>
+      </edit-bar-block>
 
       <!--////////////////////////////////////////////////////////////////////////////////////-->
   </div>
