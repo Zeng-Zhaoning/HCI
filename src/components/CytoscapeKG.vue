@@ -179,6 +179,7 @@
                 axios.get(url)
                     .then(res => {
                         this.dataHandle(res.data);
+                        console.log("here")
                     })
                     .catch(err => {
                         console.error(err);
