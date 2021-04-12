@@ -34,6 +34,7 @@ export default {
             },
             searchLog: [],
 
+            ///////////////////////////////////////////////////
 
             filter_disabled: true,
             filterShowEnabled: false,
@@ -42,6 +43,39 @@ export default {
             filter_node_checkList: [],
             filter_edge_checked: false,
             filter_edge_checkList: [],
+
+            //////////////////////////////////////////////////////
+            //layout_type: 'breadthfirst',
+            layout_types: [
+                {
+                    label: 'random',
+                    value: 'random'
+                },
+                {
+                    label: 'grid',
+                    value: 'grid'
+                },
+                {
+                    label: 'circle',
+                    value: 'circle'
+                },
+                {
+                    label: 'concentric',
+                    value: 'concentric'
+                },
+                {
+                    label: 'breadthfirst',
+                    value: 'breadthfirst'
+                },
+                {
+                    label: 'cose',
+                    value: 'cose'
+                }
+            ],
+            relation_label_enabled: '',
+            font_size: '',
+            node_radius: '',
+
         }
     },
     watch: {
@@ -72,10 +106,15 @@ export default {
                 console.log(this.specific_types);
             }
         },
+        layout_type(newVal, oldVal) {
+            console.log(newVal);
+            let layout = this.cy.layout({name: newVal})
+            layout.run();
+        }
     },
-    ////////////////////////此处为搜索相关代码段////////////////////
-
-    ////////////////////////////////////////////////////////////
+    mounted() {
+        console.log(this.cy)
+    },
     computed: {
         ...mapState({
             current_pid: state => state.current_pid,
@@ -105,6 +144,12 @@ export default {
                 return !this.filter_edge_checked;
             }
 
+        },
+        layout_type: {
+            get() {
+                console.log(this.cy)
+                return 'breadthfirst';
+            }
         }
     },
     methods:{
