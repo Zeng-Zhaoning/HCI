@@ -24,46 +24,7 @@
                                 no-data-text="输入已存在的属性会取消勾选哦"
                                 placeholder="在这里可以输入属性哦">
                         </el-select>
-
-<!--                        <el-template>-->
-<!--                        <el-tag :key="tag"-->
-<!--                                v-for="tag in form.properties"-->
-<!--                                closable-->
-<!--                                style="margin-right: 1%;max-width:90%;"-->
-<!--                                @close="form.properties.splice(form.properties.indexOf(tag), 1)">-->
-<!--                            <el-span style="display:inline-flex;max-width:90%;overflow:hidden;text-overflow:ellipsis;">-->
-<!--                                {{tag}}-->
-<!--                            </el-span>-->
-<!--                        </el-tag>-->
-<!--                        <el-input-->
-<!--                                v-if="tagInputVisible"-->
-<!--                                v-model="tagInputValue"-->
-<!--                                ref="saveTagInput"-->
-<!--                                size="small"-->
-<!--                                style="width: 10%;"-->
-<!--                                @keyup.enter.native="handleTagInputConfirm"-->
-<!--                                @blur="handleTagInputConfirm"-->
-<!--                        >-->
-<!--                        </el-input>-->
-<!--                        <el-button v-else size="small" @click="showTagInput">新增＋</el-button>-->
-<!--                        </el-template>-->
                     </el-form-item>
-
-<!--                    <el-form-item label="活动区域">-->
-<!--                        <el-select v-model="sizeForm.region" placeholder="请选择活动区域">-->
-<!--                            <el-option label="区域一" value="shanghai"></el-option>-->
-<!--                            <el-option label="区域二" value="beijing"></el-option>-->
-<!--                        </el-select>-->
-<!--                    </el-form-item>-->
-<!--                    <el-form-item label="活动时间">-->
-<!--                        <el-col :span="11">-->
-<!--                            <el-date-picker type="date" placeholder="选择日期" v-model="sizeForm.date1" style="width: 100%;"></el-date-picker>-->
-<!--                        </el-col>-->
-<!--                        <el-col class="line" :span="2">-</el-col>-->
-<!--                        <el-col :span="11">-->
-<!--                            <el-time-picker placeholder="选择时间" v-model="sizeForm.date2" style="width: 100%;"></el-time-picker>-->
-<!--                        </el-col>-->
-<!--                    </el-form-item>-->
 
                 </el-form>
                 <template #footer>
@@ -74,26 +35,13 @@
                 </template>
             </el-dialog>
 
-            <el-dialog title="类型选择" v-model="typeFormVisible" :before-close="handleClose" :append-to-body="true">
-                <el-form :model="form">
-                    <el-form-item label="可选类型" :label-width="formLabelWidth">
-                        <el-select v-model="form.type" placeholder="请选择类型">
-                            <el-option v-for="item in givenType" :key="item.value" :label="item.name" :value="item.value"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-                <template #footer>
-                    <span class="dialog-footer">
-                        <el-button @click="typeFormVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="typeFormVisible = false">确 定</el-button>
-                    </span>
-                </template>
-            </el-dialog>
         </div>
     </div>
 </template>
 
 <script>
+    import TagEditor from "./PropEditTool/TagEditor";
+
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -111,14 +59,21 @@
 
     export default {
         name: 'CytoscapeKG',
+        components:{
+          TagEditor
+        },
         data() {
             let nameCheck = (rule,value,callback) => {
                 console.log('nameCheck');
+                console.log(this.form);
+                let validName = value.trim();
+                if(this.form.nameNow&&this.form.nameNow===validName){
+                    return callback();
+                }
                 let nameValid = /\S/;
-                if(!nameValid.test(value)){//可添加正则表达式等逻辑
+                if(!nameValid.test(validName)){//可添加正则表达式等逻辑
                     return callback(new Error('名称不能为空哟'));
                 }
-                let validName = value.trim();
                 if(this.node0Edge1===0){
                     if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
                         callback();
@@ -155,25 +110,23 @@
                 }else if(len>limit){
                     callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
                 }else{
-                    console.log("没事")
                     callback();
                 }
             };
             return {
                 node0Edge1: 0,
+                // editMode: false,
                 addFormVisible : false,
-                typeFormVisible: false,
+                givenType: [],
                 form: {
                     name: '',
                     type: '',
                     properties: [],
                     edgeCondition:{source:'',target:''},
+                    //以下为借用form的reset来自动清空的属性
+                    nameNow: '',
                     formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
                 },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
-                givenType: [],
-                formLabelWidth: '120px',
-                tagInputVisible: false,
-                tagInputValue: '',
                 rules:{
                     name:[
                         {validator:nameCheck, trigger:'blur'}
@@ -184,7 +137,8 @@
                     properties:[
                         {validator:propLenCheck,trigger:'change'}
                     ]
-                }
+                },
+                formLabelWidth: '12%'
                 // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
                 // https://github.com/yiminghe/async-validator
             };
@@ -230,7 +184,7 @@
             getData(url) {
                 axios.get(url)
                     .then(res => {
-                        this.dataHandle(res.data)
+                        this.dataHandle(res.data);
                     })
                     .catch(err => {
                         console.error(err);
@@ -442,85 +396,66 @@
                             content: '编辑',
                             selector: 'node, edge',
                             hasTrailingDivider: false,
-                            submenu: [
-                                {
-                                    id: 'rename',
-                                    content: '重命名',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        const group = target.group()
-                                        const data = target.data()
-                                        const name = group === 'nodes' ? 'name' : 'relation'
-                                        const nameShowed = data[name]
-                                        let value = "";
-                                        let propFunc = (val,key)=>val.data(key);
-                                        let getNameFunc = ()=>prompt("请输入需要修改的名称", nameShowed);
+                            onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                const group = target.group()
+                                const data = target.data()
 
-                                        //以下取名函数必须保证返回值不是''
-                                        if(group==='nodes'){
-                                            value = that.getUniqueNode(cy.nodes(),propFunc,getNameFunc);
-                                        }else{
-                                            value = that.getUniqueEdge(data,cy.edges(),propFunc,getNameFunc);
+                                const name = group === 'nodes' ? 'name' : 'relation'
+                                if(group==='nodes'){
+                                    that.node0Edge1 = 0;
+                                    that.givenType = that.nodeType;
+                                    that.form.properties = data.properties;
+                                }else{
+                                    that.node0Edge1 = 1;
+                                    that.givenType = that.edgeType;
+                                }
+                                that.form.nameNow = that.form.name = data[name];
+                                that.form.type = data.type;
+                                that.addFormVisible = true;
+                                that.form.formCallback = addForm => {
+                                    console.log("before edit: target", target);
+                                    let obj = {
+                                        [name]: addForm.name,
+                                        type: addForm.type,
+                                    };
+                                    if(group==='nodes'){
+                                        obj.properties = addForm.properties;
+                                    }
+                                    target.data(obj);
+                                    //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
+                                    let conflict = false;
+                                    if (group==='nodes') {
+                                        that.rendNode(target, that);
+                                        for(let i=0;i<removed.length;i++){
+                                            let val = removed[i];
+                                            if(val.group()==='nodes'&&val.data(name)===addForm.name){
+                                                conflict = true;
+                                                break;
+                                            }
                                         }
-                                        if (value !== null) {//取消返回null，空值返回''，其中空值必须以在函数中处理
-                                            console.log("before edit: target", target);
-                                            let obj = {};
-                                            obj[name] = value;
-                                            target.data(obj);
-                                            //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
-                                            let conflict = false;
-                                            if (group==='nodes') {
-                                                that.rendNode(target, that);
-                                                for(let i=0;i<removed.length;i++){
-                                                    let val = removed[i];
-                                                    if(val.group()==='nodes'&&val.data()[name]===value){
-                                                        conflict = true;
-                                                        break;
-                                                    }
-                                                }
-                                            }else{
-                                                that.rendEdge(target,that);
-                                                for(let i=0;i<removed.length;i++){
-                                                    let val = removed[i];
-                                                    let valData = val.data();
-                                                    if(val.group()==='edges'
-                                                        &&valData.source===data.source
-                                                        &&valData.target===data.target
-                                                        &&valData[name]===value){
-                                                        conflict = true;
-                                                        break;
-                                                    }
-                                                }
+                                    }else{
+                                        that.rendEdge(target,that);
+                                        for(let i=0;i<removed.length;i++){
+                                            let val = removed[i];
+                                            let valData = val.data();
+                                            if(val.group()==='edges'
+                                                &&valData.source===data.source
+                                                &&valData.target===data.target
+                                                &&valData[name]===addForm.name){
+                                                conflict = true;
+                                                break;
                                             }
-                                            if(conflict){
-                                                console.log("conflict in removed, delete it all");
-                                                contextMenu.hideMenuItem('undo-last-remove');
-                                                removed = [];
-                                            }
-                                            console.log("after edit: target", target);
-                                            // updateData(group, data, value, that)
-                                            // that.submit()
                                         }
                                     }
-                                },
-                                {
-                                    id: 'change-type',
-                                    content: '改变类型',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                        const group = target.group();
-                                        const data = target.data();
-                                        const name = group === 'nodes' ? 'name' : 'relation';
-                                    },
-                                },
-                                {
-                                    id: 'edit-properties',
-                                    content: '编辑属性',
-                                    onClickFunction: function (event) {
-                                        let target = event.target || event.cyTarget;
-                                    },
-                                }
-                            ]
+                                    if(conflict){
+                                        console.log("conflict in removed, delete it all");
+                                        contextMenu.hideMenuItem('undo-last-remove');
+                                        removed = [];
+                                    }
+                                    console.log("after edit: target", target);
+                                };
+                            }
                         },
                         {
                         id: 'color',
@@ -600,20 +535,20 @@
                                 that.node0Edge1 = 0;
                                 that.givenType = that.nodeType;
                                 that.addFormVisible = true;
+                                let pos = event.position || event.cyPosition;
+                                let newObj = {
+                                    group: 'nodes',
+                                    position: {
+                                        x: pos.x,
+                                        y: pos.y
+                                    }
+                                };
                                 that.form.formCallback = addForm => {
-                                    let pos = event.position || event.cyPosition;
-                                    let newObj = {
-                                        group: 'nodes',
-                                        data: {
-                                            name:addForm.name,
-                                            type:addForm.type,
-                                            properties:addForm.properties,
-                                            nameShowed: '未渲染'
-                                        },
-                                        position: {
-                                            x: pos.x,
-                                            y: pos.y
-                                        }
+                                    newObj.data = {
+                                        name:addForm.name,
+                                        type:addForm.type,
+                                        properties:addForm.properties,
+                                        nameShowed: '未渲染'
                                     };
                                     let collection = cy.add(newObj);
                                     that.rendNode(collection[0], that);
@@ -646,17 +581,17 @@
                                         that.givenType = that.edgeType;
                                         that.form.edgeCondition = {source:sid,target:tid};
                                         that.addFormVisible = true;
+                                        let newEdge = {
+                                            group: 'edges',
+                                            classes: 'autorotate'
+                                        };
                                         that.form.formCallback = addForm => {
-                                            let newEdge = {
-                                                group: 'edges',
-                                                data: {
-                                                    relation: addForm.name,
-                                                    source: addForm.edgeCondition.source,
-                                                    target: addForm.edgeCondition.target,
-                                                    type: addForm.type,
-                                                    nameShowed: '未渲染'
-                                                },
-                                                classes: 'autorotate'
+                                            newEdge.data = {
+                                                relation: addForm.name,
+                                                source: addForm.edgeCondition.source,
+                                                target: addForm.edgeCondition.target,
+                                                type: addForm.type,
+                                                nameShowed: '未渲染'
                                             };
                                             let collection = cy.add(newEdge);
                                             that.rendEdge(collection[0], that);
@@ -664,7 +599,6 @@
                                         };
                                     }
                                     starget.style({'background-color': color_before});
-                                    console.log("finish adding an edge");
                                 });
                             }
                         },
@@ -760,48 +694,6 @@
                 return true
             },
 
-            getUniqueNode(nodes,nodePropFunc,getNameFunc){
-                let name = "";
-                let count = 0;
-                let propFunc = val=>nodePropFunc(val,"name");
-                while (1){
-                    name = getNameFunc();
-                    if(name===''){//可扩展为实体名相关的正则表达式
-                        alert("名称无效哦，换一个名字吧，亲~");
-                    } else if(name===null||this.isUnique(nodes,propFunc,name)){//null代表取消
-                        return name;
-                    }else if(count>100){
-                        alert("系统繁忙，请检查输入是否正确，或稍后再试哦");
-                        return null;
-                    }else{
-                        alert("该实体已存在哦，换一个名字吧，亲~");
-                    }
-                    count++;
-                }
-            },
-
-            getUniqueEdge({source,target},edges,edgePropFunc,getNameFunc){
-                let name = "";
-                let dupEdges = [];
-                let count = 0;
-                while (1){
-                    name = getNameFunc();
-                    if(name===null) return name;//null代表取消
-                    if(name===''){//可扩展为关系名相关的正则表达式
-                        alert("名称无效哦，换一个名字吧，亲~");
-                    }else if(count>100){
-                        alert("系统繁忙，请检查输入是否正确，或稍后再试哦");
-                        return null;
-                    }else{
-                        dupEdges = edges.filter(val=>edgePropFunc(val,"source")===source).filter(val=>edgePropFunc(val,"target")===target);
-                        if(dupEdges.length===0) return name;
-                        if(this.isUnique(dupEdges,val=>edgePropFunc(val,"relation"),name)) return name;
-                        alert("该边已存在哦，换一个名字吧，亲~");
-                    }
-                    count++;
-                }
-            },
-
             //dialog组件
             handleClose(done) {
                 let that = this;
@@ -812,23 +704,6 @@
                     })
                     .catch(_ => {});
             },
-
-            //tag组件 op
-            showTagInput() {
-                this.tagInputVisible = true;
-                this.$nextTick(_ => {
-                    this.$refs.saveTagInput.$refs.input.focus();
-                });
-            },
-            handleTagInputConfirm() {
-                let tagInputValue = this.tagInputValue;
-                if (tagInputValue) {
-                    this.form.properties.push(tagInputValue);
-                }
-                this.tagInputVisible = false;
-                this.tagInputValue = '';
-            },
-            //ed
 
             //addForm组件
             addCancel(){
