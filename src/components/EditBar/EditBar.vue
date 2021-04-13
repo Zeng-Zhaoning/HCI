@@ -125,6 +125,7 @@
                 no-data-text="重复输入关键词会抵消哦"
                 placeholder="可输入多个关键词搜索">
           <!--          el-select在开了allow-create后有奇怪的bug，reserve-keyword估计也没用，最终选择文字提示-->
+          <!--          我目前的理解是这样，可信度等于四五个小时的debug（太菜了┭┮﹏┭┮），等一个大佬弄清楚原理漂亮地解决-->
           <el-option :disabled="true" >
             <span style="position: relative;display: block">注意！如果没有选中下拉框中的一项</span>
           </el-option>

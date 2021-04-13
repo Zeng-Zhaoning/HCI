@@ -578,7 +578,7 @@ export default {
                 }
                 let valName = val.data("name");
                 let valProps = val.data("property");
-                let edges = val._private.edges;
+                let edges = val.connectedEdges();
                 let hit = false;
                 let relaHit;
                 let propHit;
@@ -755,7 +755,7 @@ export default {
         //
         // },
 
-        fuzzyMatch(str, key){
+        fuzzyMatch(str, key){//不知道需不需要再加一下忽略大小写？
             let index = -1, flag = false;
             for(let i = 0, arr = key.split(""); i < arr.length; i++ ){
             //有一个关键字都没匹配到，则没有匹配到数据
@@ -829,19 +829,11 @@ export default {
 
         filter() {
             console.log("execute filter")
-
             let flag = this.filter_node_checked || this.filter_edge_checked;
-            console.log(flag)
             if (!flag) {
-                this.$message({
-                    message: '请选择过滤类型',
-                    type: 'error',
-                    duration: 1500
-                });
+                this.informMsg('error','请选择过滤类型')
                 return;
             }
-
-
 
             if (this.filter_node_checked) {
                 let checkList = this.filter_node_checkList;
@@ -849,8 +841,7 @@ export default {
                     return !checkList.includes(ele.data('type'));
                 });
                 for (let node of target_nodes) {
-                    node.addClass('filtered');
-                    console.log(node);
+                    node.addClass('nodeFiltered');
                 }
             }
             if (this.filter_edge_checked) {
@@ -859,23 +850,7 @@ export default {
                     return !checkList.includes(ele.data('type'));
                 })
                 for (let edge of target_edges) {
-                    console.log(edge);
-                    edge.addClass('filtered');
-                }
-                for (let node of this.cy.nodes()) {
-                    let flag = true;
-                    console.log("node",node);
-                    console.log(node.connectedEdges());
-                    for (let edge of node.connectedEdges()) {
-                        console.log("edge", edge);
-                        if (!edge.hasClass('filtered')) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        node.addClass('filtered');
-                    }
+                    edge.addClass('edgeFiltered');
                 }
             }
             this.filterShowEnabled = true;
@@ -883,10 +858,14 @@ export default {
 
         defilter() {
             for (let target of this.cy.elements()) {
-                target.removeClass('filtered');
+                if(target.hasClass('nodeFiltered')){
+                    target.removeClass('nodeFiltered');
+                }
+                if(target.hasClass('edgeFiltered')){
+                    target.removeClass('edgeFiltered');
+                }
             }
             this.filterShowEnabled = false;
-
             this.clearFilterParams();
         },
 

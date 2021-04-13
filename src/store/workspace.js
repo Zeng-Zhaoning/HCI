@@ -50,9 +50,15 @@ export const workspace = {
                 }
             },
             {
-                selector: '.filtered',
+                selector: '.nodeFiltered',
                 css: {
                     'display': 'none'
+                }
+            },
+            {
+                selector: '.edgeFiltered',
+                css: {
+                    'visibility': 'hidden'
                 }
             },
             {
