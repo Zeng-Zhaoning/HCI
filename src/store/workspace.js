@@ -58,7 +58,14 @@ export const workspace = {
             {
                 selector: '.searchedNode',
                 css: {
-                    'background-color': 'red',
+                    color: 'red'
+                }
+            },
+            {
+                selector: '.searchedEdge',
+                css: {
+                    'text-outline-color': "rgb(255,251,0)",
+                    'text-outline-width': 4,
                 }
             },
             // {
@@ -97,7 +104,7 @@ export const workspace = {
                 //据说'overlay-color'属性专门用于:active状态，然而我好像没成功，写个注释表示自己努力过了
                 selector: 'node:selected',
                 css: {
-                    "color": 'white',
+                    // "color": 'white',
                     'text-outline-color': "#847072",
                     'text-outline-width': 4,
                     //"background-color": '#dcc1b0',
@@ -114,7 +121,7 @@ export const workspace = {
                     "text-border-color": "#bc5f6a",
                     "text-border-width": "5px",
                     // "text-background-padding": "6px",
-                    //'text-outline-color': "rgb(255,251,0)",
+                    // 'text-outline-color': "rgb(255,251,0)",
                     //'text-outline-width': 4,
                 }
             },

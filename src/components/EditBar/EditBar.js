@@ -17,9 +17,13 @@ export default {
             relations_data: [],
 
             ////////////////////////////搜索相关/////////////////////////////////
-            search_node_text: '',
+            search_node_text: [],
             search_node_condition: [],
             node_searched: false,
+
+            search_edge_text:[],
+            search_edge_condition: [],
+            edge_searched:false,
 
             search_text: '',
             search_type: '',
@@ -534,14 +538,17 @@ export default {
 
         searchNode(){
             let condition = this.search_node_condition;
-            let text = this.search_node_text.trim();
+            if (condition.length===0) return;
             let nameValid = /\S/;
-            if (!nameValid.test(text)||condition.length===0) {return;}
+            let keyWords = this.search_node_text.filter(val=>{
+                val = val.trim();
+                return nameValid.test(val);
+            });
+            if(keyWords.length===0) return;
             const byName = condition.includes('name');
             const byRelation = condition.includes('relation');
             const byProp = condition.includes('property');
             let nodes = this.cy.nodes();
-            let keyWords = text.split(" ");
             let count = 0;
             nodes.forEach(val=>{
                 if (val.hasClass('searchedNode')) {
@@ -611,6 +618,66 @@ export default {
             }
             this.node_searched = true;
         },
+
+        searchEdge(){
+            let condition = this.search_edge_condition;
+            if (condition.length===0) return;
+            let nameValid = /\S/;
+            let keyWords = this.search_edge_text.filter(val=>{
+                val = val.trim();
+                return nameValid.test(val);
+            });
+            if(keyWords.length===0) return;
+            const byName = condition.includes('relation');
+            const bySource = condition.includes('source');
+            const byTarget = condition.includes('target');
+            let edges = this.cy.edges();
+            let count = 0;
+            edges.forEach(val=>{
+                if (val.hasClass('searchedEdge')) {
+                    val.removeClass('searchedEdge');
+                }
+                let valName = val.data("relation");
+                let valSource = this.cy.$id(val.data("source")).data("name");
+                let valTarget = this.cy.$id(val.data("target")).data("name");
+                let hit = false;
+                let nameHit;
+                let sHit;
+                let tHit;
+                for(let key of keyWords){
+                    if((byName&&this.fuzzyMatch(valName, key))||
+                        (bySource&&this.fuzzyMatch(valSource,key))||
+                        (byTarget&&this.fuzzyMatch(valTarget,key))) {
+                        hit = true;
+                        break;
+                    }
+                }
+                if(hit){
+                    count += 1;
+                    this.currentSearch.result.push(val.data());
+                    val.addClass('searchedEdge');
+                }
+            });
+            console.log('currentSearch',this.currentSearch)
+            if (count > 0) {
+                //let display = this.getDisplay(params.search_type);
+                //this.searchDisplay(display);
+                this.$message({
+                    message: '搜索完毕',
+                    type: 'success',
+                    duration: 1500
+                });
+            }
+            else {
+                this.$message({
+                    message: '未找到符合条件的结果',
+                    type: 'error',
+                    duration: 1500
+                });
+            }
+            this.edge_searched = true;
+        },
+
 
         //根据具体搜索条件还需进行修改
         search() {
@@ -713,8 +780,20 @@ export default {
                     val.removeClass('searchedNode');
                 }
                 this.search_node_condition = [];
-                this.search_node_text = '';
+                this.search_node_text = [];
                 this.node_searched = false;
+            });
+        },
+
+        desearchEdge(){
+            let edges = this.cy.edges();
+            edges.forEach(val=>{
+                if (val.hasClass('searchedEdge')) {
+                    val.removeClass('searchedEdge');
+                }
+                this.search_edge_condition = [];
+                this.search_edge_text = [];
+                this.edge_searched = false;
             });
         },
 

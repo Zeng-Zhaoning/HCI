@@ -71,24 +71,52 @@
 <!--      <edit-bar-block style="height: 1000px"></edit-bar-block>-->
 
     <!--///////////////////////////////////此处为搜索相关代码段///////////////////////////////////////-->
-      <edit-bar-block block-name="节点搜索">
-        <div class="item_title">| 节点名称</div>
-        <el-input
-            class="el-input"
-            clearable
-            :rows="1"
-            placeholder="在这里搜索节点"
-            v-model="search_node_text">
-        </el-input>
+      <edit-bar-block block-name="搜索">
+        <div class="item_title">| 实体搜索</div>
+        <el-select
+                v-model="search_node_text"
+                style="width:100%"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                clearable
+                no-data-text="输入已存在的关键词会取消勾选哦"
+                placeholder="在这里搜索实体">
+        </el-select>
         <el-checkbox-group v-model="search_node_condition" >
-          <el-checkbox label="name">节点名</el-checkbox>
-          <el-checkbox label="relation">关系名</el-checkbox>
+          <el-checkbox label="name">实体名</el-checkbox>
+          <el-checkbox label="relation">拥有关系</el-checkbox>
           <el-checkbox label="property">属性</el-checkbox>
         </el-checkbox-group>
         <div class="analyse-btn-box">
           <el-button @click="searchNode">搜索</el-button>
           <el-button v-show="node_searched" @click="desearchNode">取消</el-button>
         </div>
+
+        <div class="item_title">| 关系搜索</div>
+        <el-select
+                v-model="search_edge_text"
+                style="width:100%"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                clearable
+                no-data-text="输入已存在的关键词会取消勾选哦"
+                placeholder="在这里搜索关系">
+        </el-select>
+        <el-checkbox-group v-model="search_edge_condition" >
+          <el-checkbox label="relation">关系名</el-checkbox>
+          <el-checkbox label="source">源实体</el-checkbox>
+          <el-checkbox label="target">目标实体</el-checkbox>
+        </el-checkbox-group>
+        <div class="analyse-btn-box">
+          <el-button @click="searchEdge">搜索</el-button>
+          <el-button v-show="edge_searched" @click="desearchEdge">取消</el-button>
+        </div>
+
+
         <div class="item_title">| 图元类型</div>
         <el-select v-model="search_type" clearable placeholder="请选择类型">
           <el-option
