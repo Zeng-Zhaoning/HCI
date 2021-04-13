@@ -354,7 +354,7 @@ export default {
          日后前/后端有修改时这里都要改！
          */
         getDataJsonObject() {
-            let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
+            let eles = JSON.parse(JSON.stringify(this.cy.json().elements));//其实深拷贝可能没啥意义，只是单纯直觉上想用一用(*╹▽╹*)
             let obj = {"edges": [], "nodes": []};
             if (JSON.stringify(eles) !== '{}') {
                 if (eles.edges !== undefined && eles.edges.length > 0) {
@@ -562,7 +562,7 @@ export default {
                 }
                 else {
                     let flagProperty;
-                    flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
+                    flagProperty = params.select_value === '' ? true : val.data().properties.includes(params.select_value);
                     console.log('flagProperty', flagProperty)
                     if (flagName && flagProperty) {
                         count++;

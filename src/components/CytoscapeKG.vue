@@ -40,6 +40,12 @@
 </template>
 
 <script>
+    //日后修改：
+    //颜色改变增加调色板选项
+    //颜色的存储可以放在data（大小同理），读取时在渲染函数中访问data中相应字段来渲染，但是在其他样式与颜色解耦之前无意义（例：会把选中状态之类的颜色存进去）
+    //边的添加和修改增加source和target的可修改功能
+    //eles.hasClass()和.addClass()帮助edge把class属性的添加移动到rendEdge里
+    //ele.isNode()帮助add等方法优化group==='nodes'的逻辑
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -125,7 +131,7 @@
                     name:[
                         {validator:nameCheck, trigger:'blur'}
                     ],
-                    type:[//由于设置了初始值，这里似乎没被用到
+                    type:[//如果设置了初始值，这里就不会被用到
                         {required:true,message:'请选择类型',trigger:'change'}
                     ],
                     properties:[
@@ -179,7 +185,6 @@
                 axios.get(url)
                     .then(res => {
                         this.dataHandle(res.data);
-                        console.log("here")
                     })
                     .catch(err => {
                         console.error(err);
@@ -315,9 +320,13 @@
 
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
-                    target.style({label:target.data("name"),fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大label的36更大即可
+                    let data = target.data();
+                    target.style({label:data.name,fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大label的36更大即可
                     if(!target.scratch('tip')){
-                        target.scratch('tip',that.makeTippy(target,target.data("type")));
+                        console.log(data)
+                        console.log(data.properties)
+                        let text = "类型: "+data.type+'<br/>'+"属性: "+data.properties.join(',');
+                        target.scratch('tip',that.makeTippy(target,text));
                     }
                     target.scratch('tip').show();
                 })
@@ -334,10 +343,12 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
+                        let data = target.data();
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
-                        target.style({label:target.data("relation"),fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大label的36更大即可
+                        target.style({label:data.relation,fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大label的36更大即可
                         if(!target.scratch('tip')){
-                            target.scratch('tip',that.makeTippy(target,target.data("type")));
+                            let text = "类型: "+data.type;
+                            target.scratch('tip',that.makeTippy(target,text));
                         }
                         target.scratch('tip').show();
                     })
@@ -784,24 +795,6 @@
             // Iteration: eles.forEach(), eles.empty(), etc.
             // Traversal: node.outgoers(), eles.bfs(), etc.
             // Algorithms: eles.dijkstra(), eles.degreeCentrality(), etc.
-
-            getGraphJsonObject() {
-                let eles = JSON.parse(JSON.stringify(this.cy.json().elements));
-                console.log("eles_json", eles);
-                console.log("eles_layout", this.cy.layout({
-                    name: 'preset'
-                }));
-                return eles;
-                //布局和layout有关，读入时用cy.layout( options );则可读入上次的布局
-                //保存布局是怎么保存呢？eles.layout(options)又是什么？
-            },
-
-            getCyJsonObject() {
-                let cy = JSON.parse(JSON.stringify(this.cy.json()));
-                console.log("cy_object", this.cy)
-                console.log("cy_json", cy);
-                return cy;
-            }
         }
     }
 </script>
