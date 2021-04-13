@@ -84,6 +84,7 @@
                 no-data-text="重复输入关键词会抵消哦"
                 placeholder="可输入多个关键词搜索">
 <!--          el-select在开了allow-create后有奇怪的bug，reserve-keyword估计也没用，最终选择文字提示-->
+<!--          我目前的理解是这样，可信度等于四五个小时的debug（太菜了┭┮﹏┭┮），等一个大佬弄清楚原理漂亮地解决-->
             <el-option :disabled="true" >
               <span style="position: relative;display: block">注意！如果没有选中下拉框中的一项</span>
             </el-option>
@@ -189,25 +190,45 @@
     <!--/////////////////////////////////////////////////////////////////////////////////////////-->
 
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
-      <edit-bar-block block-name="节点过滤">
-        <el-checkbox v-model="filter_node_checked" border size="small">节点</el-checkbox>
-        <el-checkbox-group v-model="filter_node_checkList" :disabled="node_checkList_disabled">
-          <el-checkbox label="individual">个体</el-checkbox>
-          <el-checkbox label="organization">团体</el-checkbox>
-          <el-checkbox label="thing">事务</el-checkbox>
-          <el-checkbox label="default">未知</el-checkbox>
-        </el-checkbox-group>
-        <el-checkbox v-model="filter_edge_checked" border size="small">关系</el-checkbox>
-        <el-checkbox-group v-model="filter_edge_checkList" :disabled="edge_checkList_disabled">
-          <el-checkbox label="connection">关联</el-checkbox>
-          <el-checkbox label="inheritance">继承</el-checkbox>
-          <el-checkbox label="default">未知</el-checkbox>
-        </el-checkbox-group>
+      <edit-bar-block block-name="过滤">
+        <div class="item_title">| 滤去实体</div>
+        <el-select v-model="filter_node_checkList" @change="nodeFilter" collapse-tags multiple placeholder="在这里选择要滤去的实体" style="width: 100%">
+          <el-option v-for="item in nodeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+        <div class="item_title">| 滤去关系</div>
+        <el-select v-model="filter_edge_checkList" @change="edgeFilter" collapse-tags multiple placeholder="在这里选择要滤去的关系" style="width: 100%">
+          <el-option v-for="item in edgeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
         <div class="analyse-btn-box">
-          <el-button @click="filter">过滤</el-button>
-          <el-button @click="defilter" v-show="filterShowEnabled">撤销</el-button>
+          <el-col :span="11">
+            <el-button @click="nodeDefilter">一键还原实体</el-button>
+          </el-col>
+          <el-col :span="11">
+            <el-button @click="edgeDefilter">一键还原关系</el-button>
+          </el-col>
         </div>
       </edit-bar-block>
+
+
+<!--      <edit-bar-block block-name="节点过滤">-->
+<!--        <el-checkbox v-model="filter_node_checked" border size="small">节点</el-checkbox>-->
+<!--        <el-checkbox-group v-model="filter_node_checkList" :disabled="node_checkList_disabled">-->
+<!--          <el-checkbox label="individual">个体</el-checkbox>-->
+<!--          <el-checkbox label="organization">团体</el-checkbox>-->
+<!--          <el-checkbox label="thing">事务</el-checkbox>-->
+<!--          <el-checkbox label="default">未知</el-checkbox>-->
+<!--        </el-checkbox-group>-->
+<!--        <el-checkbox v-model="filter_edge_checked" border size="small">关系</el-checkbox>-->
+<!--        <el-checkbox-group v-model="filter_edge_checkList" :disabled="edge_checkList_disabled">-->
+<!--          <el-checkbox label="connection">关联</el-checkbox>-->
+<!--          <el-checkbox label="inheritance">继承</el-checkbox>-->
+<!--          <el-checkbox label="default">未知</el-checkbox>-->
+<!--        </el-checkbox-group>-->
+<!--        <div class="analyse-btn-box">-->
+<!--          <el-button @click="filter">过滤</el-button>-->
+<!--          <el-button @click="defilter" v-show="filterShowEnabled">撤销</el-button>-->
+<!--        </div>-->
+<!--      </edit-bar-block>-->
     <!--////////////////////////////////////////////////////////////////////////////////////////-->
 
       <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->

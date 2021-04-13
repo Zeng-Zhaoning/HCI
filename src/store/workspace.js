@@ -50,13 +50,13 @@ export const workspace = {
                 }
             },
             {
-                selector: '.nodeFiltered',
+                selector: '.removed',
                 css: {
                     'display': 'none'
                 }
             },
             {
-                selector: '.edgeFiltered',
+                selector: '.hidden',
                 css: {
                     'visibility': 'hidden'
                 }

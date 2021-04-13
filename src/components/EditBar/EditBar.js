@@ -30,36 +30,39 @@ export default {
             edge_searched:false,
             search_edge_log: [],
 
-            search_text: '',
-            search_type: '',
-            select_value: '',
-            showEnabled: false,
-            edgeDisabled: true,
-            types: [
-                {
-                    label: '节点',
-                    value: '1'
-                },
-                {
-                    label: '关系',
-                    value: '2'
-                }
-            ],
-            currentSearch: {
-                params: {},
-                result: []
-            },
-            searchLog: [],
+            // search_text: '',
+            // search_type: '',
+            // select_value: '',
+            // showEnabled: false,
+            // edgeDisabled: true,
+            // types: [
+            //     {
+            //         label: '节点',
+            //         value: '1'
+            //     },
+            //     {
+            //         label: '关系',
+            //         value: '2'
+            //     }
+            // ],
+            // currentSearch: {
+            //     params: {},
+            //     result: []
+            // },
+            // searchLog: [],
 
             //////////////////////过滤相关/////////////////////////////
 
-            filter_disabled: true,
-            filterShowEnabled: false,
-
-            filter_node_checked: false,
             filter_node_checkList: [],
-            filter_edge_checked: false,
             filter_edge_checkList: [],
+
+            // filter_disabled: true,
+            // filterShowEnabled: false,
+            //
+            // filter_node_checked: false,
+            // filter_node_checkList: [],
+            // filter_edge_checked: false,
+            // filter_edge_checkList: [],
 
             //////////////////////展示效果相关////////////////////////////////
             layout_type: '',
@@ -100,12 +103,11 @@ export default {
         }
     },
     watch: {
-        //暂时注释避免影响cy使用
-        // cy(newValue, oldValue){
-        //     this.get_statistic_data();
-        //     console.log("cy", newValue)
-        //     this.layout_type = newValue.options().layout.name;
-        // },
+        cy(newValue, oldValue){
+            this.get_statistic_data();
+            console.log("cy", newValue)
+            this.layout_type = newValue.options().layout.name;
+        },
         statistic_data_change(newValue, oldValue){
             this.get_statistic_data();
         },
@@ -827,54 +829,95 @@ export default {
 
         ///////////////////////////////////此处为过滤代码///////////////////////////////////////
 
-        filter() {
-            console.log("execute filter")
-            let flag = this.filter_node_checked || this.filter_edge_checked;
-            if (!flag) {
-                this.informMsg('error','请选择过滤类型')
-                return;
-            }
-
-            if (this.filter_node_checked) {
-                let checkList = this.filter_node_checkList;
-                let target_nodes = this.cy.nodes().filter(function (ele) {
-                    return !checkList.includes(ele.data('type'));
-                });
-                for (let node of target_nodes) {
-                    node.addClass('nodeFiltered');
-                }
-            }
-            if (this.filter_edge_checked) {
-                let checkList = this.filter_edge_checkList;
-                let target_edges = this.cy.edges().filter(function (ele) {
-                    return !checkList.includes(ele.data('type'));
-                })
-                for (let edge of target_edges) {
-                    edge.addClass('edgeFiltered');
-                }
-            }
-            this.filterShowEnabled = true;
+        nodeFilter(){
+            let checkList = this.filter_node_checkList;
+            this.cy.nodes().forEach(val=>{
+                let hit = checkList.includes(val.data('type'));
+               if(hit&&!val.hasClass('removed')) {
+                   val.addClass('removed');
+               }else if(!hit&&val.hasClass('removed')){
+                   val.removeClass('removed');
+               }
+            });
         },
-
-        defilter() {
-            for (let target of this.cy.elements()) {
-                if(target.hasClass('nodeFiltered')){
-                    target.removeClass('nodeFiltered');
+        edgeFilter(){
+            let checkList = this.filter_edge_checkList;
+            this.cy.edges().forEach(val=>{
+                let hit = checkList.includes(val.data('type'));
+                if(hit&&!val.hasClass('hidden')) {
+                    val.addClass('hidden');
+                }else if(!hit&&val.hasClass('hidden')){
+                    val.removeClass('hidden');
                 }
-                if(target.hasClass('edgeFiltered')){
-                    target.removeClass('edgeFiltered');
-                }
-            }
-            this.filterShowEnabled = false;
-            this.clearFilterParams();
+            });
         },
-
-        clearFilterParams() {
+        nodeDefilter(){
+            if(this.filter_node_checkList.length===0)return;
+            this.cy.nodes().forEach(val=>{
+                if(val.hasClass('removed')){
+                    val.removeClass('removed');
+                }
+            });
             this.filter_node_checkList = [];
+        },
+        edgeDefilter(){
+            if(this.filter_edge_checkList.length===0)return;
+            this.cy.edges().forEach(val=>{
+                if(val.hasClass('hidden')){
+                    val.removeClass('hidden');
+                }
+            });
             this.filter_edge_checkList = [];
-            this.filter_node_checked = false;
-            this.filter_edge_checked = false;
-        }
+        },
+
+        // filter() {
+        //     console.log("execute filter")
+        //     let flag = this.filter_node_checked || this.filter_edge_checked;
+        //     if (!flag) {
+        //         this.informMsg('error','请选择过滤类型')
+        //         return;
+        //     }
+        //
+        //     if (this.filter_node_checked) {
+        //         let checkList = this.filter_node_checkList;
+        //         let target_nodes = this.cy.nodes().filter(function (ele) {
+        //             return !checkList.includes(ele.data('type'));
+        //         });
+        //         for (let node of target_nodes) {
+        //             node.addClass('removde');
+        //         }
+        //     }
+        //     if (this.filter_edge_checked) {
+        //         let checkList = this.filter_edge_checkList;
+        //         let target_edges = this.cy.edges().filter(function (ele) {
+        //             return !checkList.includes(ele.data('type'));
+        //         })
+        //         for (let edge of target_edges) {
+        //             edge.addClass('hidden');
+        //         }
+        //     }
+        //     this.filterShowEnabled = true;
+        // },
+        //
+        // defilter() {
+        //     for (let target of this.cy.elements()) {
+        //         if(target.hasClass('removed')){
+        //             target.removeClass('removed');
+        //         }
+        //         if(target.hasClass('hidden')){
+        //             target.removeClass('hidden');
+        //         }
+        //     }
+        //     this.filterShowEnabled = false;
+        //     this.clearFilterParams();
+        // },
+        //
+        // clearFilterParams() {
+        //     this.filter_node_checkList = [];
+        //     this.filter_edge_checkList = [];
+        //     this.filter_node_checked = false;
+        //     this.filter_edge_checked = false;
+        // }
         /////////////////////////////////////////////////////////////////////////////////////
     }
 }
