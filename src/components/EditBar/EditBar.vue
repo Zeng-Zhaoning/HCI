@@ -71,7 +71,8 @@
 <!--      <edit-bar-block style="height: 1000px"></edit-bar-block>-->
 
     <!--///////////////////////////////////此处为搜索相关代码段///////////////////////////////////////-->
-      <edit-bar-block block-name="图谱搜索">
+      <edit-bar-block block-name="节点搜索">
+        <div class="item_title">| 节点名称</div>
         <el-input
             class="el-input"
             clearable
@@ -79,6 +80,7 @@
             placeholder="请输入搜索内容"
             v-model="search_text">
         </el-input>
+        <div class="item_title">| 图元类型</div>
         <el-select v-model="search_type" clearable placeholder="请选择类型">
           <el-option
               v-for="type in types"
@@ -87,12 +89,14 @@
               :value="type.value">
           </el-option>
         </el-select>
+        <div class="item_title">| 属性</div>
         <el-input
             class="el-input"
             clearable
             :rows="1"
             placeholder="请输入搜索属性"
-            v-model="select_value">
+            v-model="select_value"
+            :disabled="edgeDisabled">
         </el-input>
         <div class="analyse-btn-box">
           <el-button @click="search">搜索</el-button>
@@ -103,14 +107,14 @@
 
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
       <edit-bar-block block-name="节点过滤">
-        <el-checkbox v-model="filter_node_checked">节点</el-checkbox>
+        <el-checkbox v-model="filter_node_checked" border size="small">节点</el-checkbox>
         <el-checkbox-group v-model="filter_node_checkList" :disabled="node_checkList_disabled">
           <el-checkbox label="individual">个体</el-checkbox>
           <el-checkbox label="organization">团体</el-checkbox>
           <el-checkbox label="thing">事务</el-checkbox>
           <el-checkbox label="default">未知</el-checkbox>
         </el-checkbox-group>
-        <el-checkbox v-model="filter_edge_checked">关系</el-checkbox>
+        <el-checkbox v-model="filter_edge_checked" border size="small">关系</el-checkbox>
         <el-checkbox-group v-model="filter_edge_checkList" :disabled="edge_checkList_disabled">
           <el-checkbox label="connection">关联</el-checkbox>
           <el-checkbox label="inheritance">继承</el-checkbox>
@@ -125,6 +129,7 @@
 
       <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->
       <edit-bar-block block-name="视图调整">
+        <div class="item_title">| 布局</div>
         <el-select v-model="layout_type" placeholder="请选择布局类型">
           <el-option
               v-for="type in layout_types"
@@ -133,18 +138,20 @@
               :value="type.value">
           </el-option>
         </el-select>
-        <div>是否显示关系</div>
+        <div class="item_title">| 关系显示</div>
         <el-radio-group v-model="relation_label_enabled">
           <el-radio :label="1">是</el-radio>
           <el-radio :label="2">否</el-radio>
         </el-radio-group>
+        <div class="item_title">| 节点字体</div>
         <el-input
-            placeholder="请输入字体大小"
+            placeholder="请输入节点字体大小"
             v-model="font_size"
             clearable>
         </el-input>
+        <div class="item_title">| 节点半径</div>
         <el-input
-            placeholder="请输入节点直径"
+            placeholder="请输入节点半径"
             v-model="node_radius"
             clearable>
         </el-input>

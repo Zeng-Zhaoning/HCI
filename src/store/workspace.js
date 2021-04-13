@@ -50,6 +50,24 @@ export const workspace = {
                 }
             },
             {
+                selector: '.filtered',
+                css: {
+                    'display': 'none'
+                }
+            },
+            {
+                selector: '.searchedNode',
+                css: {
+                    'background-color': 'red',
+                }
+            },
+            // {
+            //     selector: '.labelHidden',
+            //     css: {
+            //         'text_opacity': 0
+            //     }
+            // },
+            {
                 selector: 'edge',
                 css: {
                     //目前仍然搞不懂label和content区别，姑且先用label，并且是动态添加而不是在这里设定
@@ -65,7 +83,7 @@ export const workspace = {
                     'width': 3,
                     'target-arrow-shape': 'triangle-backcurve',
                     'target-arrow-color': '#eea39d',
-                    'arrow-scale': 2
+                    'arrow-scale': 2,
                 }
                 // Bezier edges
                 // 适用于自动捆绑贝塞尔边缘(curve-style: bezier):

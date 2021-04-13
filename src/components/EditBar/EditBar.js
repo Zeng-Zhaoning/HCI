@@ -2,6 +2,8 @@ import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
 import { setGraphAPI } from "../../api/basicAPI";
 import OpItem from './OpItem';
 import EditBarBlock from "./EditBarBlock";
+import {toRaw} from 'vue'
+import {isNumber} from "element-plus/es/utils/util";
 
 export default {
     name: "EditBar",
@@ -14,10 +16,12 @@ export default {
             entities_data: [],
             relations_data: [],
 
+            ////////////////////////////搜索相关/////////////////////////////////
             search_text: '',
             search_type: '',
             select_value: '',
             showEnabled: false,
+            edgeDisabled: true,
             types: [
                 {
                     label: '节点',
@@ -45,7 +49,7 @@ export default {
             filter_edge_checkList: [],
 
             //////////////////////展示效果相关////////////////////////////////
-            layout_type: 'breadthfirst',
+            layout_type: '',
             layout_types: [
                 {
                     label: 'random',
@@ -60,6 +64,10 @@ export default {
                     value: 'circle'
                 },
                 {
+                    label: 'preset',
+                    value: 'preset'
+                },
+                {
                     label: 'concentric',
                     value: 'concentric'
                 },
@@ -72,7 +80,7 @@ export default {
                     value: 'cose'
                 }
             ],
-            relation_label_enabled: '',
+            relation_label_enabled: 1,
             font_size: '',
             node_radius: '',
 
@@ -81,9 +89,14 @@ export default {
     watch: {
         cy(newValue, oldValue){
             this.get_statistic_data();
+            console.log("cy", newValue)
+            this.layout_type = newValue.options().layout.name;
         },
         statistic_data_change(newValue, oldValue){
             this.get_statistic_data();
+        },
+        search_type(newVal, oldVal) {
+            this.edgeDisabled = newVal !== '1';
         },
         filter_type(newVal, oldVal) {
             console.log(newVal);
@@ -111,10 +124,87 @@ export default {
             console.log(newVal);
             let layout = this.cy.layout({name: newVal})
             layout.run();
+        },
+        //在workspace中添加css不能起作用，不知道为什么，暂时先通过style进行设置
+        relation_label_enabled(newVal, oldVal) {
+            console.log(newVal, typeof newVal)
+            if (newVal === 1) {
+                for (let edge of this.cy.edges()) {
+                    edge.removeStyle('text-opacity');
+                }
+            }
+            else {
+                for (let edge of this.cy.edges()) {
+                    edge.style('text-opacity', 0)
+                }
+
+            }
+        },
+        font_size(newVal, oldVal) {
+            console.log(newVal)
+
+            //默认值，25px是看workspace找到的
+            if (newVal === '') {
+                for (let node of this.cy.nodes()) {
+                    node.style('font-size', '25px');
+                }
+                return;
+            }
+
+            let size = Number(newVal);
+            console.log(size)
+            if (!isNaN(size)) {
+                size = parseInt(size);
+                for (let node of this.cy.nodes()) {
+                    node.style('font-size', size + 'px');
+                }
+            }
+            else {
+                if (newVal !== '') {
+                    this.$message({
+                        message: '请输入数字',
+                        type: 'error',
+                        duration: 1500
+                    });
+                }
+                for (let node of this.cy.nodes()) {
+                    node.style('font-size', '25px');
+                }
+            }
+        },
+        node_radius(newVal, oldVal) {
+            if (newVal === '') {
+                for (let node of this.cy.nodes()) {
+                    node.removeStyle('width');
+                    node.removeStyle('height');
+                }
+                return;
+            }
+
+            let radius = Number(newVal);
+            if (!isNaN(radius)) {
+                radius = parseInt(radius);
+                for (let node of this.cy.nodes()) {
+                    node.style('width', (radius * 2) + 'px');
+                    node.style('height', (radius * 2) + 'px');
+                }
+            }
+            else {
+                if (newVal !== '') {
+                    this.$message({
+                        message: '请输入数字',
+                        type: 'error',
+                        duration: 1500
+                    });
+                }
+                for (let node of this.cy.nodes()) {
+                    node.removeStyle('width');
+                    node.removeStyle('height');
+                }
+            }
         }
     },
     mounted() {
-        console.log(this.cy)
     },
     computed: {
         ...mapState({
@@ -401,13 +491,6 @@ export default {
             return search_type === '1' ? this.cy.nodes() : this.cy.edges();
         },
 
-        getDisplay(search_type) {
-            return search_type === '1' ? this.nodeDisplay : this.edgeDisplay;
-        },
-
-        getRender(search_type) {
-            return search_type === '1' ? this.rendNode : this.rendEdge;
-        },
 
         getName(search_type, val) {
             return search_type === '1' ? val.data().name : val.data().relation;
@@ -425,6 +508,10 @@ export default {
             this.search_text = '';
             this.search_type = '';
             this.select_value = '';
+            this.currentSearch = {
+                params: {},
+                result: []
+            };
         },
 
         checkParams() {
@@ -457,26 +544,41 @@ export default {
             let count = 0;
             console.log(target)
             target.forEach((val) =>{
-                console.log(val);
                 name = this.getName(params.search_type, val);
                 console.log(name);
                 let flagName = params.search_text === '' ? true : this.fuzzyMatch(name, params.search_text);
                 console.log('flagName', flagName)
-                let flagProperty;
-                flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
-                console.log('flagProperty', flagProperty)
-                if (flagName && flagProperty) {
-                    count++;
-                    this.currentSearch.result.push(val.data());
-                    val.addClass('searched');
+
+
+
+                if (this.search_type === '2') {
+                    if (flagName) {
+                        count++;
+                        this.currentSearch.result.push(val.data());
+                        val.source().addClass('searchedNode');
+                        val.target().addClass('searchedNode')
+                    }
+                    console.log(val)
                 }
+                else {
+                    let flagProperty;
+                    flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
+                    console.log('flagProperty', flagProperty)
+                    if (flagName && flagProperty) {
+                        count++;
+                        this.currentSearch.result.push(val.data());
+                        val.addClass('searchedNode');
+                    }
+                }
+
+
             });
 
             console.log(this.currentSearch)
 
             if (count > 0) {
-                let display = this.getDisplay(params.search_type);
-                this.searchDisplay(display);
+                //let display = this.getDisplay(params.search_type);
+                //this.searchDisplay(display);
                 this.$message({
                     message: '搜索完毕',
                     type: 'success',
@@ -519,37 +621,15 @@ export default {
             return flag;
         },
 
-        searchDisplay(display) {
-            let params = this.currentSearch.params;
-            let target = this.getSearchType(params.search_type);
-
-            target.forEach((val) => {
-                if (val.hasClass('searched')) {
-                    display(val);
-                }
-            });
-        },
-
-        nodeDisplay(val) {
-            val.style('background-color', '#ebc57c');
-        },
-
-        edgeDisplay(val) {
-            val.style('color', '#ebc57c');
-        },
-
         desearch() {
             let params = this.currentSearch.params;
-            let target = this.getSearchType(params.search_type);
-
-            let render = this.getRender(params.search_type);
+            let target = this.cy.nodes();
 
             target.forEach((val) =>{
 
-                if (val.hasClass('searched')) {
+                if (val.hasClass('searchedNode')) {
                     console.log(val);
-                    val.removeClass('searched');
-                    render(val);
+                    val.removeClass('searchedNode');
                 }
             });
 
@@ -562,45 +642,6 @@ export default {
             console.log('searchLog', this.searchLog)
         },
 
-
-
-        ///////////////////////////////////////////////////希望之后能进行复用////////////////////////////////////////////
-        //让过长的内容作为展示的标题时省略
-        fontShow(text) {
-            if (text && text.length > 5) {
-                return text.substring(0, 5) + "..."
-            }
-            return text
-        },
-
-        //根据内容设置字体大小，使之不会超出节点（未验证）
-        fontStyle(length) {
-            let fontSize = 30 - (length - 2) * 6
-            if (!fontSize || fontSize < 12) {
-                fontSize = 12
-            }
-            return {
-                "font-size": fontSize + "px"
-            };
-        },
-
-        //帮助node合适地展示text
-        rendNode(target) {
-            let name = target.data().name;
-            const text = this.fontShow(name);
-            target.data({nameShowed: text});
-            const style = this.fontStyle(text.length);
-            target.style(style);
-            target.style('background-color', '#9c8f96');
-        },
-
-        rendEdge(target){
-            let name = target.data().relation;
-            const text = this.fontShow(name);
-            target.data({nameShowed: text});
-            target.style('color', '#eea39d');
-        },
-        //////////////////////////////////////////////////////////////////////////////////////
 
         ///////////////////////////////////此处为过滤代码///////////////////////////////////////
 
@@ -627,7 +668,6 @@ export default {
                 });
                 for (let node of target_nodes) {
                     node.addClass('filtered');
-                    node.style('display', 'none');
                     console.log(node);
                 }
             }
@@ -639,7 +679,6 @@ export default {
                 for (let edge of target_edges) {
                     console.log(edge);
                     edge.addClass('filtered');
-                    edge.style('display', 'none');
                 }
                 for (let node of this.cy.nodes()) {
                     let flag = true;
@@ -648,14 +687,12 @@ export default {
                     for (let edge of node.connectedEdges()) {
                         console.log("edge", edge);
                         if (!edge.hasClass('filtered')) {
-                            console.log('here')
                             flag = false;
                             break;
                         }
                     }
                     if (flag) {
                         node.addClass('filtered');
-                        node.style('display', 'none');
                     }
                 }
             }
@@ -664,7 +701,6 @@ export default {
 
         defilter() {
             for (let target of this.cy.elements()) {
-                target.removeStyle('display');
                 target.removeClass('filtered');
             }
             this.filterShowEnabled = false;
