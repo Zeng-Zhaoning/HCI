@@ -528,45 +528,44 @@ export default {
             };
         },
 
-        checkParams() {
-            if (this.search_type === '') {
-                this.$message({
-                    message: '请选择搜索类型',
-                    type: 'error',
-                    duration: 1500
-                });
-                return false;
-            }
-
-            return true;
-        },
-
-        searchNode(){
+        checkKeyWords(text){
             let nameValid = /\S/;
             let keyWords = [];
-            this.search_node_text.forEach(val=>{//校验、去重
+            text.forEach(val=>{//校验、去重
                 if(nameValid.test(val)){
                     let item = val.trim();
                     if(!keyWords.includes(item)) keyWords.push(item);
                 }
             });
-            this.search_node_text = keyWords;//自动简化搜索框内容
-            if(keyWords.length===0) return;
-            let condition = this.search_node_condition;
-            if (condition.length===0) return;
+            return keyWords;
+        },
 
-            let log = this.search_node_log;//添加搜索日志
+        saveSearchLog(keyWords,log){//添加搜索日志
             keyWords.forEach(val=>{
-               let index = log.findIndex(item=>item===val);
-               if(index>=0){//更新日志位置
-                   log.splice(index,1);
-               }
-               log.unshift(val);//添加在头部
+                let index = log.findIndex(item=>item===val);
+                if(index>=0){//更新日志位置
+                    log.splice(index,1);
+                }
+                log.unshift(val);//添加在头部
             });
             let maxLen = this.max_log_len;
-            if(log.length>maxLen){//清除前面的过长日志
+            if(log.length>maxLen){//清除多余的早期历史记录
                 log.slice(maxLen,log.length-maxLen);
             }
+        },
+
+        searchNode(){
+            let keyWords = this.checkKeyWords(this.search_node_text);
+            let condition = this.search_node_condition;
+            this.search_node_text = keyWords;//自动简化搜索框内容
+            if(keyWords.length===0||condition.length===0){
+                // this.informMsg('error','请确认搜索内容和筛选条件都不为空哦');
+                return;
+            }
+            console.log(keyWords,condition);
+
+            //开始一次搜索
+            this.saveSearchLog(keyWords,this.search_node_log);//保存搜索历史
             const byName = condition.includes('name');
             const byRelation = condition.includes('relation');
             const byProp = condition.includes('property');
@@ -617,56 +616,24 @@ export default {
                 }
                 if(hit){
                     count += 1;
-                    this.currentSearch.result.push(val.data());
                     val.addClass('searchedNode');
                 }
             });
-            console.log('currentSearch',this.currentSearch)
-            if (count > 0) {
-                //let display = this.getDisplay(params.search_type);
-                //this.searchDisplay(display);
-                this.$message({
-                    message: '搜索完毕',
-                    type: 'success',
-                    duration: 1500
-                });
-            }
-            else {
-                this.$message({
-                    message: '未找到符合条件的结果',
-                    type: 'error',
-                    duration: 1500
-                });
-            }
+            this.informResult(count > 0,'搜索完毕','未找到符合条件的结果')
             this.node_searched = true;
         },
 
         searchEdge(){
-            let nameValid = /\S/;
-            let keyWords = [];
-            this.search_edge_text.forEach(val=>{//校验、去重
-                if(nameValid.test(val)){
-                    let item = val.trim();
-                    if(!keyWords.includes(item)) keyWords.push(item);
-                }
-            });
-            this.search_edge_text = keyWords;//自动简化搜索框内容
-            if(keyWords.length===0) return;
+            let keyWords = this.checkKeyWords(this.search_edge_text);
             let condition = this.search_edge_condition;
-            if (condition.length===0) return;
-
-            let log = this.search_edge_log;//添加搜索日志
-            keyWords.forEach(val=>{
-                let index = log.findIndex(item=>item===val);
-                if(index>=0){//更新日志位置
-                    log.splice(index,1);
-                }
-                log.unshift(val);//添加在头部
-            });
-            let maxLen = this.max_log_len;
-            if(log.length>maxLen){//清除前面的过长日志
-                log.slice(maxLen,log.length-maxLen);
+            this.search_edge_text = keyWords;//自动简化搜索框内容
+            if(keyWords.length===0||condition.length===0){
+                this.informMsg('error','请确认搜索内容和筛选条件都不为空哦');
+                return;
             }
+
+            //开始一次搜索
+            this.saveSearchLog(keyWords,this.search_edge_log);//保存搜索历史
             const byName = condition.includes('relation');
             const bySource = condition.includes('source');
             const byTarget = condition.includes('target');
@@ -693,100 +660,99 @@ export default {
                 }
                 if(hit){
                     count += 1;
-                    this.currentSearch.result.push(val.data());
                     val.addClass('searchedEdge');
                 }
             });
-            console.log('currentSearch',this.currentSearch)
-            if (count > 0) {
-                //let display = this.getDisplay(params.search_type);
-                //this.searchDisplay(display);
-                this.$message({
-                    message: '搜索完毕',
-                    type: 'success',
-                    duration: 1500
-                });
-            }
-            else {
-                this.$message({
-                    message: '未找到符合条件的结果',
-                    type: 'error',
-                    duration: 1500
-                });
-            }
+            this.informResult(count > 0,'搜索完毕','未找到符合条件的结果');
             this.edge_searched = true;
         },
 
-
-        //根据具体搜索条件还需进行修改
-        search() {
-            let flag = this.checkParams();
-
-            if (!flag) {
-                return;
-            }
-            //保存搜索参数
-            this.setSearchParams();
-
-            //搜索
-            let params = this.currentSearch.params;
-            let target = this.getSearchType(params.search_type);
-            let name;
-            let count = 0;
-            console.log(target)
-            target.forEach((val) =>{
-                name = this.getName(params.search_type, val);
-                console.log(name);
-                let flagName = params.search_text === '' ? true : this.fuzzyMatch(name, params.search_text);
-                console.log('flagName', flagName)
-
-
-
-                if (this.search_type === '2') {
-                    if (flagName) {
-                        count++;
-                        this.currentSearch.result.push(val.data());
-                        val.source().addClass('searchedNode');
-                        val.target().addClass('searchedNode')
-                    }
-                    console.log(val)
-                }
-                else {
-                    let flagProperty;
-                    flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
-                    console.log('flagProperty', flagProperty)
-                    if (flagName && flagProperty) {
-                        count++;
-                        this.currentSearch.result.push(val.data());
-                        val.addClass('searchedNode');
-                    }
-                }
-
-
-            });
-
-            console.log(this.currentSearch)
-
-            if (count > 0) {
-                //let display = this.getDisplay(params.search_type);
-                //this.searchDisplay(display);
-                this.$message({
-                    message: '搜索完毕',
-                    type: 'success',
-                    duration: 1500
-                });
+        informResult(isSuccess,success_msg,error_msg){
+            if (isSuccess) {
+                this.informMsg('success',success_msg);
             }
             else {
-                this.$message({
-                    message: '未找到符合条件的结果',
-                    type: 'error',
-                    duration: 1500
-                });
+                this.informMsg('error',error_msg);
             }
-
-            this.showEnabled = true;
-
         },
+
+        informMsg(type,msg) {
+            this.$message({
+                message: msg,
+                type: type,
+                duration: 1500
+            });
+        },
+
+        // //根据具体搜索条件还需进行修改
+        // search() {
+        //     let flag = this.checkParams();
+        //
+        //     if (!flag) {
+        //         return;
+        //     }
+        //     //保存搜索参数
+        //     this.setSearchParams();
+        //
+        //     //搜索
+        //     let params = this.currentSearch.params;
+        //     let target = this.getSearchType(params.search_type);
+        //     let name;
+        //     let count = 0;
+        //     console.log(target)
+        //     target.forEach((val) =>{
+        //         name = this.getName(params.search_type, val);
+        //         console.log(name);
+        //         let flagName = params.search_text === '' ? true : this.fuzzyMatch(name, params.search_text);
+        //         console.log('flagName', flagName)
+        //
+        //
+        //
+        //         if (this.search_type === '2') {
+        //             if (flagName) {
+        //                 count++;
+        //                 this.currentSearch.result.push(val.data());
+        //                 val.source().addClass('searchedNode');
+        //                 val.target().addClass('searchedNode')
+        //             }
+        //             console.log(val)
+        //         }
+        //         else {
+        //             let flagProperty;
+        //             flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
+        //             console.log('flagProperty', flagProperty)
+        //             if (flagName && flagProperty) {
+        //                 count++;
+        //                 this.currentSearch.result.push(val.data());
+        //                 val.addClass('searchedNode');
+        //             }
+        //         }
+        //
+        //
+        //     });
+        //
+        //     console.log(this.currentSearch)
+        //
+        //     if (count > 0) {
+        //         //let display = this.getDisplay(params.search_type);
+        //         //this.searchDisplay(display);
+        //         this.$message({
+        //             message: '搜索完毕',
+        //             type: 'success',
+        //             duration: 1500
+        //         });
+        //     }
+        //     else {
+        //         this.$message({
+        //             message: '未找到符合条件的结果',
+        //             type: 'error',
+        //             duration: 1500
+        //         });
+        //     }
+        //
+        //     this.showEnabled = true;
+        //
+        // },
 
         fuzzyMatch(str, key){
             let index = -1, flag = false;
@@ -836,26 +802,26 @@ export default {
             });
         },
 
-        desearch() {
-            let params = this.currentSearch.params;
-            let target = this.cy.nodes();
-
-            target.forEach((val) =>{
-
-                if (val.hasClass('searchedNode')) {
-                    console.log(val);
-                    val.removeClass('searchedNode');
-                }
-            });
-
-            this.clearSearchContent();
-
-            this.showEnabled = false;
-
-            this.searchLog.push(this.currentSearch);
-
-            console.log('searchLog', this.searchLog)
-        },
+        // desearch() {
+        //     let params = this.currentSearch.params;
+        //     let target = this.cy.nodes();
+        //
+        //     target.forEach((val) =>{
+        //
+        //         if (val.hasClass('searchedNode')) {
+        //             console.log(val);
+        //             val.removeClass('searchedNode');
+        //         }
+        //     });
+        //
+        //     this.clearSearchContent();
+        //
+        //     this.showEnabled = false;
+        //
+        //     this.searchLog.push(this.currentSearch);
+        //
+        //     console.log('searchLog', this.searchLog)
+        // },
 
 
         ///////////////////////////////////此处为过滤代码///////////////////////////////////////

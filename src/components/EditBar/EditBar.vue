@@ -78,11 +78,11 @@
                 style="width:100%"
                 multiple
                 filterable
-                allow-create
+
                 default-first-option
                 clearable
-                no-data-text="输入已存在的关键词会取消勾选哦"
-                placeholder="输入已存在的关键词会取消勾选哦">
+                no-data-text="重复输入关键词会抵消哦"
+                placeholder="重复输入关键词会抵消哦">
           <el-option  v-for="item in search_node_log"
                       :key="item"
                       :label="item"
@@ -109,8 +109,8 @@
                 allow-create
                 default-first-option
                 clearable
-                no-data-text="输入已存在的关键词会取消勾选哦"
-                placeholder="输入已存在的关键词会取消勾选哦">
+                no-data-text="重复输入关键词会抵消哦"
+                placeholder="重复输入关键词会抵消哦">
           <el-option  v-for="item in search_edge_log"
                       :key="item"
                       :label="item"
@@ -128,35 +128,35 @@
         </div>
 
 
-        <div class="item_title">| 节点名称</div>
-        <el-input
-                class="el-input"
-                clearable
-                placeholder="请输入搜索内容"
-                v-model="search_text">
-        </el-input>
-        <div class="item_title">| 图元类型</div>
-        <el-select v-model="search_type" clearable placeholder="请选择类型">
-          <el-option
-              v-for="type in types"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value">
-          </el-option>
-        </el-select>
-        <div class="item_title">| 属性</div>
-        <el-input
-            class="el-input"
-            clearable
-            :rows="1"
-            placeholder="请输入搜索属性"
-            v-model="select_value"
-            :disabled="edgeDisabled">
-        </el-input>
-        <div class="analyse-btn-box">
-          <el-button @click="search">搜索</el-button>
-          <el-button v-show="showEnabled" @click="desearch">取消</el-button>
-        </div>
+<!--        <div class="item_title">| 节点名称</div>-->
+<!--        <el-input-->
+<!--                class="el-input"-->
+<!--                clearable-->
+<!--                placeholder="请输入搜索内容"-->
+<!--                v-model="search_text">-->
+<!--        </el-input>-->
+<!--        <div class="item_title">| 图元类型</div>-->
+<!--        <el-select v-model="search_type" clearable placeholder="请选择类型">-->
+<!--          <el-option-->
+<!--              v-for="type in types"-->
+<!--              :key="type.value"-->
+<!--              :label="type.label"-->
+<!--              :value="type.value">-->
+<!--          </el-option>-->
+<!--        </el-select>-->
+<!--        <div class="item_title">| 属性</div>-->
+<!--        <el-input-->
+<!--            class="el-input"-->
+<!--            clearable-->
+<!--            :rows="1"-->
+<!--            placeholder="请输入搜索属性"-->
+<!--            v-model="select_value"-->
+<!--            :disabled="edgeDisabled">-->
+<!--        </el-input>-->
+<!--        <div class="analyse-btn-box">-->
+<!--          <el-button @click="search">搜索</el-button>-->
+<!--          <el-button v-show="showEnabled" @click="desearch">取消</el-button>-->
+<!--        </div>-->
       </edit-bar-block>
     <!--/////////////////////////////////////////////////////////////////////////////////////////-->
 
