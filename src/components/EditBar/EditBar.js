@@ -17,6 +17,10 @@ export default {
             relations_data: [],
 
             ////////////////////////////搜索相关/////////////////////////////////
+            search_node_text: '',
+            search_node_condition: [],
+            node_searched: false,
+
             search_text: '',
             search_type: '',
             select_value: '',
@@ -87,11 +91,12 @@ export default {
         }
     },
     watch: {
-        cy(newValue, oldValue){
-            this.get_statistic_data();
-            console.log("cy", newValue)
-            this.layout_type = newValue.options().layout.name;
-        },
+        //暂时注释避免影响cy使用
+        // cy(newValue, oldValue){
+        //     this.get_statistic_data();
+        //     console.log("cy", newValue)
+        //     this.layout_type = newValue.options().layout.name;
+        // },
         statistic_data_change(newValue, oldValue){
             this.get_statistic_data();
         },
@@ -527,6 +532,86 @@ export default {
             return true;
         },
 
+        searchNode(){
+            let condition = this.search_node_condition;
+            let text = this.search_node_text.trim();
+            let nameValid = /\S/;
+            if (!nameValid.test(text)||condition.length===0) {return;}
+            const byName = condition.includes('name');
+            const byRelation = condition.includes('relation');
+            const byProp = condition.includes('property');
+            let nodes = this.cy.nodes();
+            let keyWords = text.split(" ");
+            let count = 0;
+            nodes.forEach(val=>{
+                if (val.hasClass('searchedNode')) {
+                    val.removeClass('searchedNode');
+                }
+                let valName = val.data("name");
+                let valProps = val.data("property");
+                let edges = val._private.edges;
+                let hit = false;
+                let relaHit;
+                let propHit;
+                for(let key of keyWords){
+                    if(byName&&this.fuzzyMatch(valName, key)) {
+                        hit = true;
+                        break;
+                    }
+                    if(byProp){
+                        propHit = false;
+                        for(let prop of valProps){
+                            if(this.fuzzyMatch(prop, key)){
+                                propHit=true;
+                                break;
+                            }
+                        }
+                        if(propHit){
+                            hit = true;
+                            break;
+                        }
+                    }
+                    if(byRelation){
+                        relaHit = false;
+                        for(let edge of edges){
+                            let edgeName = edge.data("relation");
+                            if(this.fuzzyMatch(edgeName, key)){
+                                relaHit = true;
+                                break;
+                            }
+                        }
+                        if(relaHit){
+                            hit = true;
+                            break;
+                        }
+                    }
+                }
+                if(hit){
+                    count += 1;
+                    this.currentSearch.result.push(val.data());
+                    val.addClass('searchedNode');
+                }
+            });
+            console.log('currentSearch',this.currentSearch)
+            if (count > 0) {
+                //let display = this.getDisplay(params.search_type);
+                //this.searchDisplay(display);
+                this.$message({
+                    message: '搜索完毕',
+                    type: 'success',
+                    duration: 1500
+                });
+            }
+            else {
+                this.$message({
+                    message: '未找到符合条件的结果',
+                    type: 'error',
+                    duration: 1500
+                });
+            }
+            this.node_searched = true;
+        },
+
         //根据具体搜索条件还需进行修改
         search() {
             let flag = this.checkParams();
@@ -562,7 +647,7 @@ export default {
                 }
                 else {
                     let flagProperty;
-                    flagProperty = params.select_value === '' ? true : val.data().properties.includes(params.select_value);
+                    flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
                     console.log('flagProperty', flagProperty)
                     if (flagName && flagProperty) {
                         count++;
@@ -619,6 +704,18 @@ export default {
                 }
             }
             return flag;
+        },
+
+        desearchNode(){
+            let nodes = this.cy.nodes();
+            nodes.forEach(val=>{
+                if (val.hasClass('searchedNode')) {
+                    val.removeClass('searchedNode');
+                }
+                this.search_node_condition = [];
+                this.search_node_text = '';
+                this.node_searched = false;
+            });
         },
 
         desearch() {

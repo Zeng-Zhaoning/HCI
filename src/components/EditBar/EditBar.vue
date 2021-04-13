@@ -77,9 +77,18 @@
             class="el-input"
             clearable
             :rows="1"
-            placeholder="请输入搜索内容"
-            v-model="search_text">
+            placeholder="在这里搜索节点"
+            v-model="search_node_text">
         </el-input>
+        <el-checkbox-group v-model="search_node_condition" >
+          <el-checkbox label="name">节点名</el-checkbox>
+          <el-checkbox label="relation">关系名</el-checkbox>
+          <el-checkbox label="property">属性</el-checkbox>
+        </el-checkbox-group>
+        <div class="analyse-btn-box">
+          <el-button @click="searchNode">搜索</el-button>
+          <el-button v-show="node_searched" @click="desearchNode">取消</el-button>
+        </div>
         <div class="item_title">| 图元类型</div>
         <el-select v-model="search_type" clearable placeholder="请选择类型">
           <el-option

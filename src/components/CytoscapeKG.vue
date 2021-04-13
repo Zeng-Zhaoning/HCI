@@ -13,9 +13,9 @@
                             <el-option v-for="item in givenType" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="属性" prop="properties" v-if="node0Edge1===0">
+                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">
                         <el-select
-                                v-model="form.properties"
+                                v-model="form.property"
                                 style="width:90%"
                                 multiple
                                 filterable
@@ -121,7 +121,7 @@
                 form: {
                     name: '',
                     type: '',
-                    properties: [],
+                    property: [],
                     edgeCondition:{source:'',target:''},
                     //以下为借用form的reset来自动清空的属性
                     nameNow: '',
@@ -134,7 +134,7 @@
                     type:[//如果设置了初始值，这里就不会被用到
                         {required:true,message:'请选择类型',trigger:'change'}
                     ],
-                    properties:[
+                    property:[
                         {validator:propLenCheck,trigger:'change'}
                     ]
                 },
@@ -323,9 +323,7 @@
                     let data = target.data();
                     target.style({label:data.name,fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大label的36更大即可
                     if(!target.scratch('tip')){
-                        console.log(data)
-                        console.log(data.properties)
-                        let text = "类型: "+data.type+'<br/>'+"属性: "+data.properties.join(',');
+                        let text = "类型: "+data.type+'<br/>'+"属性: "+data.property.join(',');
                         target.scratch('tip',that.makeTippy(target,text));
                     }
                     target.scratch('tip').show();
@@ -425,7 +423,7 @@
                                 if(group==='nodes'){
                                     that.node0Edge1 = 0;
                                     that.givenType = that.nodeType;
-                                    that.form.properties = data.properties;
+                                    that.form.property = data.property;
                                 }else{
                                     that.node0Edge1 = 1;
                                     that.givenType = that.edgeType;
@@ -440,7 +438,7 @@
                                         type: addForm.type,
                                     };
                                     if(group==='nodes'){
-                                        obj.properties = addForm.properties;
+                                        obj.property = addForm.property;
                                     }
                                     target.data(obj);
                                     //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
@@ -567,7 +565,7 @@
                                     newObj.data = {
                                         name:addForm.name,
                                         type:addForm.type,
-                                        properties:addForm.properties
+                                        property:addForm.property
                                     };
                                     let collection = cy.add(newObj);
                                     that.rendNode(collection[0], that);

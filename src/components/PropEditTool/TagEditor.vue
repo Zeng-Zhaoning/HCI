@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-tag :key="tag"
-                v-for="tag in properties"
+                v-for="tag in property"
                 closable
                 style="margin-right: 1%;max-width:90%;"
                 @close="handleClose">
@@ -25,12 +25,12 @@
 </template>
 
 <script>
-    //使用示例：<tag-editor v-model:properties="form.properties"></tag-editor>
+    //使用示例：<tag-editor v-model:property="form.property"></tag-editor>
     //因为样式上没调好看，最终没用上这个，但是删了又可惜，留在这当做我努力过吧(╥﹏╥)
     export default {
         name: "TagEditor",
         model:{
-          prop: 'properties',
+          prop: 'property',
           event: 'change'
         },
         data(){
@@ -41,12 +41,12 @@
             };
         },
         props:{
-            properties: Array
+            property: Array
         },
         methods:{
             handleClose(){
-                properties.splice(properties.indexOf(tag), 1);
-                this.$emit('change',this.properties);
+                property.splice(property.indexOf(tag), 1);
+                this.$emit('change',this.property);
             },
             showTagInput() {
                 this.tagInputVisible = true;
@@ -57,8 +57,8 @@
             handleTagInputConfirm() {
                 let tagInputValue = this.tagInputValue;
                 if (tagInputValue) {
-                    this.properties.push(tagInputValue);
-                    this.$emit('change',this.properties);
+                    this.property.push(tagInputValue);
+                    this.$emit('change',this.property);
                 }
                 this.tagInputVisible = false;
                 this.tagInputValue = '';
