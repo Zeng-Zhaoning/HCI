@@ -27,6 +27,7 @@
 <script>
     //使用示例：<tag-editor v-model:property="form.property"></tag-editor>
     //因为样式上没调好看，最终没用上这个，但是删了又可惜，留在这当做我努力过吧(╥﹏╥)
+    //其实el-select内部实现和这个挺像的，不过就是完善了亿点点而已
     export default {
         name: "TagEditor",
         model:{

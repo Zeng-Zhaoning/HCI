@@ -78,16 +78,29 @@
                 style="width:100%"
                 multiple
                 filterable
-
+                allow-create
                 default-first-option
                 clearable
                 no-data-text="重复输入关键词会抵消哦"
-                placeholder="重复输入关键词会抵消哦">
-          <el-option  v-for="item in search_node_log"
-                      :key="item"
-                      :label="item"
-                      :value="item">
-          </el-option>
+                placeholder="可输入多个关键词搜索">
+<!--          el-select在开了allow-create后有奇怪的bug，reserve-keyword估计也没用，最终选择文字提示-->
+            <el-option :disabled="true" >
+              <span style="position: relative;display: block">注意！如果没有选中下拉框中的一项</span>
+            </el-option>
+            <el-option :disabled="true">
+              <span style="position: relative;display: block">这时类似是选中了未显示的自建选项缓存</span>
+            </el-option>
+            <el-option :disabled="true">
+              <span style="position: relative;display: block">未防止已选项和选中的未显示的相同数据抵消</span>
+            </el-option>
+            <el-option :disabled="true">
+              <span style="position: relative;display: block">请确认下拉框中的选项的选中状况符合预期</span>
+            </el-option>
+            <el-option  v-for="item in search_node_log"
+                        :key="item"
+                        :label="item"
+                        :value="item">
+            </el-option>
         </el-select>
 
         <el-checkbox-group v-model="search_node_condition" >
@@ -110,7 +123,21 @@
                 default-first-option
                 clearable
                 no-data-text="重复输入关键词会抵消哦"
-                placeholder="重复输入关键词会抵消哦">
+                placeholder="可输入多个关键词搜索">
+          <!--          el-select在开了allow-create后有奇怪的bug，reserve-keyword估计也没用，最终选择文字提示-->
+          <el-option :disabled="true" >
+            <span style="position: relative;display: block">注意！如果没有选中下拉框中的一项</span>
+          </el-option>
+          <el-option :disabled="true">
+            <span style="position: relative;display: block">这时类似是选中了未显示的自建选项缓存</span>
+          </el-option>
+          <el-option :disabled="true">
+            <span style="position: relative;display: block">未防止已选项和选中的未显示的相同数据抵消</span>
+          </el-option>
+          <el-option :disabled="true">
+            <span style="position: relative;display: block">请确认下拉框中的选项的选中状况符合预期</span>
+          </el-option>
+
           <el-option  v-for="item in search_edge_log"
                       :key="item"
                       :label="item"

@@ -501,32 +501,32 @@ export default {
         },
 
         ///////////////////////////////////此处为搜索相关代码段///////////////////////////////////
-        getSearchType(search_type) {
-            return search_type === '1' ? this.cy.nodes() : this.cy.edges();
-        },
-
-
-        getName(search_type, val) {
-            return search_type === '1' ? val.data().name : val.data().relation;
-        },
-
-        setSearchParams() {
-            this.currentSearch.params = {
-                search_text: this.search_text,
-                search_type: this.search_type,
-                select_value: this.select_value
-            }
-        },
-
-        clearSearchContent() {
-            this.search_text = '';
-            this.search_type = '';
-            this.select_value = '';
-            this.currentSearch = {
-                params: {},
-                result: []
-            };
-        },
+        // getSearchType(search_type) {
+        //     return search_type === '1' ? this.cy.nodes() : this.cy.edges();
+        // },
+        //
+        //
+        // getName(search_type, val) {
+        //     return search_type === '1' ? val.data().name : val.data().relation;
+        // },
+        //
+        // setSearchParams() {
+        //     this.currentSearch.params = {
+        //         search_text: this.search_text,
+        //         search_type: this.search_type,
+        //         select_value: this.select_value
+        //     }
+        // },
+        //
+        // clearSearchContent() {
+        //     this.search_text = '';
+        //     this.search_type = '';
+        //     this.select_value = '';
+        //     this.currentSearch = {
+        //         params: {},
+        //         result: []
+        //     };
+        // },
 
         checkKeyWords(text){
             let nameValid = /\S/;
@@ -543,10 +543,10 @@ export default {
         saveSearchLog(keyWords,log){//添加搜索日志
             keyWords.forEach(val=>{
                 let index = log.findIndex(item=>item===val);
-                if(index>=0){//更新日志位置
-                    log.splice(index,1);
+                if(index<0){//更新日志位置
+                    log.unshift(val);//添加在头部
                 }
-                log.unshift(val);//添加在头部
+
             });
             let maxLen = this.max_log_len;
             if(log.length>maxLen){//清除多余的早期历史记录
@@ -559,13 +559,14 @@ export default {
             let condition = this.search_node_condition;
             this.search_node_text = keyWords;//自动简化搜索框内容
             if(keyWords.length===0||condition.length===0){
-                // this.informMsg('error','请确认搜索内容和筛选条件都不为空哦');
+                this.informMsg('error','请确认搜索内容和筛选条件都不为空哦');
                 return;
             }
-            console.log(keyWords,condition);
+            console.log("(keyWords, condition, log) before saveLog",keyWords,condition,this.search_node_log);
 
             //开始一次搜索
             this.saveSearchLog(keyWords,this.search_node_log);//保存搜索历史
+            console.log("(keyWords, condition, log) after saveLog",keyWords,condition,this.search_node_log);
             const byName = condition.includes('name');
             const byRelation = condition.includes('relation');
             const byProp = condition.includes('property');
