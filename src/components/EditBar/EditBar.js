@@ -34,7 +34,7 @@ export default {
             },
             searchLog: [],
 
-            ///////////////////////////////////////////////////
+            //////////////////////过滤相关/////////////////////////////
 
             filter_disabled: true,
             filterShowEnabled: false,
@@ -44,8 +44,8 @@ export default {
             filter_edge_checked: false,
             filter_edge_checkList: [],
 
-            //////////////////////////////////////////////////////
-            //layout_type: 'breadthfirst',
+            //////////////////////展示效果相关////////////////////////////////
+            layout_type: 'breadthfirst',
             layout_types: [
                 {
                     label: 'random',
@@ -106,6 +106,7 @@ export default {
                 console.log(this.specific_types);
             }
         },
+        /////////////////////////////展示相关//////////////////////////////
         layout_type(newVal, oldVal) {
             console.log(newVal);
             let layout = this.cy.layout({name: newVal})
@@ -145,12 +146,7 @@ export default {
             }
 
         },
-        layout_type: {
-            get() {
-                console.log(this.cy)
-                return 'breadthfirst';
-            }
-        }
+
     },
     methods:{
         ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult']),
