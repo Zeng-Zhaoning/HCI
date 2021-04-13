@@ -82,8 +82,14 @@
                 default-first-option
                 clearable
                 no-data-text="输入已存在的关键词会取消勾选哦"
-                placeholder="在这里搜索实体">
+                placeholder="输入已存在的关键词会取消勾选哦">
+          <el-option  v-for="item in search_node_log"
+                      :key="item"
+                      :label="item"
+                      :value="item">
+          </el-option>
         </el-select>
+
         <el-checkbox-group v-model="search_node_condition" >
           <el-checkbox label="name">实体名</el-checkbox>
           <el-checkbox label="relation">拥有关系</el-checkbox>
@@ -104,7 +110,12 @@
                 default-first-option
                 clearable
                 no-data-text="输入已存在的关键词会取消勾选哦"
-                placeholder="在这里搜索关系">
+                placeholder="输入已存在的关键词会取消勾选哦">
+          <el-option  v-for="item in search_edge_log"
+                      :key="item"
+                      :label="item"
+                      :value="item">
+          </el-option>
         </el-select>
         <el-checkbox-group v-model="search_edge_condition" >
           <el-checkbox label="relation">关系名</el-checkbox>
@@ -117,6 +128,13 @@
         </div>
 
 
+        <div class="item_title">| 节点名称</div>
+        <el-input
+                class="el-input"
+                clearable
+                placeholder="请输入搜索内容"
+                v-model="search_text">
+        </el-input>
         <div class="item_title">| 图元类型</div>
         <el-select v-model="search_type" clearable placeholder="请选择类型">
           <el-option

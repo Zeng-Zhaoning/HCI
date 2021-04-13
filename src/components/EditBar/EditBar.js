@@ -2,12 +2,13 @@ import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
 import { setGraphAPI } from "../../api/basicAPI";
 import OpItem from './OpItem';
 import EditBarBlock from "./EditBarBlock";
+import TagEditor from "../PropEditTool/TagEditor"; //
 import {toRaw} from 'vue'
 import {isNumber} from "element-plus/es/utils/util";
 
 export default {
     name: "EditBar",
-    components: {OpItem,EditBarBlock},
+    components: {OpItem,EditBarBlock,TagEditor}, //
     data(){
         return{
             showEditBar: true,
@@ -17,13 +18,17 @@ export default {
             relations_data: [],
 
             ////////////////////////////搜索相关/////////////////////////////////
+            max_log_len: 10,
+
             search_node_text: [],
             search_node_condition: [],
             node_searched: false,
+            search_node_log: [],
 
             search_edge_text:[],
             search_edge_condition: [],
             edge_searched:false,
+            search_edge_log: [],
 
             search_text: '',
             search_type: '',
@@ -537,14 +542,31 @@ export default {
         },
 
         searchNode(){
+            let nameValid = /\S/;
+            let keyWords = [];
+            this.search_node_text.forEach(val=>{//校验、去重
+                if(nameValid.test(val)){
+                    let item = val.trim();
+                    if(!keyWords.includes(item)) keyWords.push(item);
+                }
+            });
+            this.search_node_text = keyWords;//自动简化搜索框内容
+            if(keyWords.length===0) return;
             let condition = this.search_node_condition;
             if (condition.length===0) return;
-            let nameValid = /\S/;
-            let keyWords = this.search_node_text.filter(val=>{
-                val = val.trim();
-                return nameValid.test(val);
+
+            let log = this.search_node_log;//添加搜索日志
+            keyWords.forEach(val=>{
+               let index = log.findIndex(item=>item===val);
+               if(index>=0){//更新日志位置
+                   log.splice(index,1);
+               }
+               log.unshift(val);//添加在头部
             });
-            if(keyWords.length===0) return;
+            let maxLen = this.max_log_len;
+            if(log.length>maxLen){//清除前面的过长日志
+                log.slice(maxLen,log.length-maxLen);
+            }
             const byName = condition.includes('name');
             const byRelation = condition.includes('relation');
             const byProp = condition.includes('property');
@@ -620,14 +642,31 @@ export default {
         },
 
         searchEdge(){
+            let nameValid = /\S/;
+            let keyWords = [];
+            this.search_edge_text.forEach(val=>{//校验、去重
+                if(nameValid.test(val)){
+                    let item = val.trim();
+                    if(!keyWords.includes(item)) keyWords.push(item);
+                }
+            });
+            this.search_edge_text = keyWords;//自动简化搜索框内容
+            if(keyWords.length===0) return;
             let condition = this.search_edge_condition;
             if (condition.length===0) return;
-            let nameValid = /\S/;
-            let keyWords = this.search_edge_text.filter(val=>{
-                val = val.trim();
-                return nameValid.test(val);
+
+            let log = this.search_edge_log;//添加搜索日志
+            keyWords.forEach(val=>{
+                let index = log.findIndex(item=>item===val);
+                if(index>=0){//更新日志位置
+                    log.splice(index,1);
+                }
+                log.unshift(val);//添加在头部
             });
-            if(keyWords.length===0) return;
+            let maxLen = this.max_log_len;
+            if(log.length>maxLen){//清除前面的过长日志
+                log.slice(maxLen,log.length-maxLen);
+            }
             const byName = condition.includes('relation');
             const bySource = condition.includes('source');
             const byTarget = condition.includes('target');
