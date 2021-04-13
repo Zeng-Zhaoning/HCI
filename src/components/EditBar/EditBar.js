@@ -269,18 +269,17 @@ export default {
             if (JSON.stringify(eles) !== '{}') {
                 if (eles.edges !== undefined && eles.edges.length > 0) {
                     eles.edges.forEach(val => {
-                        let newData = {
-                            ...val.data
-                        };
-                        obj.edges.push({data: newData});
+                        obj.edges.push({
+                            data: val.data
+                        });
                     });
                 }
                 if (eles.nodes !== undefined && eles.nodes.length > 0) {
                     eles.nodes.forEach(val => {
-                        let newData = {
-                            ...val.data
-                        };
-                        obj.nodes.push({data: newData});
+                        obj.nodes.push({
+                            data: val.data,
+                            position: val.position
+                        });
                     });
                 }
             }
