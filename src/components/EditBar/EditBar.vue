@@ -249,8 +249,8 @@
         </el-select>
         <div class="item_title">| 关系显示</div>
         <el-radio-group v-model="relation_label_enabled">
-          <el-radio :label="1">是</el-radio>
-          <el-radio :label="2">否</el-radio>
+          <el-radio :label="true">是</el-radio>
+          <el-radio :label="false">否</el-radio>
         </el-radio-group>
         <div class="item_title">| 节点字体</div>
         <el-input

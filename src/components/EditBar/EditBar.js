@@ -71,7 +71,7 @@ export default {
             // layout_type:''更名为layoutTypeNow
             // layout_types:[…]搬为workspace的layoutType
 
-            relation_label_enabled: 1,
+            relation_label_enabled: true,
             font_size: '',
             node_radius: '',
 
@@ -135,17 +135,14 @@ export default {
         },
         //在workspace中添加css不能起作用，不知道为什么，暂时先通过style进行设置
         relation_label_enabled(newVal, oldVal) {
-            console.log(newVal, typeof newVal)
-            if (newVal === 1) {
-                for (let edge of this.cy.edges()) {
-                    edge.removeStyle('text-opacity');
+            let edges = this.cy.edges();
+            let enabled = newVal;
+            for (let edge of edges) {
+                if(enabled&&edge.hasClass('label_hidden')){
+                    edge.removeClass('label_hidden');
+                }else if(!enabled&&!edge.hasClass('label_hidden')){
+                    edge.addClass('label_hidden');
                 }
-            }
-            else {
-                for (let edge of this.cy.edges()) {
-                    edge.style('text-opacity', 0)
-                }
-
             }
         },
         font_size(newVal, oldVal) {

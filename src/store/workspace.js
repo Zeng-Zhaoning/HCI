@@ -56,6 +56,12 @@ export const workspace = {
                 }
             },
             {
+                selector: '.label_hidden',
+                css: {
+                    "text-opacity": 0,
+                }
+            },
+            {
                 selector: '.hidden',
                 css: {
                     'visibility': 'hidden'
