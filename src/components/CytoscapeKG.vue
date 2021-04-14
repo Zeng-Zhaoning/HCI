@@ -46,6 +46,7 @@
     //边的添加和修改增加source和target的可修改功能
     //eles.hasClass()和.addClass()帮助edge把class属性的添加移动到rendEdge里
     //ele.isNode()帮助add等方法优化group==='nodes'的逻辑
+    //node0Edge1这个属性换成字符串
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -178,7 +179,7 @@
             // }
         },
         methods: {
-            ...mapMutations(['setCy','trigger_statistic_data_change']),
+            ...mapMutations(['setCy','setElements','trigger_statistic_data_change']),
 
             //读数据，然后交给dataHandle
             getData(url) {
@@ -306,6 +307,11 @@
                     layout: presetLayout
                 });
                 this.setCy(cy);
+
+                //为了恢复打开时的布局而存的elements，目前用到的只有elements中nodes的id和position映射关系
+                //虽然完全可以只存这个map<id,position>，但为了可扩展性考虑暂时先存elements(扩展时可能也用不到hhh)
+                let elements = JSON.parse(JSON.stringify(this.cy.json().elements));//存入运行时的cy，确保都有id
+                this.setElements(elements);
 
                 this.batch(cy,()=>{
                     cy.nodes().forEach(val => {

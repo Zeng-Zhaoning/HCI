@@ -65,37 +65,12 @@ export default {
             // filter_edge_checkList: [],
 
             //////////////////////展示效果相关////////////////////////////////
-            layout_type: '',
-            layout_types: [
-                {
-                    label: 'random',
-                    value: 'random'
-                },
-                {
-                    label: 'grid',
-                    value: 'grid'
-                },
-                {
-                    label: 'circle',
-                    value: 'circle'
-                },
-                {
-                    label: 'preset',
-                    value: 'preset'
-                },
-                {
-                    label: 'concentric',
-                    value: 'concentric'
-                },
-                {
-                    label: 'breadthfirst',
-                    value: 'breadthfirst'
-                },
-                {
-                    label: 'cose',
-                    value: 'cose'
-                }
-            ],
+
+            layoutTypeNow : '',
+
+            // layout_type:''更名为layoutTypeNow
+            // layout_types:[…]搬为workspace的layoutType
+
             relation_label_enabled: 1,
             font_size: '',
             node_radius: '',
@@ -105,40 +80,57 @@ export default {
     watch: {
         cy(newValue, oldValue){
             this.get_statistic_data();
-            console.log("cy", newValue)
-            this.layout_type = newValue.options().layout.name;
+            console.log("cy watched: '", oldValue,"' to '",newValue, "'")
+            this.layoutTypeNow = newValue.options().layout.name;
         },
         statistic_data_change(newValue, oldValue){
             this.get_statistic_data();
         },
-        search_type(newVal, oldVal) {
-            this.edgeDisabled = newVal !== '1';
-        },
-        filter_type(newVal, oldVal) {
-            console.log(newVal);
-            if (newVal === '') {
-                this.filter_disabled = true;
-            }
-            else {
-                this.filter_disabled = false;
-                if (newVal === '1') {
-                    this.specific_types = this.nodeType;
-                    console.log(this.nodeType)
-                }
-                else  if (newVal === '2') {
-                    this.specific_types = this.edgeType;
-                    console.log(this.edgeType)
-                }
-                else {
-                    console.log('类型错误！！！')
-                }
-                console.log(this.specific_types);
-            }
-        },
+        // search_type(newVal, oldVal) {
+        //     this.edgeDisabled = newVal !== '1';
+        // },
+        // filter_type(newVal, oldVal) {
+        //     console.log(newVal);
+        //     if (newVal === '') {
+        //         this.filter_disabled = true;
+        //     }
+        //     else {
+        //         this.filter_disabled = false;
+        //         if (newVal === '1') {
+        //             this.specific_types = this.nodeType;
+        //             console.log(this.nodeType)
+        //         }
+        //         else  if (newVal === '2') {
+        //             this.specific_types = this.edgeType;
+        //             console.log(this.edgeType)
+        //         }
+        //         else {
+        //             console.log('类型错误！！！')
+        //         }
+        //         console.log(this.specific_types);
+        //     }
+        // },
         /////////////////////////////展示相关//////////////////////////////
-        layout_type(newVal, oldVal) {
-            console.log(newVal);
-            let layout = this.cy.layout({name: newVal})
+        layoutTypeNow(newVal, oldVal) {
+            console.log("layout watched: '",oldVal,"' to '",newVal,"'");
+            let layout;
+            if(newVal!=='preset'){
+                layout = this.cy.layout({name: newVal})
+            }else{
+                console.log("elements stored: ",this.elements);
+                let nodes = this.elements.nodes;
+                let positions = node=>{
+                    let nodeId = node.data("id");
+                    for(let node of nodes){
+                        if(node.data.id===nodeId){
+                            return node.position;
+                        }//可用cy.$()?
+                    }
+                    return {x:0,y:0};//可以拓展成随机放置
+                };
+                layout = this.cy.layout({name: newVal,positions:positions});//若以后恢复的布局中新增颜色、大小等，可能需要为增加的部分渲染内容新写代码
+                console.log("reset done")
+            }
             layout.run();
         },
         //在workspace中添加css不能起作用，不知道为什么，暂时先通过style进行设置
@@ -229,7 +221,9 @@ export default {
             cy: state => state.workspace.cy,
             statistic_data_change: state => state.workspace.statistic_data_change,
             nodeType: state => state.workspace.nodeType,
-            edgeType: state => state.workspace.edgeType
+            edgeType: state => state.workspace.edgeType,
+            layoutType: state => state.workspace.layoutType,
+            elements: state => state.workspace.elements
         }),
         ...mapGetters(['current_project']),
         text: {

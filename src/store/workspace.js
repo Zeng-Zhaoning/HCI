@@ -133,6 +133,7 @@ export const workspace = {
             },
         ],
         cy: null, //注：cy在组件方法中通过函数cytoscape()创建，属性均为private。因此无法直接用赋值修改其属性。
+        elements : {}, //用以恢复初始数据，将来可拓展或削减这个备份的量
 
         //下面两表均附有标准中文译名,CytoscapeKG.vue中dataHandle(data)有引用此处"default"
         shapeType: {
@@ -156,7 +157,16 @@ export const workspace = {
             {label:"关联",value:"connection"},
             {label:"继承",value:"inheritance"},
             {label:"未知",value:"default"}
-        ]
+        ],
+        layoutType: [
+            {label: 'random', value: 'random'},
+            {label: 'grid', value: 'grid'},
+            {label: 'circle', value: 'circle'},
+            {label: 'preset', value: 'preset'},
+            {label: 'concentric', value: 'concentric'},
+            {label: 'breadthfirst', value: 'breadthfirst'},
+            {label: 'cose', value: 'cose'}
+        ],
 
     },
 
@@ -166,6 +176,9 @@ export const workspace = {
         },
         setCy(state, cy){
             state.cy = cy;
+        },
+        setElements(state, data){
+            state.elements = data;
         },
         setJsonSrcPath(state, path){
             state.json_src_path = path;

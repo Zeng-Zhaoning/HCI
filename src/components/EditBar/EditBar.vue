@@ -234,9 +234,14 @@
       <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->
       <edit-bar-block block-name="视图调整">
         <div class="item_title">| 布局</div>
-        <el-select v-model="layout_type" placeholder="请选择布局类型">
+      <!-- 当前做法：v-model绑定到editbar本身的变量，然后初始化放在watch中cy的函数里，
+      由于每次cy改变都要改一次，所以每次设置layoutTypeNow都会因改变了cy而重复再设置一次该字段
+      又因监听layoutTypeNow的函数需要重跑layout，在cy初始化时会白白重新布局一遍-->
+        <el-select v-model="layoutTypeNow" placeholder="请选择布局类型">
+      <!-- 另一种实现思路：bind上workspace中的layoutTypeNow，然后用@change调用mutation改变它，
+      layoutTypeNow初始化放在初始化cy的setCy方法里，这样修改起来不会有重复操作-->
           <el-option
-              v-for="type in layout_types"
+              v-for="type in layoutType"
               :key="type.value"
               :label="type.label"
               :value="type.value">
