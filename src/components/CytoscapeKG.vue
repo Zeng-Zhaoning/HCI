@@ -47,6 +47,7 @@
     //eles.hasClass()和.addClass()帮助edge把class属性的添加移动到rendEdge里
     //ele.isNode()帮助add等方法优化group==='nodes'的逻辑
     //node0Edge1这个属性换成字符串
+    // 宽高修改逻辑暂时在EditBar，考虑这个样式的职责要不要放在本KG组件的updataAllNodeFontSize（到时候再改个方法名表示同时修改节点大小和字体大小）
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -152,6 +153,8 @@
                 nodeType: state => state.workspace.nodeType,
                 edgeType: state => state.workspace.edgeType,
                 cy: state => state.workspace.cy,
+                nodeRadius: state => state.workspace.nodeRadius,
+                nodeFontSize: state => state.workspace.nodeFontSize,
                 json_src_path: state => state.workspace.json_src_path,
             }),
             ...mapGetters(['current_project']),
@@ -166,6 +169,18 @@
                     nodes: this.current_project.nodes,
                 };
                 this.dataHandle(data);
+            },
+            nodeFontSize(now,old){//监听节点大小变化，如果刚变为未设定就需要修改节点字体大小
+                console.log("nodeFontSize watched")
+                if(this.nodeFontSize===''){
+                    this.updateAllNodeFontSize();
+                }
+            },
+            nodeRadius(now,old){//监听节点大小来改变文字大小，但是字体大小如果处于被设定状态就不能改
+                console.log("nodeRadius watched")
+                if(this.nodeFontSize===''){
+                    this.updateAllNodeFontSize();
+                }
             }
         },
         //方便调试而添加，最后删掉
@@ -223,16 +238,27 @@
             //让过长的内容作为展示的标题时省略
             fontShow(text) {
                 if (text && text.length > 5) {
-                    return text.substring(0, 5) + "..."
+                    return text.substring(0, 3) + "..."
                 }
                 return text
             },
 
             //根据内容设置字体大小，使之不会超出节点（未验证）
-            fontStyle(length) {
-                let fontSize = 30 - (length - 2) * 6
-                if (!fontSize || fontSize < 12) {
-                    fontSize = 12
+            //最好改成根据实体大小设置字体大小
+            fontStyle(length,width) {
+                if(this.nodeFontSize!==''){
+                    return {
+                        "font-size": this.nodeFontSize + "px"
+                    };
+                }
+                let defaultWidth = 30;
+                let minWidth = 12;
+                let fontSize = defaultWidth - (length - 2) * 6;//这个计算字体大小的算式可能有点拉胯，
+                //根据节点大小调整文字大小
+                let nodeWidth = width?width:defaultWidth;
+                fontSize = fontSize*nodeWidth/defaultWidth;
+                if (!fontSize || fontSize < minWidth) {//"!fontSize"有效吗，不懂诶
+                    fontSize = minWidth;
                 }
                 return {
                     "font-size": fontSize + "px"
@@ -242,11 +268,48 @@
             //帮助node合适地展示text
             rendNode(target, that) {
                 let data = target.data();
-                const text = that.fontShow(data.name);
-                let style = that.fontStyle(text.length);
+                const text = that.fontShow(data.name)
+
+                //如果没有设定大小，就按照节点本身大小（节点大小不是时刻是设定大小吗？按现在的写法，我觉得新增的节点没有初始化到渲染到设定大小）
+                let widthNow = this.nodeRadius===''?this.getNodeWidth(target):this.nodeRadius;
+
+                widthNow = parseInt(widthNow+'');//确保是数字类型
+                //获取节点宽度的数字值来调节字体大小
+                let style = that.fontStyle(text.length,widthNow);
+
                 style.shape = this.shapeType[data.type];
                 style.label = text;
+                if(this.nodeRadius!==''){//和EditBar中nodeRadius监听方法逻辑耦合，必须同时修改
+                    style.width = widthNow+'px';
+                    style.height = widthNow+'px';
+                }
                 target.style(style);
+            },
+
+            getNodeWidth(target){//返回值为数字类型
+                let widthProp = target.style("width");
+                let defaultWidth = 30;
+                if(widthProp){
+                    return parseInt(widthProp.match(/(\S*)px/)[1]);//随便搜的，不知道有没有更好写法
+                }else{
+                    return defaultWidth;
+                }
+            },
+
+            updateAllNodeFontSize(){
+                //宽高修改逻辑暂时在EditBar，感觉这个样式的职责应该放在KG组件
+                //由于宽高修改在EditBar，此处默认NodeRadius如果已设定那就已经更新到全部节点了，例外情况已在rendNode中考虑
+                //此处为了防止多做操作就没有调用rendNode，结果是逻辑一部分和rendNode重复，形成重复耦合
+                let that = this;
+                let cy = that.cy;
+                that.batch(cy,()=>{
+                    cy.nodes().forEach(val => {
+                        let widthNow = that.getNodeWidth(val);//默认NodeRadius如果被设置则节点属性已经更新到和它一样
+                        let nameShown = val.style("label");
+                        let style = that.fontStyle(nameShown.length,widthNow);
+                        val.style(style);
+                    });
+                });
             },
 
             rendEdge(target,that){
@@ -326,8 +389,12 @@
 
                 cy.on('mouseover', 'node', event => {
                     let target = event.target || event.cyTarget;
+                    // console.log("mouseover node: ",target);
                     let data = target.data();
-                    target.style({label:data.name,fontSize: 48,'z-index':9999});//fontSize仅仅需要比rendNode最大label的36更大即可
+                    const minSize = 48;//看起来可以的试验值，无特殊意义
+                    let fontSize = parseInt(target.style("font-size").match(/(\S*)px/)[1])*1.2;
+                    fontSize = fontSize<minSize?minSize:fontSize;
+                    target.style({label:data.name,fontSize: fontSize,'z-index':9999});
                     if(!target.scratch('tip')){
                         let text = "类型: "+data.type+'<br/>'+"属性: "+data.property.join(',');
                         target.scratch('tip',that.makeTippy(target,text));
@@ -347,6 +414,7 @@
                     //edge不能改变边的颜色，否则和选中机制冲突（那处也会改变颜色）
                     .on('mouseover', 'edge', event => {
                         let target = event.target || event.cyTarget;
+                        // console.log("mouseover edge: ",target);
                         let data = target.data();
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
                         target.style({label:data.relation,fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大label的36更大即可
@@ -411,7 +479,7 @@
                 };
 
 
-                let removed = [];  //为了撤销删除而使用的缓存，以后可以改成数组等等，恢复多次
+                let removed = [];  //为了撤销删除而使用的缓存，以后可以改成恢复多次
 
                 let contextMenu = cy.contextMenus({
                     menuItems: [
@@ -447,7 +515,6 @@
                                         obj.property = addForm.property;
                                     }
                                     target.data(obj);
-                                    //由于vue的响应式，以下代码其实是不必要的，但是响应式自动修改会有延迟
                                     let conflict = false;
                                     if (group==='nodes') {
                                         that.rendNode(target, that);

@@ -124,7 +124,7 @@ export default {
                     for(let node of nodes){
                         if(node.data.id===nodeId){
                             return node.position;
-                        }//可用cy.$()?
+                        }
                     }
                     return {x:0,y:0};//可以拓展成随机放置
                 };
@@ -133,7 +133,6 @@ export default {
             }
             layout.run();
         },
-        //在workspace中添加css不能起作用，不知道为什么，暂时先通过style进行设置
         relation_label_enabled(newVal, oldVal) {
             let edges = this.cy.edges();
             let enabled = newVal;
@@ -146,19 +145,17 @@ export default {
             }
         },
         font_size(newVal, oldVal) {
-            console.log(newVal)
-
-            //默认值，25px是看workspace找到的
+            // let defaultSize = '25px';//默认值，25px是看workspace找到的
             if (newVal === '') {
-                for (let node of this.cy.nodes()) {
-                    node.style('font-size', '25px');
-                }
+                this.setNodeFontSize('');//同步改变workspace中的nodeNodeFontSize
+                //CytoscapeKG中在监听到workspace中nodeFontSize刚变回''时
+                //会根据节点大小和字数重新渲染各个节点的字体大小，所以不能用统一默认值
+                //此处什么也不需要做，因为CytoscapeKG里做了
                 return;
             }
-
             let size = Number(newVal);
-            console.log(size)
             if (!isNaN(size)) {
+                this.setNodeFontSize(newVal);//同步改变workspace中的nodeNodeFontSize
                 size = parseInt(size);
                 for (let node of this.cy.nodes()) {
                     node.style('font-size', size + 'px');
@@ -166,41 +163,37 @@ export default {
             }
             else {
                 if (newVal !== '') {
-                    this.$message({
-                        message: '请输入数字',
-                        type: 'error',
-                        duration: 1500
-                    });
+                    this.informMsg('error','请输入数字');
                 }
-                for (let node of this.cy.nodes()) {
-                    node.style('font-size', '25px');
-                }
+                this.setNodeFontSize('');//同步改变workspace中的nodeNodeFontSize
+                //CytoscapeKG中在监听到workspace中nodeFontSize刚变回''时
+                //会根据节点大小和字数重新渲染各个节点的字体大小，所以不能用统一默认值
+                //此处什么也不需要做，因为CytoscapeKG里做了
             }
         },
         node_radius(newVal, oldVal) {
             if (newVal === '') {
+                this.setNodeRadius('');//同步改变workspace中的nodeRadius
                 for (let node of this.cy.nodes()) {
                     node.removeStyle('width');
                     node.removeStyle('height');
                 }
                 return;
             }
-
             let radius = Number(newVal);
             if (!isNaN(radius)) {
                 radius = parseInt(radius);
-                for (let node of this.cy.nodes()) {
-                    node.style('width', (radius * 2) + 'px');
-                    node.style('height', (radius * 2) + 'px');
+                let realRadius = radius * 2;
+                this.setNodeRadius(realRadius+"");//同步改变workspace中的nodeRadius
+                for (let node of this.cy.nodes()) {//是不是要改成等比例扩大？
+                    node.style('width', realRadius + 'px');
+                    node.style('height', realRadius + 'px');
                 }
             }
             else {
+                this.setNodeRadius('');//同步改变workspace中的nodeRadius
                 if (newVal !== '') {
-                    this.$message({
-                        message: '请输入数字',
-                        type: 'error',
-                        duration: 1500
-                    });
+                    this.informMsg('error','请输入数字');
                 }
                 for (let node of this.cy.nodes()) {
                     node.removeStyle('width');
@@ -220,7 +213,7 @@ export default {
             nodeType: state => state.workspace.nodeType,
             edgeType: state => state.workspace.edgeType,
             layoutType: state => state.workspace.layoutType,
-            elements: state => state.workspace.elements
+            elements: state => state.workspace.elements,
         }),
         ...mapGetters(['current_project']),
         text: {
@@ -246,7 +239,7 @@ export default {
 
     },
     methods:{
-        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult']),
+        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult','setNodeRadius','setNodeFontSize']),
         ...mapActions(['postText']),
 
         changeEditBarState(){
@@ -910,5 +903,10 @@ export default {
         //     this.filter_edge_checked = false;
         // }
         /////////////////////////////////////////////////////////////////////////////////////
+
+        ///////////////////////////////////此处为视图代码///////////////////////////////////////
+
+        /////////////////////////////////////////////////////////////////////////////////////
+
     }
 }

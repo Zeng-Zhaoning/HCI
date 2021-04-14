@@ -140,6 +140,8 @@ export const workspace = {
         ],
         cy: null, //注：cy在组件方法中通过函数cytoscape()创建，属性均为private。因此无法直接用赋值修改其属性。
         elements : {}, //用以恢复初始数据，将来可拓展或削减这个备份的量
+        nodeRadius: '',
+        nodeFontSize: '',
 
         //下面两表均附有标准中文译名,CytoscapeKG.vue中dataHandle(data)有引用此处"default"
         shapeType: {
@@ -185,6 +187,12 @@ export const workspace = {
         },
         setElements(state, data){
             state.elements = data;
+        },
+        setNodeRadius(state, val){
+            state.nodeRadius = val;
+        },
+        setNodeFontSize(state,val){
+            state.nodeFontSize = val;
         },
         setJsonSrcPath(state, path){
             state.json_src_path = path;
