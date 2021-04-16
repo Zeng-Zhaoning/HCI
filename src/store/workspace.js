@@ -21,7 +21,7 @@ export const workspace = {
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'padding': '25px',
-                    "background-color": "#9c8f96",
+                    "background-color": 'data(color)',//颜色持久化
                 }
             },
             {

@@ -221,6 +221,7 @@
                 })
                 data.nodes.forEach((val) => {
                     val.data.type = val.data.type || 'default';
+                    val.data.color = val.data.color || "#9c8f96";//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
                 })
                 let that = this;
                 const loading = this.$loading({
@@ -563,7 +564,7 @@
                             content: '红',
                             onClickFunction: function (event) {
                               let target = event.target || event.cyTarget;
-                              target.style('background-color', '#e89d96');
+                              target.data('color', '#e89d96');//颜色持久化
                             },
                           },
                           {
@@ -571,7 +572,7 @@
                             content: '黄',
                             onClickFunction: function (event) {
                               let target = event.target || event.cyTarget;
-                              target.style('background-color', '#ebc57c');
+                              target.data('color', '#ebc57c');//颜色持久化
                             },
                           },
                           {
@@ -579,7 +580,7 @@
                             content: '浅蓝',
                             onClickFunction: function (event) {
                               let target = event.target || event.cyTarget;
-                              target.style('background-color', 'lightblue');
+                              target.data('color', 'lightblue');//颜色持久化
                             },
                           },
                           {
@@ -587,7 +588,7 @@
                               content: '靛青',
                               onClickFunction: function (event) {
                                 let target = event.target || event.cyTarget;
-                                target.style('background-color', '#6a85ce');
+                                target.data('color', '#6a85ce');//颜色持久化
                               }
                           },
                           {
@@ -595,7 +596,7 @@
                             content: '棕',
                             onClickFunction: function (event) {
                               let target = event.target || event.cyTarget;
-                              target.style('background-color', '#9c8f96');
+                              target.data('color', '#9c8f96');//颜色持久化
                             },
                           },
                         ]
@@ -658,13 +659,14 @@
                             onClickFunction: function (event) {
                                 let starget = event.target || event.cyTarget;
                                 let color_before = starget.style('background-color');
-                                starget.style({
-                                    //"border-width": 4,
-                                    //"border-color": "#847072",
-                                    "background-color": '#dcc1b0',
-                                    //'text-outline-color': "#847072",
-                                    //'text-outline-width': 4,
-                                });
+                                // starget.style({
+                                //     //"border-width": 4,
+                                //     //"border-color": "#847072",
+                                //     "background-color": '#dcc1b0',
+                                //     //'text-outline-color': "#847072",
+                                //     //'text-outline-width': 4,
+                                // });
+                                starget.data("color",'#dcc1b0');//颜色持久化
                                 let sid = starget.data("id");
                                 cy.once('tap', event => {
                                     console.log("start adding an edge");
@@ -691,7 +693,7 @@
                                             that.trigger_statistic_data_change();
                                         };
                                     }
-                                    starget.style({'background-color': color_before});
+                                    starget.data({'color': color_before});//颜色持久化
                                 });
                             }
                         },

@@ -131,7 +131,7 @@ export default {
                     }
                     return {x:0,y:0};//可以拓展成随机放置
                 };
-                layout = this.cy.layout({name: newVal,positions:positions});//若以后恢复的布局中新增颜色、大小等，可能需要为增加的部分渲染内容新写代码
+                layout = this.cy.layout({name: newVal,fit:true,positions:positions});//若以后恢复的布局中新增颜色、大小等，可能需要为增加的部分渲染内容新写代码
                 console.log("reset done")
 
             }else if(newVal==='d3-force'){
@@ -185,6 +185,7 @@ export default {
                 let d3_options = {
                     name: 'd3-force',
                     animate: true,
+                    fit: true,//适应viewport
                     fixedAfterDragging: false,
                     linkId: function id(d) {
                         return d.id;
@@ -201,7 +202,7 @@ export default {
                 }
                 layout = this.cy.layout(d3_options)
             }else{
-                layout = this.cy.layout({name: newVal})
+                layout = this.cy.layout({name: newVal, fit: true})
             }
             this.layout = layout;
             this.layout.run();
