@@ -173,7 +173,8 @@ export const workspace = {
             {label: 'preset', value: 'preset'},
             {label: 'concentric', value: 'concentric'},
             {label: 'breadthfirst', value: 'breadthfirst'},
-            {label: 'cose', value: 'cose'}
+            {label: 'cose', value: 'cose'},
+            {label:'d3-force',value:'d3-force'}
         ],
 
     },

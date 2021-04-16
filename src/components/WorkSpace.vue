@@ -84,6 +84,9 @@ export default {
         pan: this.initPan,
       })
     },
+    fitScreen(){
+      this.cy.fit();
+    },//最好有这个功能，上述back2Init在d3-force下效果不好
     showChangeMode(e){
       this.ifShowChangeMode = ! this.ifShowChangeMode;
     },

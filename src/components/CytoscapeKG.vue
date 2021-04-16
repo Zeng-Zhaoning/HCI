@@ -48,10 +48,14 @@
     //ele.isNode()帮助add等方法优化group==='nodes'的逻辑
     //node0Edge1这个属性换成字符串
     // 宽高修改逻辑暂时在EditBar，考虑这个样式的职责要不要放在本KG组件的updataAllNodeFontSize（到时候再改个方法名表示同时修改节点大小和字体大小）
+    //考虑引入https://github.com/kaluginserg/cytoscape-node-html-label
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
     import { mapState,mapMutations,mapGetters } from 'vuex';
+
+    import d3Force from 'cytoscape-d3-force';
+    cytoscape.use( d3Force );
 
     import contextMenus from 'cytoscape-context-menus';
     cytoscape.use(contextMenus);

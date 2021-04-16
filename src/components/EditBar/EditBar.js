@@ -66,6 +66,8 @@ export default {
 
             //////////////////////展示效果相关////////////////////////////////
 
+            layout: null,
+
             layoutTypeNow : '',
 
             // layout_type:''更名为layoutTypeNow
@@ -113,10 +115,11 @@ export default {
         /////////////////////////////展示相关//////////////////////////////
         layoutTypeNow(newVal, oldVal) {
             console.log("layout watched: '",oldVal,"' to '",newVal,"'");
-            let layout;
-            if(newVal!=='preset'){
-                layout = this.cy.layout({name: newVal})
-            }else{
+            let layout = this.layout;
+            if(layout!==null){
+                layout.stop();
+            }
+            if(newVal==='preset'){
                 console.log("elements stored: ",this.elements);
                 let nodes = this.elements.nodes;
                 let positions = node=>{
@@ -130,8 +133,78 @@ export default {
                 };
                 layout = this.cy.layout({name: newVal,positions:positions});//若以后恢复的布局中新增颜色、大小等，可能需要为增加的部分渲染内容新写代码
                 console.log("reset done")
+
+            }else if(newVal==='d3-force'){
+                // {
+                //     animate: true, // whether to show the layout as it's running; special 'end' value makes the layout animate like a discrete layout
+                //         maxIterations: 0, // max iterations before the layout will bail out
+                //     maxSimulationTime: 0, // max length in ms to run the layout
+                //     ungrabifyWhileSimulating: false, // so you can't drag nodes during layout
+                //     fixedAfterDragging: false, // fixed node after dragging
+                //     fit: false, // on every layout reposition of nodes, fit the viewport
+                //     padding: 30, // padding around the simulation
+                //     boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+                //     /**d3-force API**/
+                //     alpha: 1, // sets the current alpha to the specified number in the range [0,1]
+                //     alphaMin: 0.001, // sets the minimum alpha to the specified number in the range [0,1]
+                //     alphaDecay: 1 - Math.pow(0.001, 1 / 300), // sets the alpha decay rate to the specified number in the range [0,1]
+                //     alphaTarget: 0, // sets the current target alpha to the specified number in the range [0,1]
+                //     velocityDecay: 0.4, // sets the velocity decay factor to the specified number in the range [0,1]
+                //     collideRadius: 1, // sets the radius accessor to the specified number or function
+                //     collideStrength: 0.7, // sets the force strength to the specified number in the range [0,1]
+                //     collideIterations: 1, // sets the number of iterations per application to the specified number
+                //     linkId: function id(d) {
+                //     return d.index;
+                // }, // sets the node id accessor to the specified function
+                //     linkDistance: 30, // sets the distance accessor to the specified number or function
+                //         linkStrength: function strength(link) {
+                //     return 1 / Math.min(count(link.source), count(link.target));
+                // }, // sets the strength accessor to the specified number or function
+                //     linkIterations: 1, // sets the number of iterations per application to the specified number
+                //         manyBodyStrength: -30, // sets the strength accessor to the specified number or function
+                //     manyBodyTheta: 0.9, // sets the Barnes–Hut approximation criterion to the specified number
+                //     manyBodyDistanceMin: 1, // sets the minimum distance between nodes over which this force is considered
+                //     manyBodyDistanceMax: Infinity, // sets the maximum distance between nodes over which this force is considered
+                //     xStrength: 0.1, // sets the strength accessor to the specified number or function
+                //     xX: 0, // sets the x-coordinate accessor to the specified number or function
+                //     yStrength: 0.1, // sets the strength accessor to the specified number or function
+                //     yY: 0, // sets the y-coordinate accessor to the specified number or function
+                //     radialStrength: 0.1, // sets the strength accessor to the specified number or function
+                //     radialRadius: [radius]// sets the circle radius to the specified number or function
+                //     radialX: 0, // sets the x-coordinate of the circle center to the specified number
+                //         radialY: 0, // sets the y-coordinate of the circle center to the specified number
+                //     // layout event callbacks
+                //     ready: function(){}, // on layoutready
+                //     stop: function(){}, // on layoutstop
+                //     tick: function(progress) {}, // on every iteration
+                //     // positioning options
+                //     randomize: false, // use random node positions at beginning of layout
+                //         // infinite layout options
+                //         infinite: false // overrides all other options for a forces-all-the-time mode
+                // }
+                let d3_options = {
+                    name: 'd3-force',
+                    animate: true,
+                    fixedAfterDragging: false,
+                    linkId: function id(d) {
+                        return d.id;
+                    },
+                    linkDistance: 1000,
+                    manyBodyStrength: -10000,
+                    ready: function(){},
+                    stop: function(){},
+                    tick: function(progress) {
+                        // console.log('progress - ', progress);
+                    },
+                    randomize: false,
+                    infinite: true
+                }
+                layout = this.cy.layout(d3_options)
+            }else{
+                layout = this.cy.layout({name: newVal})
             }
-            layout.run();
+            this.layout = layout;
+            this.layout.run();
         },
         relation_label_enabled(newVal, oldVal) {
             let edges = this.cy.edges();
