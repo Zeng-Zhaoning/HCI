@@ -49,6 +49,7 @@
     //node0Edge1这个属性换成字符串
     // 宽高修改逻辑暂时在EditBar，考虑这个样式的职责要不要放在本KG组件的updataAllNodeFontSize（到时候再改个方法名表示同时修改节点大小和字体大小）
     //考虑引入https://github.com/kaluginserg/cytoscape-node-html-label
+    //cola布局挺好的感觉，有空加一下
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
@@ -219,9 +220,10 @@
                     val.classes = 'autorotate';
                     val.data.type = val.data.type || 'default';
                 })
+                let default_color = "#9c8f96";//和add-node方法中初始化颜色耦合，必须同时修改
                 data.nodes.forEach((val) => {
                     val.data.type = val.data.type || 'default';
-                    val.data.color = val.data.color || "#9c8f96";//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
+                    val.data.color = val.data.color || default_color;//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
                 })
                 let that = this;
                 const loading = this.$loading({
@@ -640,9 +642,11 @@
                                     }
                                 };
                                 that.form.formCallback = addForm => {
+                                    let default_color = "#9c8f96";
                                     newObj.data = {
                                         name:addForm.name,
                                         type:addForm.type,
+                                        color:default_color,//和初始化时的颜色耦合，必须是相同的default_color
                                         property:addForm.property
                                     };
                                     let collection = cy.add(newObj);
