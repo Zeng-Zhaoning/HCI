@@ -18,9 +18,19 @@
           <use xlink:href="#iconqiehuan1"></use>
         </svg>
         <div class="choose-mode-box" :class="{'collapsed':!ifShowChangeMode, 'expanded':ifShowChangeMode}">
-          <div @click="changeMode('force')" class="mode-op">力导图</div>
+          <div @click="changeMode('typeset')" class="mode-op" :class="{'mode-chosen':typesetMode}">
+            <svg class="icon dot" aria-hidden="true">
+              <use xlink:href="#icondian"></use>
+            </svg>
+            排版
+          </div>
           <div class="separator"></div>
-          <div @click="changeMode('typeset')" class="mode-op">排版</div>
+          <div @click="changeMode('force')" class="mode-op" :class="{'mode-chosen':forceMode}">
+            <svg class="icon dot" aria-hidden="true">
+              <use xlink:href="#icondian"></use>
+            </svg>
+            力导图
+          </div>
         </div>
       </div>
     </div>
@@ -40,7 +50,7 @@ export default {
   data(){
     return {
       ifShowChangeMode: false,
-      mode: 'force',
+      mode: 'typeset', //'force'
       initZoom: 0,
       initPan: {},
     }
@@ -50,6 +60,8 @@ export default {
       current_pid: state => state.current_pid,
       cy: state => state.workspace.cy,
     }),
+    forceMode(){return this.mode === 'force';},
+    typesetMode(){return this.mode === 'typeset';}
   },
   watch: {
     json_src_path(now, old) {
@@ -110,7 +122,7 @@ export default {
   box-shadow: 0 0 10px #e6e6e6;
   margin-top: 5px;
 }
-.view-op svg{
+.view-op > svg{
   position: absolute;
   left: 0;
   right: 0;
@@ -130,6 +142,7 @@ export default {
   background-color: white;
   transform: translate3d(0,0,0);  //硬件加速
   height: @len3;
+  width: (@len3+20px) * 2;
   border: 1px solid @separator;
   border-radius: 4px;
   border-left: none;
@@ -139,20 +152,21 @@ export default {
   flex-direction: row;
   align-items: center;
   z-index: 1;
-  .mode-op{
-    background-color: white;
-    height: @len3;
-    line-height: @len3;
-    width: @len3+20px;
-    text-align: center;
-    color: @prompt;
-    font-size: 13px;
-  }
-  .mode-op:hover{
-    background-color: #f0f7ff;
-    color: @theme;
-  }
   overflow: hidden;
+}
+.mode-op{
+  background-color: white;
+  height: @len3;
+  flex-grow: 1;
+  line-height: @len3;
+  //width: @len3+20px;
+  text-align: center;
+  color: @prompt;
+  font-size: 13px;
+}
+.mode-op:hover{
+  background-color: #f0f7ff;
+  color: @theme;
 }
 .collapsed {
   transition: max-width 0.35s cubic-bezier(0, 1, 0, 1);
@@ -171,5 +185,17 @@ export default {
   height: 20px;
   width: 1px;
   background-color: @separator;
+}
+.dot{
+  height: 5px;
+  width: 5px;
+  margin: 2px 0;
+  display: none;
+}
+.mode-chosen{
+  color: @theme;
+  .dot{
+    display: inline;
+  }
 }
 </style>

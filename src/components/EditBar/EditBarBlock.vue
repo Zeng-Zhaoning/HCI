@@ -62,6 +62,10 @@ export default {
   top: @len2;
   right: @len2;
   color: #6a85ce;
+  height: 20px;
+  i{
+    line-height: 20px;
+  }
 }
 .control-edit-block:hover{
   cursor: pointer;
