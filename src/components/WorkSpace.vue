@@ -1,9 +1,12 @@
 <template>
   <div class="work-space-container">
+    <keep-alive>
+      <component :is="current_graph_component"></component>
+    </keep-alive>
 
-    <kg-template class="kg-template"></kg-template>
-
-    <edit-bar></edit-bar>
+    <keep-alive>
+      <component :is="current_edit_component"></component>
+    </keep-alive>
 
     <div class="view-ops">
       <el-tooltip effect="light" content="返回初始位置" placement="right" :enterable="false">
@@ -18,18 +21,18 @@
           <use xlink:href="#iconqiehuan1"></use>
         </svg>
         <div class="choose-mode-box" :class="{'collapsed':!ifShowChangeMode, 'expanded':ifShowChangeMode}">
-          <div @click="changeMode('typeset')" class="mode-op" :class="{'mode-chosen':typesetMode}">
+          <div @click="changeMode('edit')" class="mode-op" :class="{'mode-chosen':isEditMode}">
+            <svg class="icon dot" aria-hidden="true">
+              <use xlink:href="#icondian"></use>
+            </svg>
+            编辑
+          </div>
+          <div class="separator"></div>
+          <div @click="changeMode('typeset')" class="mode-op" :class="{'mode-chosen':isTypesetMode}">
             <svg class="icon dot" aria-hidden="true">
               <use xlink:href="#icondian"></use>
             </svg>
             排版
-          </div>
-          <div class="separator"></div>
-          <div @click="changeMode('force')" class="mode-op" :class="{'mode-chosen':forceMode}">
-            <svg class="icon dot" aria-hidden="true">
-              <use xlink:href="#icondian"></use>
-            </svg>
-            力导图
           </div>
         </div>
       </div>
@@ -39,18 +42,20 @@
 </template>
 
 <script>
-import EditBar from "./EditBar/EditBar.vue";
 import { mapState } from "vuex";
-import kgTemplate from "./CytoscapeKG"
 import axios from "axios";
+import EditBar from "./EditBar/EditBar.vue";
+import kgTemplate from "./CytoscapeKG";
+import TypesetGraph from "@/components/TypesetGraph";
+import TypesetEditPanel from "@/components/TypesetEditPanel";
 
 export default {
   name: "WorkSpace",
-  components: {EditBar,kgTemplate},
+  components: {EditBar,kgTemplate,TypesetGraph,TypesetEditPanel},
   data(){
     return {
       ifShowChangeMode: false,
-      mode: 'typeset', //'force'
+      mode: 'edit', //'typeset'
       initZoom: 0,
       initPan: {},
     }
@@ -60,8 +65,16 @@ export default {
       current_pid: state => state.current_pid,
       cy: state => state.workspace.cy,
     }),
-    forceMode(){return this.mode === 'force';},
-    typesetMode(){return this.mode === 'typeset';}
+    isEditMode(){return this.mode === 'edit';},
+    isTypesetMode(){return this.mode === 'typeset';},
+    current_graph_component(){
+      if (this.mode === 'typeset'){return 'typeset-graph';}
+      else if(this.mode === 'edit'){return 'kg-template'}
+    },
+    current_edit_component(){
+      if (this.mode === 'typeset'){return 'typeset-edit-panel';}
+      else if(this.mode === 'edit'){return 'edit-bar'}
+    }
   },
   watch: {
     json_src_path(now, old) {
@@ -105,9 +118,6 @@ export default {
 .work-space-container{
   height: 100%;
   position: relative;
-}
-.kg-template{
-  height: 100%;
 }
 .view-ops{
   position: absolute;

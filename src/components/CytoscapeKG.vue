@@ -882,6 +882,9 @@
 
 <style lang="less">
 @import "../assets/css/colors";
+    .knowledge-graph-cy{
+      height: 100%;
+    }
     #graph {
         width: 100%;
         height: 100%;
