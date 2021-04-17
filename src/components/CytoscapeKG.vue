@@ -190,7 +190,7 @@
         },
         //方便调试而添加，最后删掉
         created() {
-            this.getData("/static_ref1/data/data.json");
+            //this.getData("/static_ref1/data/data.json");
         },
         mounted () {
             //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
@@ -224,6 +224,7 @@
                 data.nodes.forEach((val) => {
                     val.data.type = val.data.type || 'default';
                     val.data.color = val.data.color || default_color;//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
+                    val.data.typeset = val.data.typeset || {x: 0.0, y: 0.0, parent: ''};
                 })
                 let that = this;
                 const loading = this.$loading({

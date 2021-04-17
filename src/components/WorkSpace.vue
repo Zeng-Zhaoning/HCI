@@ -10,7 +10,7 @@
 
     <div class="view-ops">
       <el-tooltip effect="light" content="返回初始位置" placement="right" :enterable="false">
-        <div class="view-op" @click="back2Init">
+        <div class="view-op" @click="back2Init" v-show="isEditMode">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icondingwei"></use>
           </svg>

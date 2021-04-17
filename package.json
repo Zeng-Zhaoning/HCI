@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "cytoscape": "^3.18.1",
+    "cytoscape-compound-drag-and-drop": "^1.0.0",
     "cytoscape-context-menus": "^4.0.0",
     "cytoscape-cose-bilkent": "^4.1.0",
     "cytoscape-d3-force": "^1.1.4",

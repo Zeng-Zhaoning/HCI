@@ -145,10 +145,10 @@ export const workspace = {
 
         //下面两表均附有标准中文译名,CytoscapeKG.vue中dataHandle(data)有引用此处"default"
         shapeType: {
-        "individual": "ellipse",//个体
-        "organization": "barrel",//团体
-        "thing": "round-diamond",//事物
-        "default": "pentagon"//未知
+            "individual": "ellipse",//个体
+            "organization": "barrel",//团体
+            "thing": "round-diamond",//事物
+            "default": "pentagon"//未知
         },
         lineStyleType:{
             "connection": "solid",//关联

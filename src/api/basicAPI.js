@@ -26,6 +26,7 @@ function getGraphAPI(pid){
 }
 
 function setGraphAPI(data){
+    console.log("setGraphAPI 要保存的数据：",data)
     return axios.post(base + '/set_graph', data)
         .then(res => {
             return res.data

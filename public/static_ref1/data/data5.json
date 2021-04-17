@@ -281,6 +281,18 @@
         "x": -206.75,
         "y": 535.8
       }
+    },
+    {
+      "data": {
+        "name": "",
+        "id": "patent-1",
+        "type": "individual",
+        "property": []
+      },
+      "position": {
+        "x": 620.25,
+        "y": 538.8
+      }
     }
   ]
 }
