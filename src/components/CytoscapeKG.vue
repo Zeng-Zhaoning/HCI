@@ -170,8 +170,8 @@
             },
             current_project(now, old){
                 let data = {
-                    edges: this.current_project.edges,
-                    nodes: this.current_project.nodes,
+                  edges: JSON.parse(JSON.stringify(this.current_project.edges)),
+                  nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
                 };
                 this.dataHandle(data);
             },
@@ -188,15 +188,18 @@
                 }
             }
         },
-        //方便调试而添加，最后删掉
-        created() {
-            //this.getData("/static_ref1/data/data.json");
-        },
         mounted () {
             //禁用右键菜单（应该防止浏览器菜单行为干扰cy的菜单行为）
             // document.oncontextmenu = () => {
             //     event.returnValue = false;
             // }
+            if (this.current_project !== undefined && this.current_project !== null){
+              let data = {
+                edges: this.current_project.edges,
+                nodes: this.current_project.nodes,
+              };
+              this.dataHandle(data);
+            }
         },
         methods: {
             ...mapMutations(['setCy','setElements','trigger_statistic_data_change']),
@@ -224,7 +227,7 @@
                 data.nodes.forEach((val) => {
                     val.data.type = val.data.type || 'default';
                     val.data.color = val.data.color || default_color;//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
-                    val.data.typeset = val.data.typeset || {x: 0.0, y: 0.0, parent: ''};
+                    val.data.typeset = val.data.typeset || {x: -1, y: -1, parent: ''};
                 })
                 let that = this;
                 const loading = this.$loading({
@@ -557,53 +560,53 @@
                             }
                         },
                         {
-                        id: 'color',
-                        content: '颜色',
-                        selector: 'node',
-                        hasTrailingDivider: true,
-                        submenu: [
-                          {
-                            id: 'color-red',
-                            content: '红',
-                            onClickFunction: function (event) {
-                              let target = event.target || event.cyTarget;
-                              target.data('color', '#e89d96');//颜色持久化
-                            },
-                          },
-                          {
-                            id: 'color-yellow',
-                            content: '黄',
-                            onClickFunction: function (event) {
-                              let target = event.target || event.cyTarget;
-                              target.data('color', '#ebc57c');//颜色持久化
-                            },
-                          },
-                          {
-                            id: 'color-light-blue',
-                            content: '浅蓝',
-                            onClickFunction: function (event) {
-                              let target = event.target || event.cyTarget;
-                              target.data('color', 'lightblue');//颜色持久化
-                            },
-                          },
-                          {
-                              id: 'color-blue-slate',
-                              content: '靛青',
+                          id: 'color',
+                          content: '颜色',
+                          selector: 'node',
+                          hasTrailingDivider: true,
+                          submenu: [
+                            {
+                              id: 'color-red',
+                              content: '红',
                               onClickFunction: function (event) {
                                 let target = event.target || event.cyTarget;
-                                target.data('color', '#6a85ce');//颜色持久化
-                              }
-                          },
-                          {
-                            id: 'color-brown',
-                            content: '棕',
-                            onClickFunction: function (event) {
-                              let target = event.target || event.cyTarget;
-                              target.data('color', '#9c8f96');//颜色持久化
+                                target.data('color', '#e89d96');//颜色持久化
+                              },
                             },
-                          },
-                        ]
-                      },
+                            {
+                              id: 'color-yellow',
+                              content: '黄',
+                              onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                target.data('color', '#ebc57c');//颜色持久化
+                              },
+                            },
+                            {
+                              id: 'color-light-blue',
+                              content: '浅蓝',
+                              onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                target.data('color', 'lightblue');//颜色持久化
+                              },
+                            },
+                            {
+                                id: 'color-blue-slate',
+                                content: '靛青',
+                                onClickFunction: function (event) {
+                                  let target = event.target || event.cyTarget;
+                                  target.data('color', '#6a85ce');//颜色持久化
+                                }
+                            },
+                            {
+                              id: 'color-brown',
+                              content: '棕',
+                              onClickFunction: function (event) {
+                                let target = event.target || event.cyTarget;
+                                target.data('color', '#9c8f96');//颜色持久化
+                              },
+                            },
+                          ]
+                        },
                         {
                             id: 'undo-last-remove',
                             content: '撤销最近一次删除',

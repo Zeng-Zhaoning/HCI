@@ -1,23 +1,29 @@
 <template>
-  <div class="typeset-edit-panel-box">
-    <button @click="save">保存</button>
-  </div>
+  <edit-bar-block block-name="操作" class="typeset-edit-panel-box">
+    <div class="operations">
+      <op-item op-name="保存" icon="#iconsave" @click="typeset_save"></op-item>
+      <op-item op-name="导出" icon="#iconshare" @click="exportPng(typeset_cy)"></op-item>
+    </div>
+  </edit-bar-block>
   <div id="typeset-graph"></div>
 </template>
 
 <script>
 import cytoscape from 'cytoscape';
 import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop';
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import $ from "jquery";
 import axios from "axios";
 import tippy, {sticky} from "tippy.js";
 import {setGraphAPI} from "@/api/basicAPI";
+import EditBarBlock from "@/components/EditBar/EditBarBlock";
+import OpItem from "@/components/EditBar/OpItem";
 
-cytoscape.use( compoundDragAndDrop );
+cytoscape.use(compoundDragAndDrop);
 
 export default {
   name: "TypesetGraph",
+  components:{EditBarBlock,OpItem},
   data(){
     return{
       cdnd: null, //拖拽工具句柄
@@ -32,31 +38,40 @@ export default {
       defaultStyle: state => state.workspace.defaultStyle,
       shapeType: state => state.workspace.shapeType,
       lineStyleType: state => state.workspace.lineStyleType,
+      current_pid: state => state.current_pid,
+      current_project_info_change: state => state.current_project_change,
     }),
     ...mapGetters(['current_project']),
   },
   mounted() {
-    //方便调试：
-    //this.getData("/static_ref1/data/data5.json");
-    // 要改成：
     let data = {
-      edges: this.current_project.edges,
-      nodes: this.current_project.nodes,
+      edges: JSON.parse(JSON.stringify(this.current_project.edges)),
+      nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
     };
     this.dataHandle(data);
   },
   watch:{
     current_project(now, old){
+      console.log("current_project改动")
       let data = {
-        edges: this.current_project.edges,
-        nodes: this.current_project.nodes,
+        edges: JSON.parse(JSON.stringify(this.current_project.edges)),
+        nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
       };
       this.dataHandle(data);
     },
+    current_project_change(now, old){
+      console.log("current_project改动")
+      let data = {
+        edges: JSON.parse(JSON.stringify(this.current_project.edges)),
+        nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
+      };
+      this.dataHandle(data);
+    }
   },
   methods: {
-    getDataJsonObject() {
-      let eles = JSON.parse(JSON.stringify(this.cy.json().elements));//其实深拷贝可能没啥意义，只是单纯直觉上想用一用(*╹▽╹*)
+    ...mapMutations(['updateProjectInfo']),
+    getDataJsonObject(cy) {
+      let eles = JSON.parse(JSON.stringify(cy.json().elements));//其实深拷贝可能没啥意义，只是单纯直觉上想用一用(*╹▽╹*)
       let obj = {"edges": [], "nodes": []};
       if (JSON.stringify(eles) !== '{}') {
         if (eles.edges !== undefined && eles.edges.length > 0) {
@@ -78,33 +93,38 @@ export default {
       return obj;
     },
 
-    save(){
+    typeset_save(){
       let data = {
-        project_name: this.current_project.project_name,
-        pid: this.current_pid,
-        text: this.current_project.text,
-        ...this.getDataJsonObject()
-      };
+        ...this.current_project,
+      }
 
-      // console.log(data.nodes);
-      // for (let node in data.nodes){
-      //     node.data['typeset'] = {
-      //       x:
-      //     }
-      // }
+      for (let node of data.nodes){
+          let temp = this.typeset_cy.filter(function(element, i){
+            return element.isNode() && element.data('id') === node.data.id;
+          })[0];
+          node.data.typeset.x = temp.position('x');
+          node.data.typeset.y = temp.position('y');
+          node.data.typeset.parent = temp.data('parent');
+      }
 
-      // setGraphAPI(data).then(res => {
-      //   if(res.success){
-      //     this.updateProjectInfo(data);
-      //     this.$message.success('保存成功')
-      //   }else{
-      //     this.$message.error( '保存失败')
-      //   }
-      // }).catch( err => {
-      //   this.$message.error('网络错误或服务器错误')
-      // }).finally(() => {
-      //   loading.close();
-      // })
+      const loading = this.$loading({
+        lock: true,
+        text: '...保存中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255,255, 0.8)'
+      });
+      setGraphAPI(data).then(res => {
+        if(res.success){
+          this.updateProjectInfo(data);
+          this.$message.success('保存成功');
+        }else{
+          this.$message.error( '保存失败')
+        }
+      }).catch( err => {
+        this.$message.error('网络错误或服务器错误')
+      }).finally(() => {
+        loading.close();
+      })
     },
 
     //最后去掉
@@ -130,6 +150,8 @@ export default {
       data.nodes.forEach((val) => {
         val.data.type = val.data.type || 'default';
         val.data.color = val.data.color || default_color;//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
+        val.position.x = val.data.typeset.x === -1? val.position.x : val.data.typeset.x;
+        val.position.y = val.data.typeset.y === -1? val.position.y : val.data.typeset.y;
       })
       let that = this;
       const loading = this.$loading({
@@ -231,6 +253,7 @@ export default {
         stop: undefined, // callback on layoutstop
         transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
       };
+      //console.log(data)
       let cy = cytoscape({
         container: $('#typeset-graph'),
         boxSelectionEnabled: false,
@@ -315,6 +338,57 @@ export default {
               // console.log(target.scratch());
             }
           });
+
+
+      let contextMenu = cy.contextMenus({
+        menuItems: [
+          {
+            id: 'color-red',
+            content: '红',
+            selector: 'node',
+            onClickFunction: function (event) {
+              let target = event.target || event.cyTarget;
+              target.data('color', '#e89d96');//颜色持久化
+            },
+          },
+          {
+            id: 'color-yellow',
+            content: '黄',
+            selector: 'node',
+            onClickFunction: function (event) {
+              let target = event.target || event.cyTarget;
+              target.data('color', '#ebc57c');//颜色持久化
+            },
+          },
+          {
+            id: 'color-light-blue',
+            content: '浅蓝',
+            selector: 'node',
+            onClickFunction: function (event) {
+              let target = event.target || event.cyTarget;
+              target.data('color', 'lightblue');//颜色持久化
+            },
+          },
+          {
+            id: 'color-blue-slate',
+            content: '靛青',
+            selector: 'node',
+            onClickFunction: function (event) {
+              let target = event.target || event.cyTarget;
+              target.data('color', '#6a85ce');//颜色持久化
+            }
+          },
+          {
+            id: 'color-brown',
+            content: '棕',
+            selector: 'node',
+            onClickFunction: function (event) {
+              let target = event.target || event.cyTarget;
+              target.data('color', '#9c8f96');//颜色持久化
+            },
+          },
+        ],
+      });
     },
 
     // **Allow for manipulation of elements without triggering multiple style calculations or multiple redraws.**
@@ -363,6 +437,47 @@ export default {
 
       return tip;
     },
+
+
+    exportPng(cy){
+      this.$message.success("正在导出图片...");
+      let blob = cy.png({
+        output: 'blob-promise', bg: 'white',
+        full: true, scale: 4
+      });
+      blob.then(res => {
+        //创建下载链接
+        let aLink = document.createElement('a');
+        aLink.download = this.generateFileName() + '.png';
+        let url = window.URL.createObjectURL(res);
+        aLink.href = url;
+
+        //创建、分配并触发点击事件
+        let evt = document.createEvent("MouseEvents");
+        evt.initEvent("click", true, true);
+        aLink.dispatchEvent(evt);
+
+        // 释放掉blob对象
+        window.URL.revokeObjectURL(url);
+      }).catch(err => {
+        console.log("Error occured: ", err);
+        if (cy.elements().length === 0) {
+          this.$message.error("知识图谱已经空啦，导不出东西的呀");
+        }
+      });
+    },
+
+    generateFileName(){
+      let name = "";
+      try{
+        name = this.current_project.project_name;
+      }catch (e) {
+        console.log("Error occurs:"+e);
+        console.log("可能未连接到Server");
+        name = new Date().getTime();
+      }
+      return name + '-排版';
+    },
   }
 }
 </script>
@@ -373,11 +488,9 @@ export default {
   height: 100%;
 }
 .typeset-edit-panel-box{
-  border: 2px solid black;
-  width: 50px;
   position: fixed;
-  right: 70px;
-  top: 20px;
+  right: 5px;
+  top: 1%;
   z-index: 100;
 }
 </style>

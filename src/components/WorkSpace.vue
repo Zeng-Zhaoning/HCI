@@ -1,12 +1,9 @@
 <template>
   <div class="work-space-container">
-    <keep-alive>
-      <component :is="current_graph_component"></component>
-    </keep-alive>
 
-    <keep-alive>
-      <component :is="current_edit_component"></component>
-    </keep-alive>
+    <component :is="current_graph_component"></component>
+
+    <component :is="current_edit_component"></component>
 
     <div class="view-ops">
       <el-tooltip effect="light" content="返回初始位置" placement="right" :enterable="false">
@@ -42,16 +39,15 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import {mapGetters, mapState} from "vuex";
 import axios from "axios";
 import EditBar from "./EditBar/EditBar.vue";
 import kgTemplate from "./CytoscapeKG";
 import TypesetGraph from "@/components/TypesetGraph";
-import TypesetEditPanel from "@/components/TypesetEditPanel";
 
 export default {
   name: "WorkSpace",
-  components: {EditBar,kgTemplate,TypesetGraph,TypesetEditPanel},
+  components: {EditBar,kgTemplate,TypesetGraph},
   data(){
     return {
       ifShowChangeMode: false,
@@ -65,6 +61,7 @@ export default {
       current_pid: state => state.current_pid,
       cy: state => state.workspace.cy,
     }),
+    ...mapGetters(['current_project']),
     isEditMode(){return this.mode === 'edit';},
     isTypesetMode(){return this.mode === 'typeset';},
     current_graph_component(){

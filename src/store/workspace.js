@@ -5,7 +5,7 @@ export const workspace = {
     state: {
         workspace_text: "",  //注意这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
         json_src_path:  '',
-        statistic_data_change: false,
+        statistic_data_change: false,  //flag
         defaultStyle: [
             {
                 selector: 'node',
@@ -200,6 +200,9 @@ export const workspace = {
         },
         trigger_statistic_data_change(state){
             state.statistic_data_change = ! state.statistic_data_change;
+        },
+        trigger_current_project_change(state){
+            state.current_project_change = ! state.current_project_change;
         }
     },
 

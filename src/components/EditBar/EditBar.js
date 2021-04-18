@@ -82,7 +82,7 @@ export default {
     watch: {
         cy(newValue, oldValue){
             this.get_statistic_data();
-            console.log("cy watched: '", oldValue,"' to '",newValue, "'")
+            //console.log("cy watched: '", oldValue,"' to '",newValue, "'")
             this.layoutTypeNow = newValue.options().layout.name;
         },
         statistic_data_change(newValue, oldValue){
@@ -313,7 +313,8 @@ export default {
 
     },
     methods:{
-        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams', 'setCurrentSearchResult','setNodeRadius','setNodeFontSize']),
+        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams',
+            'setCurrentSearchResult','setNodeRadius','setNodeFontSize']),
         ...mapActions(['postText']),
 
         changeEditBarState(){
@@ -344,7 +345,17 @@ export default {
                     pid: this.current_pid,
                     text: this.current_project.text,
                     ...this.getDataJsonObject()
+                };
+                for (let node of data.nodes){
+                    let temp_nodes = this.cy.nodes();
+                    for (let temp_node of temp_nodes){
+                        if (temp_node.data('id') === node.data.id){
+                            node.data.typeset = temp_node.data('typeset');
+                            break;
+                        }
+                    }
                 }
+                console.log(data);
             }catch (e) {
                 console.log("Error occurs:"+e);
                 alert("保存不了哦，请检查是否连接到Server");
@@ -360,11 +371,12 @@ export default {
             setGraphAPI(data).then(res => {
                 if(res.success){
                     this.updateProjectInfo(data);
-                    this.$message.success('保存成功')
+                    this.$message.success('保存成功');
                 }else{
                     this.$message.error( '保存失败')
                 }
             }).catch( err => {
+                console.log(err);
                 this.$message.error('网络错误或服务器错误')
             }).finally(() => {
                 loading.close();

@@ -16,6 +16,7 @@ export default createStore({
         current_pid: 1,
         current_project: null,
         all_projects: [],
+        current_project_info_change: false,  //flag
     },
 
     getters: {
@@ -35,6 +36,9 @@ export default createStore({
         setAllProjects(state, pros) {
             state.all_projects = pros;
         },
+        trigger_current_project_change(state){
+            state.current_project_info_change = ! state.current_project_info_change;
+        },
         updateProjectInfo(state, data){
             //data 包括：pid, project_name, text, edges[], nodes[]
             for (let p of state.all_projects) {
@@ -43,6 +47,7 @@ export default createStore({
                     p.text = data.text;
                     p.edges = data.edges;
                     p.nodes = data.nodes;
+                    this.commit('trigger_current_project_change');
                     return;
                 }
             }
@@ -81,8 +86,5 @@ export default createStore({
                     });
             }))
         },
-
-
     }
-
 })
