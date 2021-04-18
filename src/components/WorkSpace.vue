@@ -94,9 +94,7 @@ export default {
         pan: this.initPan,
       })
     },
-    // fitScreen(){
-    //   this.cy.fit();
-    // },//所有布局已加上fit:true，此函数不急着加
+
     showChangeMode(e){
       this.ifShowChangeMode = ! this.ifShowChangeMode;
     },

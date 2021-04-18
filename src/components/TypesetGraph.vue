@@ -253,7 +253,6 @@ export default {
         stop: undefined, // callback on layoutstop
         transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
       };
-      //console.log(data)
       let cy = cytoscape({
         container: $('#typeset-graph'),
         boxSelectionEnabled: false,
@@ -275,10 +274,6 @@ export default {
       };
       that.cdnd = cy.compoundDragAndDrop(options);
 
-      // //为了恢复打开时的布局而存的elements，目前用到的只有elements中nodes的id和position映射关系
-      // //虽然完全可以只存这个map<id,position>，但为了可扩展性考虑暂时先存elements(扩展时可能也用不到hhh)
-      // let elements = JSON.parse(JSON.stringify(this.cy.json().elements));//存入运行时的cy，确保都有id
-      // this.setElements(elements);
 
       this.batch(cy,()=>{
         cy.nodes().forEach(val => {
@@ -348,7 +343,15 @@ export default {
             selector: 'node',
             onClickFunction: function (event) {
               let target = event.target || event.cyTarget;
-              target.data('color', '#e89d96');//颜色持久化
+              let color = '#e89d96'
+              if (target.descendants().length === 0){
+                target.data('color', color);
+              }else{
+                target.style({
+                  'border-color': color,
+                  'background-color': color,
+                });
+              }
             },
           },
           {
@@ -357,7 +360,15 @@ export default {
             selector: 'node',
             onClickFunction: function (event) {
               let target = event.target || event.cyTarget;
-              target.data('color', '#ebc57c');//颜色持久化
+              let color = '#ebc57c'
+              if (target.descendants().length === 0){
+                target.data('color', color);
+              }else{
+                target.style({
+                  'border-color': color,
+                  'background-color': color,
+                });
+              }
             },
           },
           {
@@ -366,7 +377,15 @@ export default {
             selector: 'node',
             onClickFunction: function (event) {
               let target = event.target || event.cyTarget;
-              target.data('color', 'lightblue');//颜色持久化
+              let color = '#81c7e0'
+              if (target.descendants().length === 0){
+                target.data('color', 'lightblue');
+              }else{
+                target.style({
+                  'border-color': color,
+                  'background-color': color,
+                });
+              }
             },
           },
           {
@@ -375,7 +394,15 @@ export default {
             selector: 'node',
             onClickFunction: function (event) {
               let target = event.target || event.cyTarget;
-              target.data('color', '#6a85ce');//颜色持久化
+              let color = '#6a85ce'
+              if (target.descendants().length === 0){
+                target.data('color', color);
+              }else{
+                target.style({
+                  'border-color': color,
+                  'background-color': color,
+                });
+              }
             }
           },
           {
@@ -384,7 +411,15 @@ export default {
             selector: 'node',
             onClickFunction: function (event) {
               let target = event.target || event.cyTarget;
-              target.data('color', '#9c8f96');//颜色持久化
+              let color = '#9c8f96'
+              if (target.descendants().length === 0){
+                target.data('color', color);
+              }else{
+                target.style({
+                  'border-color': color,
+                  'background-color': color,
+                });
+              }
             },
           },
         ],
@@ -437,7 +472,6 @@ export default {
 
       return tip;
     },
-
 
     exportPng(cy){
       this.$message.success("正在导出图片...");

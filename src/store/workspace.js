@@ -137,6 +137,17 @@ export const workspace = {
                     //'text-outline-width': 4,
                 }
             },
+            {
+                selector: 'node:parent',
+                css: {
+                    'border-width': '2px',
+                    'border-color': '#9c8f96',
+                    'background-color': '#9c8f96',
+                    'background-opacity': 0.2,
+                    'border-style': 'dashed',
+                    'shape': 'round-rectangle',
+                }
+            }
         ],
         cy: null, //注：cy在组件方法中通过函数cytoscape()创建，属性均为private。因此无法直接用赋值修改其属性。
         elements : {}, //用以恢复初始数据，将来可拓展或削减这个备份的量
