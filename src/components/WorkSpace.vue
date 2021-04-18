@@ -3,7 +3,9 @@
 
     <component :is="current_graph_component"></component>
 
-    <component :is="current_edit_component"></component>
+    <keep-alive>
+      <component :is="current_edit_component"></component>
+    </keep-alive>
 
     <div class="view-ops">
       <el-tooltip effect="light" content="返回初始位置" placement="right" :enterable="false">

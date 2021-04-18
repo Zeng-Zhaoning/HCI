@@ -1,16 +1,25 @@
 <template>
-  <edit-bar-block block-name="操作" class="typeset-edit-panel-box">
-    <div class="operations">
-      <op-item op-name="保存" icon="#iconsave" @click="typeset_save"></op-item>
-      <op-item op-name="导出" icon="#iconshare" @click="exportPng(typeset_cy)"></op-item>
-    </div>
-  </edit-bar-block>
+  <div class="typeset-edit-panel-box">
+    <edit-bar-block block-name="操作">
+      <div class="operations">
+        <op-item op-name="保存" icon="#iconsave" @click="typeset_save"></op-item>
+        <op-item op-name="导出" icon="#iconshare" @click="exportPng(typeset_cy)"></op-item>
+      </div>
+    </edit-bar-block>
+    <edit-bar-block block-name="对齐">
+      <div class="operations">
+        <op-item op-name="水平" icon="#iconalign-vertical" @click="align('horizontal')"></op-item>
+        <op-item op-name="垂直" icon="#iconalign-level" @click="align('vertical')"></op-item>
+      </div>
+    </edit-bar-block>
+  </div>
   <div id="typeset-graph"></div>
 </template>
 
 <script>
 import cytoscape from 'cytoscape';
 import compoundDragAndDrop from 'cytoscape-compound-drag-and-drop';
+import fcose from 'cytoscape-fcose';
 import {mapGetters, mapMutations, mapState} from "vuex";
 import $ from "jquery";
 import axios from "axios";
@@ -20,6 +29,7 @@ import EditBarBlock from "@/components/EditBar/EditBarBlock";
 import OpItem from "@/components/EditBar/OpItem";
 
 cytoscape.use(compoundDragAndDrop);
+cytoscape.use( fcose );
 
 export default {
   name: "TypesetGraph",
@@ -27,7 +37,18 @@ export default {
   data(){
     return{
       cdnd: null, //拖拽工具句柄
-      typeset_cy: null,
+      typeset_cy: null,  //cy句柄
+      fcose_options: {
+        name: 'fcose',
+        quality: "proof",
+        randomize: false,
+        animationDuration: 250,
+        fit: false,
+        alignmentConstraint: {
+          vertical: [],
+          horizontal: [],
+        },
+      }, //fcose布局选项
     }
   },
   computed:{
@@ -270,7 +291,7 @@ export default {
       const options = {
         newParentNode: (grabbedNode, dropSibling) => ({}), // specifies element json for parent nodes added by dropping an orphan node on another orphan (a drop sibling)
         overThreshold: 20, // make dragging over a drop target easier by expanding the hit area by this amount on all sides
-        outThreshold: 30 // make dragging out of a drop target a bit harder by expanding the hit area by this amount on all sides
+        outThreshold: 50 // make dragging out of a drop target a bit harder by expanding the hit area by this amount on all sides
       };
       that.cdnd = cy.compoundDragAndDrop(options);
 
@@ -330,10 +351,16 @@ export default {
             if(target.scratch('tip')){
               target.scratch('tip').destroy();
               target.removeScratch('tip');
-              // console.log(target.scratch());
+            }
+          })
+          .on('tap', 'node', event => {
+            let target = event.target || event.cyTarget;
+            let descendants = target.descendants();
+            if (descendants.length > 0){
+              descendants.select();
+              // target.unselect();无效
             }
           });
-
 
       let contextMenu = cy.contextMenus({
         menuItems: [
@@ -512,6 +539,30 @@ export default {
       }
       return name + '-排版';
     },
+
+    //对齐
+    align(direction){
+      let layout_constraint = this.fcose_options.alignmentConstraint[direction];
+      let nodes = this.typeset_cy.$('node:selected');
+      let node_ids = [];
+
+      for (let node of nodes){
+        if (node.descendants().length === 0){
+          let id = node.data('id');
+          node_ids.push(id);
+        }
+      }
+
+      try{
+        layout_constraint.push(node_ids);
+        nodes.layout(this.fcose_options).run();
+      }catch (err){
+        console.log(err)
+      }finally {
+        layout_constraint.pop();
+      }
+    },
+
   }
 }
 </script>
