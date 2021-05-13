@@ -178,14 +178,14 @@ export const workspace = {
             {label:"未知",value:"default"}
         ],
         layoutType: [
-            {label: 'random', value: 'random'},
-            {label: 'grid', value: 'grid'},
-            {label: 'circle', value: 'circle'},
-            {label: 'preset', value: 'preset'},
-            {label: 'concentric', value: 'concentric'},
-            {label: 'breadthfirst', value: 'breadthfirst'},
-            {label: 'cose', value: 'cose'},
-            {label:'d3-force',value:'d3-force'}
+            {label: '预设', value: 'preset'},
+            {label:'力导图',value:'d3-force'},
+            {label: '随机', value: 'random'},
+            {label: '层级', value: 'breadthfirst'},
+            {label: '圆环', value: 'circle'},
+            {label: '网格', value: 'grid'},
+            {label: '同心圆', value: 'concentric'},
+            {label: 'cose', value: 'cose'}
         ],
 
     },
