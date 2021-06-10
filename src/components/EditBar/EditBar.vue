@@ -28,22 +28,23 @@
               <div @click="exportJson" class="export-op">json</div>
             </div>
           </op-item>
+          <op-item op-name="智能问答" icon="#iconcomment" @click=""></op-item>
         </div>
       </edit-bar-block>
 
-      <edit-bar-block block-name="待解析文本">
-        <el-input
-            disabled
-            class="el-input"
-            type="textarea"
-            :rows="6"
-            placeholder="请输入待解析文本"
-            v-model="text">
-        </el-input>
-        <div class="analyse-btn-box">
-          <el-button disabled :loading="false" @click="saveAndAnalyse">保存并解析</el-button>
-        </div>
-      </edit-bar-block>
+<!--      <edit-bar-block block-name="待解析文本">-->
+<!--        <el-input-->
+<!--            disabled-->
+<!--            class="el-input"-->
+<!--            type="textarea"-->
+<!--            :rows="6"-->
+<!--            placeholder="请输入待解析文本"-->
+<!--            v-model="text">-->
+<!--        </el-input>-->
+<!--        <div class="btn-box">-->
+<!--          <my-button disabled :loading="false" @click="saveAndAnalyse">保存并解析</my-button>-->
+<!--        </div>-->
+<!--      </edit-bar-block>-->
 
       <edit-bar-block block-name="统计">
         <div class="table_name">| 实体</div>
@@ -68,7 +69,6 @@
         </el-table>
       </edit-bar-block>
 
-<!--      <edit-bar-block style="height: 1000px"></edit-bar-block>-->
 
     <!--///////////////////////////////////此处为搜索相关代码段///////////////////////////////////////-->
       <edit-bar-block block-name="搜索">
@@ -109,9 +109,9 @@
           <el-checkbox label="relation">拥有关系</el-checkbox>
           <el-checkbox label="property">属性</el-checkbox>
         </el-checkbox-group>
-        <div class="analyse-btn-box">
-          <el-button @click="searchNode">搜索</el-button>
-          <el-button v-show="node_searched" @click="desearchNode">取消</el-button>
+        <div class="btn-box1">
+          <my-button class="my-button" @click="searchNode">搜索</my-button>
+          <my-button class="my-button" v-show="node_searched" @click="desearchNode">取消</my-button>
         </div>
 
         <div class="item_title">| 关系搜索</div>
@@ -151,9 +151,9 @@
           <el-checkbox label="source">源实体</el-checkbox>
           <el-checkbox label="target">目标实体</el-checkbox>
         </el-checkbox-group>
-        <div class="analyse-btn-box">
-          <el-button @click="searchEdge">搜索</el-button>
-          <el-button v-show="edge_searched" @click="desearchEdge">取消</el-button>
+        <div class="btn-box1">
+          <my-button class="my-button" @click="searchEdge">搜索</my-button>
+          <my-button class="my-button" v-show="edge_searched" @click="desearchEdge">取消</my-button>
         </div>
 
 
@@ -182,9 +182,9 @@
 <!--            v-model="select_value"-->
 <!--            :disabled="edgeDisabled">-->
 <!--        </el-input>-->
-<!--        <div class="analyse-btn-box">-->
-<!--          <el-button @click="search">搜索</el-button>-->
-<!--          <el-button v-show="showEnabled" @click="desearch">取消</el-button>-->
+<!--        <div class="btn-box">-->
+<!--          <my-button @click="search">搜索</my-button>-->
+<!--          <my-button v-show="showEnabled" @click="desearch">取消</my-button>-->
 <!--        </div>-->
       </edit-bar-block>
     <!--/////////////////////////////////////////////////////////////////////////////////////////-->
@@ -199,12 +199,12 @@
         <el-select v-model="filter_edge_checkList" @change="edgeFilter" collapse-tags multiple placeholder="在这里选择要滤去的关系" style="width: 100%">
           <el-option v-for="item in edgeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
-        <div class="analyse-btn-box">
+        <div class="btn-box2">
           <el-col :span="11">
-            <el-button @click="nodeDefilter">一键还原实体</el-button>
+            <my-button class="my-button" @click="edgeDefilter">还原关系</my-button>
           </el-col>
           <el-col :span="11">
-            <el-button @click="edgeDefilter">一键还原关系</el-button>
+            <my-button class="my-button" @click="nodeDefilter">还原实体</my-button>
           </el-col>
         </div>
       </edit-bar-block>
@@ -224,9 +224,9 @@
 <!--          <el-checkbox label="inheritance">继承</el-checkbox>-->
 <!--          <el-checkbox label="default">未知</el-checkbox>-->
 <!--        </el-checkbox-group>-->
-<!--        <div class="analyse-btn-box">-->
-<!--          <el-button @click="filter">过滤</el-button>-->
-<!--          <el-button @click="defilter" v-show="filterShowEnabled">撤销</el-button>-->
+<!--        <div class="btn-box">-->
+<!--          <my-button @click="filter">过滤</my-button>-->
+<!--          <my-button @click="defilter" v-show="filterShowEnabled">撤销</my-button>-->
 <!--        </div>-->
 <!--      </edit-bar-block>-->
     <!--////////////////////////////////////////////////////////////////////////////////////////-->
@@ -252,22 +252,28 @@
           <el-radio :label="true">是</el-radio>
           <el-radio :label="false">否</el-radio>
         </el-radio-group>
-        <div class="item_title">| 节点字体</div>
-        <el-input
-            placeholder="请输入节点字体大小"
-            v-model="font_size"
-            clearable>
-        </el-input>
+        <div class="item_title">| 节点字体大小</div>
+<!--        <el-input-->
+<!--            placeholder="请输入节点字体大小"-->
+<!--            v-model="font_size"-->
+<!--            clearable>-->
+<!--        </el-input>-->
+        <div>
+          <el-slider min="10" max="50" v-model="font_size"></el-slider>
+        </div>
         <div class="item_title">| 节点半径</div>
-        <el-input
-            placeholder="请输入节点半径"
-            v-model="node_radius"
-            clearable>
-        </el-input>
+<!--        <el-input-->
+<!--            placeholder="请输入节点半径"-->
+<!--            v-model="node_radius"-->
+<!--            clearable>-->
+<!--        </el-input>-->
+        <div>
+          <el-slider min="10" max="50" v-model="node_radius"></el-slider>
+        </div>
       </edit-bar-block>
 
       <!--////////////////////////////////////////////////////////////////////////////////////-->
-  </div>
+    </div>
   </div>
 </template>
 

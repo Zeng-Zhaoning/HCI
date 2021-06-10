@@ -34,10 +34,10 @@ export default {
 <style lang="less">
 @import "../../assets/css/colors.less";
 @len1 : 10px;
-@len2 : 12px;
+@len2 : 14px;
 @len3 : 20px;
 .edit-block{
-  padding: @len1 @len2;
+  padding: @len2 @len2;
   margin-bottom: 5px;
   border-radius: 4px;
   background-color: white;

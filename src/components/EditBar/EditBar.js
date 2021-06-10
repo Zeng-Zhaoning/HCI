@@ -2,13 +2,14 @@ import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
 import { setGraphAPI } from "../../api/basicAPI";
 import OpItem from './OpItem';
 import EditBarBlock from "./EditBarBlock";
-import TagEditor from "../PropEditTool/TagEditor"; //
+import TagEditor from "../PropEditTool/TagEditor";
+import MyButton from "@/components/Tools/MyButton";
 import {toRaw} from 'vue'
 import {isNumber} from "element-plus/es/utils/util";
 
 export default {
     name: "EditBar",
-    components: {OpItem,EditBarBlock,TagEditor}, //
+    components: {OpItem,EditBarBlock,TagEditor, MyButton},
     data(){
         return{
             showEditBar: true,
@@ -74,8 +75,8 @@ export default {
             // layout_types:[…]搬为workspace的layoutType
 
             relation_label_enabled: true,
-            font_size: '',
-            node_radius: '',
+            font_size: 20,
+            node_radius: 20,
 
         }
     },

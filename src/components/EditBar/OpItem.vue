@@ -23,7 +23,7 @@ export default {
 <style lang="less">
 @import "../../assets/css/colors.less";
 @len1 : 10px;
-@len2 : 12px;
+@len2 : 3px;
 .op{
   display: flex;
   flex-direction: column;
@@ -33,19 +33,33 @@ export default {
   color: #909399;
   font-weight: bold;
   font-size: 13px;
-  margin: @len2 @len2 @len1 @len2;
+  margin: @len1 @len2 @len1 @len2;
   position: relative;
   text-align: center;
+  width: 60px;
   svg{
     height: 30px;
     width: 30px;
   }
+  .icon{
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
 }
 .op:hover{
   cursor: pointer;
   .text-box{
     color: @myblack;
   }
+}
+
+.text-box{
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: visible;
 }
 
 @len3: 42.22px;
