@@ -11,15 +11,16 @@
     <div class="projects">
       <div class="header">
         <span>我的项目</span>
-        <i class="el-icon-plus createbtn" @click="create_pro"></i>
+<!--        <i class="el-icon-plus createbtn" @click="create_pro"></i>-->
       </div>
       <div class="menu">
-        <project-item v-for="(pro,i) of all_projects"
-                      :pname="pro.project_name"
-                      :pid="pro.pid"
-                      :key="i"
-                      @click="select(pro.pid)">
-        </project-item>
+<!--        <project-item v-for="(pro,i) of all_projects"-->
+<!--                      :pname="pro.project_name"-->
+<!--                      :pid="pro.pid"-->
+<!--                      :key="i"-->
+<!--                      @click="select(pro.pid)">-->
+<!--        </project-item>-->
+        <project-item pname="项目1" :pid="1" :key="0"></project-item>
       </div>
     </div>
   </div>
@@ -33,19 +34,19 @@ export default {
   components:{ProjectItem},
   computed:{
     ...mapState([
-        "user_name", "all_projects", "workspace_text"
+        "user_name"//, "all_projects", "workspace_text"
     ]),
-    ...mapGetters(['current_project'])
+    // ...mapGetters(['current_project'])
   },
   methods:{
-    ...mapMutations(['setCurrentProject','setWorkspaceText']),
-    create_pro(){
-      alert("创建新项目")
-    },
-    select(pid){
-      this.setCurrentProject(pid);
-      this.setWorkspaceText(this.current_project.text);
-    }
+    // ...mapMutations(['setCurrentProject','setWorkspaceText']),
+    // create_pro(){
+    //   alert("创建新项目")
+    // },
+    // select(pid){
+    //   this.setCurrentProject(pid);
+    //   this.setWorkspaceText(this.current_project.text);
+    // }
   }
 }
 </script>

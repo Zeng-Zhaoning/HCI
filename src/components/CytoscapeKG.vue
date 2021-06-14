@@ -2,8 +2,7 @@
     <div class='knowledge-graph-cy'>
         <div id="graph">
 <!--            <el-button type="text" @click="addFormVisible = true">打开嵌套表单的 Dialog</el-button>-->
-
-            <el-dialog title="添加元素" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
+        <el-dialog title="信息完善" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
                 <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth" class="demo-ruleForm"><!-- class="demo-ruleForm"意义何在？-->
                     <el-form-item label="名称" prop="name" required>
                         <el-input v-model="form.name" autocomplete="off" style="width:90%"></el-input>
@@ -13,18 +12,18 @@
                             <el-option v-for="item in givenType" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">
-                        <el-select
-                                v-model="form.property"
-                                style="width:90%"
-                                multiple
-                                filterable
-                                allow-create
-                                default-first-option
-                                no-data-text="输入已存在的属性会取消勾选哦"
-                                placeholder="在这里可以输入属性哦">
-                        </el-select>
-                    </el-form-item>
+<!--                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">-->
+<!--                        <el-select-->
+<!--                                v-model="form.property"-->
+<!--                                style="width:90%"-->
+<!--                                multiple-->
+<!--                                filterable-->
+<!--                                allow-create-->
+<!--                                default-first-option-->
+<!--                                no-data-text="输入已存在的属性会取消勾选哦"-->
+<!--                                placeholder="在这里可以输入属性哦">-->
+<!--                        </el-select>-->
+<!--                    </el-form-item>-->
 
                 </el-form>
                 <template #footer>
@@ -128,7 +127,7 @@
                 form: {
                     name: '',
                     type: '',
-                    property: [],
+                    property: {},
                     edgeCondition:{source:'',target:''},
                     //以下为借用form的reset来自动清空的属性
                     nameNow: '',
@@ -161,19 +160,19 @@
                 nodeRadius: state => state.workspace.nodeRadius,
                 nodeFontSize: state => state.workspace.nodeFontSize,
                 json_src_path: state => state.workspace.json_src_path,
+                project: state => state.project,
             }),
-            ...mapGetters(['current_project']),
         },
         watch: {
             json_src_path(now, old){
                 this.getData(now);
             },
-            current_project(now, old){
-                let data = {
-                  edges: JSON.parse(JSON.stringify(this.current_project.edges)),
-                  nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
-                };
-                this.dataHandle(data);
+            project(now, old){
+              let data = {
+                edges: JSON.parse(JSON.stringify(this.project.edges)),
+                nodes: JSON.parse(JSON.stringify(this.project.nodes)),
+              };
+              this.dataHandle(data);
             },
             nodeFontSize(now,old){//监听节点大小变化，如果刚变为未设定就需要修改节点字体大小
                 console.log("nodeFontSize watched")
@@ -193,22 +192,24 @@
             // document.oncontextmenu = () => {
             //     event.returnValue = false;
             // }
-            if (this.current_project !== undefined && this.current_project !== null){
-              let data = {
-                edges: this.current_project.edges,
-                nodes: this.current_project.nodes,
-              };
-              this.dataHandle(data);
-            }
+            // if (this.current_project !== undefined && this.current_project !== null){
+            //   let data = {
+            //     edges: this.current_project.edges,
+            //     nodes: this.current_project.nodes,
+            //   };
+            //   this.dataHandle(data);
+            // }
+            this.dataHandle(this.project);
         },
         methods: {
-            ...mapMutations(['setCy','setElements','trigger_statistic_data_change']),
+            ...mapMutations(['setCy','setElements','trigger_statistic_data_change', 'setProject']),
 
             //读数据，然后交给dataHandle
             getData(url) {
                 axios.get(url)
                     .then(res => {
                         this.dataHandle(res.data);
+                        this.setProject(res.data);
                     })
                     .catch(err => {
                         console.error(err);
@@ -381,7 +382,6 @@
                     layout: presetLayout
                 });
                 this.setCy(cy);
-
                 //为了恢复打开时的布局而存的elements，目前用到的只有elements中nodes的id和position映射关系
                 //虽然完全可以只存这个map<id,position>，但为了可扩展性考虑暂时先存elements(扩展时可能也用不到hhh)
                 let elements = JSON.parse(JSON.stringify(this.cy.json().elements));//存入运行时的cy，确保都有id
@@ -407,7 +407,7 @@
                     fontSize = fontSize<minSize?minSize:fontSize;
                     target.style({label:data.name,fontSize: fontSize,'z-index':9999});
                     if(!target.scratch('tip')){
-                        let text = "类型: "+data.type+'<br/>'+"属性: "+data.property.join(',');
+                        let text = "类型: "+data.type+'<br/>'+"属性: " +'<br/>' + this.property2String(data.property)
                         target.scratch('tip',that.makeTippy(target,text));
                     }
                     target.scratch('tip').show();
@@ -800,7 +800,7 @@
             //dialog组件
             handleClose(done) {
                 let that = this;
-                this.$confirm('确认关闭？')
+                this.$confirm('所作的编辑将不会保存')
                     .then(_ => {
                         done();
                         that.$refs['ruleForm'].resetFields();
@@ -880,7 +880,17 @@
             // Iteration: eles.forEach(), eles.empty(), etc.
             // Traversal: node.outgoers(), eles.bfs(), etc.
             // Algorithms: eles.dijkstra(), eles.degreeCentrality(), etc.
+
+            // 把对象转化为字符串
+            property2String(props){
+                let result = '';
+                for(let key in props){
+                    result += key + '-' + props[key] + '</br>';
+                }
+                return result;
+            }
         }
+
     }
 </script>
 

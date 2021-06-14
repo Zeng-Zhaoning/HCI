@@ -54,7 +54,7 @@
           <el-table-column prop="individual" label="个体" min-width="1"></el-table-column>
           <el-table-column prop="organization" label="团体" min-width="1"></el-table-column>
           <el-table-column prop="thing" label="事物" min-width="1"></el-table-column>
-          <el-table-column prop="default" label="未知" min-width="1"></el-table-column>
+          <el-table-column prop="default" label="其他" min-width="1"></el-table-column>
           <el-table-column prop="total" label="合计" min-width="1"></el-table-column>
         </el-table>
         <div class="table_name">| 关系</div>
@@ -64,7 +64,7 @@
         >
           <el-table-column prop="connection" label="关联" min-width="1"></el-table-column>
           <el-table-column prop="inheritance" label="继承" min-width="1"></el-table-column>
-          <el-table-column prop="default" label="未知" min-width="1"></el-table-column>
+          <el-table-column prop="default" label="其他" min-width="1"></el-table-column>
           <el-table-column prop="total" label="合计" min-width="1"></el-table-column>
         </el-table>
       </edit-bar-block>
@@ -253,22 +253,12 @@
           <el-radio :label="false">否</el-radio>
         </el-radio-group>
         <div class="item_title">| 节点字体大小</div>
-<!--        <el-input-->
-<!--            placeholder="请输入节点字体大小"-->
-<!--            v-model="font_size"-->
-<!--            clearable>-->
-<!--        </el-input>-->
         <div>
-          <el-slider min="10" max="50" v-model="font_size"></el-slider>
+          <el-slider :min="10" :max="100" v-model="font_size"></el-slider>
         </div>
         <div class="item_title">| 节点半径</div>
-<!--        <el-input-->
-<!--            placeholder="请输入节点半径"-->
-<!--            v-model="node_radius"-->
-<!--            clearable>-->
-<!--        </el-input>-->
         <div>
-          <el-slider min="10" max="50" v-model="node_radius"></el-slider>
+          <el-slider :min="10" :max="100" v-model="node_radius"></el-slider>
         </div>
       </edit-bar-block>
 

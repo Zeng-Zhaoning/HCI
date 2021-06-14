@@ -1,13 +1,12 @@
 import axios from "axios";
 
 
-export {setTextAPI, getGraphAPI, setGraphAPI}
+export {addKG, getKG, inputKG}
 
-let base =  '/demo/api/basic';
+let base =  '/api/basic/';
 
-function setTextAPI(pid, text){
-
-    return axios.post(base + '/set_text/' + pid, {string: text})
+function addKG(graph){
+    return axios.post(base + 'addKG', graph)
         .then(res => {
             return res.data
         }).catch(error => {
@@ -16,8 +15,8 @@ function setTextAPI(pid, text){
 }
 
 
-function getGraphAPI(pid){
-    return axios.get(base + '/get_graph/' + pid )
+function getKG(num){
+    return axios.get(base + 'getKG?num=' + num)
         .then(res => {
             return res.data
         }).catch(error => {
@@ -25,9 +24,11 @@ function getGraphAPI(pid){
         })
 }
 
-function setGraphAPI(data){
-    return axios.post(base + '/set_graph', data)
+function inputKG(graph){
+    return axios.post(base + 'inputKG', graph)
         .then(res => {
             return res.data
+        }).catch(error => {
+            console.log(error);
         })
 }

@@ -2,14 +2,9 @@
   <div class="typeset-edit-panel-box">
     <edit-bar-block block-name="操作">
       <div class="operations">
-        <op-item op-name="保存" icon="#iconsave" @click="typeset_save"></op-item>
+        <op-item op-name="水平对齐" icon="#iconalign-vertical" @click="align('horizontal')"></op-item>
+        <op-item op-name="垂直对齐" icon="#iconalign-level" @click="align('vertical')"></op-item>
         <op-item op-name="导出" icon="#iconshare" @click="exportPng(typeset_cy)"></op-item>
-      </div>
-    </edit-bar-block>
-    <edit-bar-block block-name="对齐">
-      <div class="operations">
-        <op-item op-name="水平" icon="#iconalign-vertical" @click="align('horizontal')"></op-item>
-        <op-item op-name="垂直" icon="#iconalign-level" @click="align('vertical')"></op-item>
       </div>
     </edit-bar-block>
   </div>
@@ -24,7 +19,6 @@ import {mapGetters, mapMutations, mapState} from "vuex";
 import $ from "jquery";
 import axios from "axios";
 import tippy, {sticky} from "tippy.js";
-import {setGraphAPI} from "@/api/basicAPI";
 import EditBarBlock from "@/components/EditBar/EditBarBlock";
 import OpItem from "@/components/EditBar/OpItem";
 
@@ -59,40 +53,30 @@ export default {
       defaultStyle: state => state.workspace.defaultStyle,
       shapeType: state => state.workspace.shapeType,
       lineStyleType: state => state.workspace.lineStyleType,
-      current_pid: state => state.current_pid,
-      current_project_info_change: state => state.current_project_change,
+      //current_project_info_change: state => state.current_project_change,
+      project: state => state.project,
     }),
-    ...mapGetters(['current_project']),
   },
   mounted() {
     let data = {
-      edges: JSON.parse(JSON.stringify(this.current_project.edges)),
-      nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
+      edges: JSON.parse(JSON.stringify(this.project.edges)),
+      nodes: JSON.parse(JSON.stringify(this.project.nodes)),
     };
     this.dataHandle(data);
   },
   watch:{
-    current_project(now, old){
-      console.log("current_project改动")
-      let data = {
-        edges: JSON.parse(JSON.stringify(this.current_project.edges)),
-        nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
-      };
-      this.dataHandle(data);
-    },
-    current_project_change(now, old){
-      console.log("current_project改动")
-      let data = {
-        edges: JSON.parse(JSON.stringify(this.current_project.edges)),
-        nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
-      };
-      this.dataHandle(data);
-    }
+    // current_project_change(now, old){
+    //   console.log("current_project改动")
+    //   let data = {
+    //     edges: JSON.parse(JSON.stringify(this.current_project.edges)),
+    //     nodes: JSON.parse(JSON.stringify(this.current_project.nodes)),
+    //   };
+    //   this.dataHandle(data);
+    // }
   },
   methods: {
-    ...mapMutations(['updateProjectInfo']),
     getDataJsonObject(cy) {
-      let eles = JSON.parse(JSON.stringify(cy.json().elements));//其实深拷贝可能没啥意义，只是单纯直觉上想用一用(*╹▽╹*)
+      let eles = JSON.parse(JSON.stringify(cy.json().elements));
       let obj = {"edges": [], "nodes": []};
       if (JSON.stringify(eles) !== '{}') {
         if (eles.edges !== undefined && eles.edges.length > 0) {
@@ -112,40 +96,6 @@ export default {
         }
       }
       return obj;
-    },
-
-    typeset_save(){
-      let data = {
-        ...this.current_project,
-      }
-
-      for (let node of data.nodes){
-          let temp = this.typeset_cy.filter(function(element, i){
-            return element.isNode() && element.data('id') === node.data.id;
-          })[0];
-          node.data.typeset.x = temp.position('x');
-          node.data.typeset.y = temp.position('y');
-          node.data.typeset.parent = temp.data('parent');
-      }
-
-      const loading = this.$loading({
-        lock: true,
-        text: '...保存中...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(255, 255,255, 0.8)'
-      });
-      setGraphAPI(data).then(res => {
-        if(res.success){
-          this.updateProjectInfo(data);
-          this.$message.success('保存成功');
-        }else{
-          this.$message.error( '保存失败')
-        }
-      }).catch( err => {
-        this.$message.error('网络错误或服务器错误')
-      }).finally(() => {
-        loading.close();
-      })
     },
 
     //最后去掉
@@ -230,7 +180,12 @@ export default {
 
       widthNow = parseInt(widthNow+'');//确保是数字类型
       //获取节点宽度的数字值来调节字体大小
-      let style = that.fontStyle(text.length,widthNow);
+      let style;
+      if (text !== undefined){
+        style = that.fontStyle(text.length,widthNow);
+      }else{
+        style = that.fontStyle(0, widthNow);
+      }
 
       style.shape = this.shapeType[data.type];
       style.label = text;
@@ -316,7 +271,7 @@ export default {
         fontSize = fontSize<minSize?minSize:fontSize;
         target.style({label:data.name,fontSize: fontSize,'z-index':9999});
         if(!target.scratch('tip')){
-          let text = "类型: "+data.type+'<br/>'+"属性: "+data.property.join(',');
+          let text = "类型: "+data.type+'<br/>'+"属性: " +'<br/>' + this.property2String(data.property)
           target.scratch('tip',that.makeTippy(target,text));
         }
         target.scratch('tip').show();
@@ -563,6 +518,14 @@ export default {
       }
     },
 
+    // 把对象转化为字符串
+    property2String(props){
+      let result = '';
+      for(let key in props){
+        result += key + '-' + props[key] + '</br>';
+      }
+      return result;
+    }
   }
 }
 </script>

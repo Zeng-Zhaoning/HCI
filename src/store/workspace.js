@@ -1,9 +1,6 @@
-import {setTextAPI} from "@/api/basicAPI"
-
 
 export const workspace = {
     state: {
-        workspace_text: "",  //注意这个是当前工作区的文本，不是当前项目的文本（可能是编辑中未保存的暂时文本）
         json_src_path:  '',
         statistic_data_change: false,  //flag
         defaultStyle: [
@@ -170,12 +167,12 @@ export const workspace = {
             {label:"个体",value:"individual"},
             {label:"团体",value:"organization"},
             {label:"事物",value:"thing"},
-            {label:"未知",value:"default"}
+            {label:"其他",value:"default"}
         ],
         edgeType:[
             {label:"关联",value:"connection"},
             {label:"继承",value:"inheritance"},
-            {label:"未知",value:"default"}
+            {label:"其他",value:"default"}
         ],
         layoutType: [
             {label: '预设', value: 'preset'},
@@ -191,9 +188,6 @@ export const workspace = {
     },
 
     mutations: {
-        setWorkspaceText(state, text) {
-            state.workspace_text = text;
-        },
         setCy(state, cy){
             state.cy = cy;
         },
@@ -217,23 +211,4 @@ export const workspace = {
         }
     },
 
-    actions: {
-        postText({commit}, data) {
-            let pid = data.pid;
-            let text = data.text;
-            return new Promise((resolve,reject) => {
-                setTextAPI(pid, text).then(res => {
-                    if (res.success) {
-                        commit('setProjectGraph', {pid: res.pid, edges: res.edges, nodes: res.nodes});
-                    } else {
-                        console.log(res.message);
-                    }
-                    resolve(res)
-                }).catch(err => {
-                    console.log(err);
-                    reject(err)
-                })
-            })
-        },
-    }
 }

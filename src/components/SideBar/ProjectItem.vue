@@ -16,20 +16,12 @@ export default {
     pname: String,
     pid: Number
   },
-  data(){
-    return{
-
-    }
-  },
   computed: {
-    selected(){
-      return this.pid === this.current_pid;
-    },
-    ...mapState(['current_pid'])
+    // selected(){
+    //   return this.pid === this.current_pid;
+    // },
+    // ...mapState(['current_pid'])
   },
-  methods:{
-
-  }
 }
 </script>
 

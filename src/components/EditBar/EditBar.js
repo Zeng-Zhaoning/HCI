@@ -1,15 +1,13 @@
 import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
-import { setGraphAPI } from "../../api/basicAPI";
+import { inputKG } from "../../api/basicAPI";
 import OpItem from './OpItem';
 import EditBarBlock from "./EditBarBlock";
-import TagEditor from "../PropEditTool/TagEditor";
 import MyButton from "@/components/Tools/MyButton";
-import {toRaw} from 'vue'
-import {isNumber} from "element-plus/es/utils/util";
+
 
 export default {
     name: "EditBar",
-    components: {OpItem,EditBarBlock,TagEditor, MyButton},
+    components: {OpItem,EditBarBlock, MyButton},
     data(){
         return{
             showEditBar: true,
@@ -71,48 +69,20 @@ export default {
 
             layoutTypeNow : '',
 
-            // layout_type:''更名为layoutTypeNow
-            // layout_types:[…]搬为workspace的layoutType
-
             relation_label_enabled: true,
             font_size: 20,
             node_radius: 20,
-
         }
     },
     watch: {
         cy(newValue, oldValue){
             this.get_statistic_data();
-            //console.log("cy watched: '", oldValue,"' to '",newValue, "'")
             this.layoutTypeNow = newValue.options().layout.name;
         },
         statistic_data_change(newValue, oldValue){
             this.get_statistic_data();
         },
-        // search_type(newVal, oldVal) {
-        //     this.edgeDisabled = newVal !== '1';
-        // },
-        // filter_type(newVal, oldVal) {
-        //     console.log(newVal);
-        //     if (newVal === '') {
-        //         this.filter_disabled = true;
-        //     }
-        //     else {
-        //         this.filter_disabled = false;
-        //         if (newVal === '1') {
-        //             this.specific_types = this.nodeType;
-        //             console.log(this.nodeType)
-        //         }
-        //         else  if (newVal === '2') {
-        //             this.specific_types = this.edgeType;
-        //             console.log(this.edgeType)
-        //         }
-        //         else {
-        //             console.log('类型错误！！！')
-        //         }
-        //         console.log(this.specific_types);
-        //     }
-        // },
+
         /////////////////////////////展示相关//////////////////////////////
         layoutTypeNow(newVal, oldVal) {
             console.log("layout watched: '",oldVal,"' to '",newVal,"'");
@@ -133,56 +103,9 @@ export default {
                     return {x:0,y:0};//可以拓展成随机放置
                 };
                 layout = this.cy.layout({name: newVal,fit:true,positions:positions});//若以后恢复的布局中新增颜色、大小等，可能需要为增加的部分渲染内容新写代码
-                console.log("reset done")
+                //console.log("reset done")
 
             }else if(newVal==='d3-force'){
-                // {
-                //     animate: true, // whether to show the layout as it's running; special 'end' value makes the layout animate like a discrete layout
-                //         maxIterations: 0, // max iterations before the layout will bail out
-                //     maxSimulationTime: 0, // max length in ms to run the layout
-                //     ungrabifyWhileSimulating: false, // so you can't drag nodes during layout
-                //     fixedAfterDragging: false, // fixed node after dragging
-                //     fit: false, // on every layout reposition of nodes, fit the viewport
-                //     padding: 30, // padding around the simulation
-                //     boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-                //     /**d3-force API**/
-                //     alpha: 1, // sets the current alpha to the specified number in the range [0,1]
-                //     alphaMin: 0.001, // sets the minimum alpha to the specified number in the range [0,1]
-                //     alphaDecay: 1 - Math.pow(0.001, 1 / 300), // sets the alpha decay rate to the specified number in the range [0,1]
-                //     alphaTarget: 0, // sets the current target alpha to the specified number in the range [0,1]
-                //     velocityDecay: 0.4, // sets the velocity decay factor to the specified number in the range [0,1]
-                //     collideRadius: 1, // sets the radius accessor to the specified number or function
-                //     collideStrength: 0.7, // sets the force strength to the specified number in the range [0,1]
-                //     collideIterations: 1, // sets the number of iterations per application to the specified number
-                //     linkId: function id(d) {
-                //     return d.index;
-                // }, // sets the node id accessor to the specified function
-                //     linkDistance: 30, // sets the distance accessor to the specified number or function
-                //         linkStrength: function strength(link) {
-                //     return 1 / Math.min(count(link.source), count(link.target));
-                // }, // sets the strength accessor to the specified number or function
-                //     linkIterations: 1, // sets the number of iterations per application to the specified number
-                //         manyBodyStrength: -30, // sets the strength accessor to the specified number or function
-                //     manyBodyTheta: 0.9, // sets the Barnes–Hut approximation criterion to the specified number
-                //     manyBodyDistanceMin: 1, // sets the minimum distance between nodes over which this force is considered
-                //     manyBodyDistanceMax: Infinity, // sets the maximum distance between nodes over which this force is considered
-                //     xStrength: 0.1, // sets the strength accessor to the specified number or function
-                //     xX: 0, // sets the x-coordinate accessor to the specified number or function
-                //     yStrength: 0.1, // sets the strength accessor to the specified number or function
-                //     yY: 0, // sets the y-coordinate accessor to the specified number or function
-                //     radialStrength: 0.1, // sets the strength accessor to the specified number or function
-                //     radialRadius: [radius]// sets the circle radius to the specified number or function
-                //     radialX: 0, // sets the x-coordinate of the circle center to the specified number
-                //         radialY: 0, // sets the y-coordinate of the circle center to the specified number
-                //     // layout event callbacks
-                //     ready: function(){}, // on layoutready
-                //     stop: function(){}, // on layoutstop
-                //     tick: function(progress) {}, // on every iteration
-                //     // positioning options
-                //     randomize: false, // use random node positions at beginning of layout
-                //         // infinite layout options
-                //         infinite: false // overrides all other options for a forces-all-the-time mode
-                // }
                 let d3_options = {
                     name: 'd3-force',
                     animate: true,
@@ -281,8 +204,6 @@ export default {
     },
     computed: {
         ...mapState({
-            current_pid: state => state.current_pid,
-            workspace_text: state => state.workspace.workspace_text,
             cy: state => state.workspace.cy,
             statistic_data_change: state => state.workspace.statistic_data_change,
             nodeType: state => state.workspace.nodeType,
@@ -290,20 +211,10 @@ export default {
             layoutType: state => state.workspace.layoutType,
             elements: state => state.workspace.elements,
         }),
-        ...mapGetters(['current_project']),
-        text: {
-            get(){
-                return this.workspace_text;
-            },
-            set(value){
-                this.setWorkspaceText(value);
-            }
-        },
         node_checkList_disabled: {
             get() {
                 return !this.filter_node_checked;
             }
-
         },
         edge_checkList_disabled: {
             get() {
@@ -314,9 +225,8 @@ export default {
 
     },
     methods:{
-        ...mapMutations(['setWorkspaceText', 'setJsonSrcPath', 'updateProjectInfo', 'setSeCurrentSearchParams',
-            'setCurrentSearchResult','setNodeRadius','setNodeFontSize']),
-        ...mapActions(['postText']),
+        ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
+            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject']),
 
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
@@ -338,13 +248,11 @@ export default {
             }
         },
 
+        // TODO：要改数据格式
         save(){
             let data = {};
             try{
                 data = {
-                    project_name: this.current_project.project_name,
-                    pid: this.current_pid,
-                    text: this.current_project.text,
                     ...this.getDataJsonObject()
                 };
                 for (let node of data.nodes){
@@ -356,7 +264,7 @@ export default {
                         }
                     }
                 }
-                console.log(data);
+                console.log("要保存的数据：",data);
             }catch (e) {
                 console.log("Error occurs:"+e);
                 alert("保存不了哦，请检查是否连接到Server");
@@ -369,9 +277,10 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(255, 255,255, 0.8)'
             });
-            setGraphAPI(data).then(res => {
+            //todo 改接口
+            inputKG(data).then(res => {
                 if(res.success){
-                    this.updateProjectInfo(data);
+                    this.setProject(data);
                     this.$message.success('保存成功');
                 }else{
                     this.$message.error( '保存失败')

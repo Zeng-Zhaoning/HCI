@@ -60,10 +60,10 @@ export default {
   },
   computed: {
     ...mapState({
-      current_pid: state => state.current_pid,
+      // current_pid: state => state.current_pid,
       cy: state => state.workspace.cy,
     }),
-    ...mapGetters(['current_project']),
+    // ...mapGetters(['current_project']),
     isEditMode(){return this.mode === 'edit';},
     isTypesetMode(){return this.mode === 'typeset';},
     current_graph_component(){
