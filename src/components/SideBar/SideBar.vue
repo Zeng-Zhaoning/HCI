@@ -9,8 +9,15 @@
             <use xlink:href="#iconyou"></use>
           </svg>
         </div>
+        <el-checkbox-group v-model="search_node_condition" >
+          <el-checkbox label="name">实体名</el-checkbox>
+          <el-checkbox label="relation">拥有关系</el-checkbox>
+          <el-checkbox label="property">属性</el-checkbox>
+        </el-checkbox-group>
       </div>
     </div>
+
+    <br/>
 
     <el-scrollbar>
       <div class="result-box" v-loading="resultLoading">
@@ -59,6 +66,7 @@ export default {
       recommendations: [],  //推荐条目
       indexClass: ['index-1', 'index-2', 'index-3'],
       showNoRecs: false,
+      search_node_condition: ['name','relation','property'],//搜索的筛选条件
     }
   },
   computed: {
@@ -90,70 +98,77 @@ export default {
       this.recommendations = [];
 
       //显示部分图谱
-      this.cy.nodes().forEach(val=>{
-        let valName = val.data("name");
-        let valProps = val.data("property");
-        let edges = val.connectedEdges();
-        let hit = false;
-        if(input){//假设input存在且为字符串
-          let byName=true,byProp=true,byRelation=true;
-          let relaHit;
-          let propHit;
-          let keyWords = [input];//假设input为字符串
-          for(let key of keyWords){
-            if(byName&&this.fuzzyMatch(valName, key)) {
-              hit = true;
-              break;
-            }
-            if(byProp){
-              propHit = false;
-              let propArray = [];
-              for(let key in valProps){
-                propArray.push(key);
-                let val = valProps[key];
-                if(val instanceof Array){
-                  propArray = propArray.concat(val);
-                }else{
-                  propArray.push(val);
-                }
-              }
-              for(let prop of propArray){
-                if(this.fuzzyMatch(prop, key)){
-                  propHit=true;
-                  break;
-                }
-              }
-              if(propHit){
+      let condition = this.search_node_condition;
+      if(condition.length!==0){
+        const byName = condition.includes('name');
+        const byRelation = condition.includes('relation');
+        const byProp = condition.includes('property');
+        this.cy.nodes().forEach(val=>{
+          let valName = val.data("name");
+          let valProps = val.data("property");
+          let edges = val.connectedEdges();
+          let hit = false;
+          if(input){//假设input存在且为字符串
+            // let byName=true,byProp=true,byRelation=true;
+            let relaHit;
+            let propHit;
+            let keyWords = [input];//假设input为字符串
+            for(let key of keyWords){
+              if(byName&&this.fuzzyMatch(valName, key)) {
                 hit = true;
                 break;
               }
-            }
-            if(byRelation){
-              relaHit = false;
-              for(let edge of edges){
-                let edgeName = edge.data("relation");
-                if(this.fuzzyMatch(edgeName, key)){
-                  relaHit = true;
+              if(byProp){
+                propHit = false;
+                let propArray = [];
+                for(let key in valProps){
+                  propArray.push(key);
+                  let val = valProps[key];
+                  if(val instanceof Array){
+                    propArray = propArray.concat(val);
+                  }else{
+                    propArray.push(val);
+                  }
+                }
+                for(let prop of propArray){
+                  if(this.fuzzyMatch(prop, key)){
+                    propHit=true;
+                    break;
+                  }
+                }
+                if(propHit){
+                  hit = true;
                   break;
                 }
               }
-              if(relaHit){
-                hit = true;
-                break;
+              if(byRelation){
+                relaHit = false;
+                for(let edge of edges){
+                  let edgeName = edge.data("relation");
+                  if(this.fuzzyMatch(edgeName, key)){
+                    relaHit = true;
+                    break;
+                  }
+                }
+                if(relaHit){
+                  hit = true;
+                  break;
+                }
               }
             }
+          }else{
+            hit = true;//若无输入则复原所有节点
           }
-        }else{
-          hit = true;//若无输入则复原所有节点
-        }
-        if(!hit&&!val.hasClass('removed')) {
-          console.log("remove")
-          val.addClass('removed');
-        }else if(hit&&val.hasClass('removed')){
-          console.log("recover")
-          val.removeClass('removed');
-        }
-      });
+          if(!hit&&!val.hasClass('removed')) {
+            console.log("remove")
+            val.addClass('removed');
+          }else if(hit&&val.hasClass('removed')){
+            console.log("recover")
+            val.removeClass('removed');
+          }
+        });
+      }
+
 
       //请求api获得搜索结果
       this.result = {
