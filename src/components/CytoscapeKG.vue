@@ -841,7 +841,7 @@
                         addForm.name = addForm.name.trim();//名称和校验时一样前后无空格
                         this.form.formCallback(addForm);
                         this.resetForm();
-                        this.trigger_statistic_data_change();
+                        // this.trigger_statistic_data_change();//因为在各个callback函数中已经写了，由于背后机制是布尔值取反，所以重复操作会导致无法监听到布尔值变化
                     } else {
                         alert('好像哪里有问题，操作失败了呢……');
                     }
