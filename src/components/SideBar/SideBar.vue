@@ -44,6 +44,7 @@
 
 <script>
 import { getRecommend } from "@/api/RecommendAPI"
+import {mapState} from "vuex";
 
 export default {
   name: "SideBar",
@@ -60,6 +61,11 @@ export default {
       showNoRecs: false,
     }
   },
+  computed: {
+    ...mapState({
+      cy: state => state.workspace.cy
+    })
+  },
   methods:{
     keyDownHandler(event){
       if (event.keyCode == '13'){
@@ -75,13 +81,79 @@ export default {
       if (this.question === ''){ return; }
 
       let input = this.input;
-      this.input = "";
+      // this.input = "";//不一定要清空把
       this.searched = true;
       this.recsLoading = true;
       this.resultLoading = true;
       this.showNoResult = false;
       this.showNoRecs = false;
       this.recommendations = [];
+
+      //显示部分图谱
+      this.cy.nodes().forEach(val=>{
+        let valName = val.data("name");
+        let valProps = val.data("property");
+        let edges = val.connectedEdges();
+        let hit = false;
+        if(input){//假设input存在且为字符串
+          let byName=true,byProp=true,byRelation=true;
+          let relaHit;
+          let propHit;
+          let keyWords = [input];//假设input为字符串
+          for(let key of keyWords){
+            if(byName&&this.fuzzyMatch(valName, key)) {
+              hit = true;
+              break;
+            }
+            if(byProp){
+              propHit = false;
+              let propArray = [];
+              for(let key in valProps){
+                propArray.push(key);
+                let val = valProps[key];
+                if(val instanceof Array){
+                  propArray = propArray.concat(val);
+                }else{
+                  propArray.push(val);
+                }
+              }
+              for(let prop of propArray){
+                if(this.fuzzyMatch(prop, key)){
+                  propHit=true;
+                  break;
+                }
+              }
+              if(propHit){
+                hit = true;
+                break;
+              }
+            }
+            if(byRelation){
+              relaHit = false;
+              for(let edge of edges){
+                let edgeName = edge.data("relation");
+                if(this.fuzzyMatch(edgeName, key)){
+                  relaHit = true;
+                  break;
+                }
+              }
+              if(relaHit){
+                hit = true;
+                break;
+              }
+            }
+          }
+        }else{
+          hit = true;//若无输入则复原所有节点
+        }
+        if(!hit&&!val.hasClass('removed')) {
+          console.log("remove")
+          val.addClass('removed');
+        }else if(hit&&val.hasClass('removed')){
+          console.log("recover")
+          val.removeClass('removed');
+        }
+      });
 
       //请求api获得搜索结果
       this.result = {
@@ -113,6 +185,30 @@ export default {
         this.recsLoading = false;
       });
     },
+
+    fuzzyMatch(str, key){//不知道需不需要再加一下忽略大小写？
+      let index = -1, flag = false;
+      for(let i = 0, arr = key.split(""); i < arr.length; i++ ){
+        //有一个关键字都没匹配到，则没有匹配到数据
+        if(str.indexOf(arr[i]) < 0){
+          break;
+        }else{
+          let match = str.matchAll(arr[i]);
+          let next = match.next();
+          while (!next.done){
+            if(next.value.index > index){
+              index = next.value.index;
+              if(i === arr.length - 1){
+                flag = true
+              }
+              break;
+            }
+            next = match.next();
+          }
+        }
+      }
+      return flag;
+    }
   }
 }
 </script>

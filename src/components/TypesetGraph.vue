@@ -522,7 +522,13 @@ export default {
     property2String(props){
       let result = '';
       for(let key in props){
-        result += key + '-' + props[key] + '</br>';
+        let val = props[key];
+        if(val instanceof Array){
+          result += '· ' + key + '-' + val.join(',') + '</br>';
+        }else{
+          result += '· ' + key + '-' + val + '</br>';
+        }
+
       }
       return result;
     }

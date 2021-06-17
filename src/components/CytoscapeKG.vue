@@ -973,7 +973,7 @@
                                 if(key&&!errorReg.test(key)){
                                     result[key] = validItem;
                                 }else{
-                                    defaultItem += validItem;
+                                    defaultItem = defaultItem.concat(validItem);
                                 }
                             }
                         }
@@ -983,7 +983,7 @@
                     let defaultKey = "未命名";
                     if(result.hasOwnProperty(defaultKey)){
                         if(result[defaultKey] instanceof Array){
-                            result[defaultKey] += defaultItem;
+                            result[defaultKey] = result[defaultKey].concat(defaultItem);
                         }else {
                             result[defaultKey] = [result[defaultKey]] + defaultItem;
                         }
