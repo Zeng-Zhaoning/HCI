@@ -813,7 +813,6 @@
                     type: '',
                     property: [],
                     edgeCondition:{source:'',target:''},
-                    //以下为借用form的reset来自动清空的属性
                     nameNow: '',
                     formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
                 };
@@ -938,33 +937,46 @@
                 if(!array) return result;
                 for(let item of array){
                     let index = item.search(/[:：]/);
-                    if(index>0 && index<item.length-1){
-                        let key = item.slice(0,index);
-                        let content = item.slice(index+1);
-                        if(content.search(/[;,；，]/)===-1){
-                            result[key] = content
+                    let key='',content='';
+                    if(index>=0 && index<item.length-1){
+                        key = item.slice(0,index);
+                        content = item.slice(index+1);
+                    } else{
+                        content = item;
+                    }
+
+                    let pauseWord = /[;,.；，。]/;
+                    if(content.search(pauseWord)===-1){
+                        let errorReg = /\s/;
+                        if(key&&!errorReg.test(key)){
+                            result[key] = content;
                         }else{
-                            content = content.split(/[;,；，]/);
-                            if(content.length>0){
-                                let errorReg = /\s/;
-                                let validIndex = []
-                                for(let i = 0;i < content.length;i++){
-                                    if(!errorReg.test(content[i])){
-                                        validIndex.push(i)
-                                    }
+                            defaultItem.push(item);
+                        }
+                    }else{
+                        content = content.split(pauseWord);
+                        if(content.length>0){
+                            // let errorReg = /\s/;
+                            let validIndex = []
+                            for(let i = 0;i < content.length;i++){
+                                content[i] = content[i].trim();
+                                if(content[i]){
+                                    validIndex.push(i)
                                 }
-                                if(validIndex.length>0){
-                                    let validItem = []
-                                    for(let i of validIndex){
-                                        validItem.push(content[i]);
-                                    }
-                                    result[key] = content;
+                            }
+                            if(validIndex.length>0){
+                                let validItem = []
+                                for(let i of validIndex){
+                                    validItem.push(content[i]);
+                                }
+                                let errorReg = /\s/;
+                                if(key&&!errorReg.test(key)){
+                                    result[key] = validItem;
+                                }else{
+                                    defaultItem += validItem;
                                 }
                             }
                         }
-
-                    } else{
-                        defaultItem.push(item);
                     }
                 }
                 if(defaultItem.length>0){
