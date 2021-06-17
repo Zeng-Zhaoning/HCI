@@ -12,18 +12,18 @@
                             <el-option v-for="item in givenType" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
-<!--                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">-->
-<!--                        <el-select-->
-<!--                                v-model="form.property"-->
-<!--                                style="width:90%"-->
-<!--                                multiple-->
-<!--                                filterable-->
-<!--                                allow-create-->
-<!--                                default-first-option-->
-<!--                                no-data-text="输入已存在的属性会取消勾选哦"-->
-<!--                                placeholder="在这里可以输入属性哦">-->
-<!--                        </el-select>-->
-<!--                    </el-form-item>-->
+                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">
+                        <el-select
+                                v-model="form.property"
+                                style="width:90%"
+                                multiple
+                                filterable
+                                allow-create
+                                default-first-option
+                                no-data-text="输入已存在的属性会取消勾选哦"
+                                placeholder="在这里可以输入属性哦">
+                        </el-select>
+                    </el-form-item>
 
                 </el-form>
                 <template #footer>
@@ -39,6 +39,9 @@
 </template>
 
 <script>
+    //注意！！！
+    //所有对property的处理都标注了注释：property处理
+
     //日后修改：
     //颜色改变增加调色板选项
     //颜色的存储可以放在data（大小同理），读取时在渲染函数中访问data中相应字段来渲染，但是在其他样式与颜色解耦之前无意义（例：会把选中状态之类的颜色存进去）
@@ -97,28 +100,29 @@
                 }
 
             };
-            let propLenCheck = (rule,value,callback) => {
-                console.log('propLenCheck');
-                let len = 0;
-                const limit = 255;
-                let invalid = false;
-                let errorReg = /\s/;
-                for(let i = 0;i < value.length;i++){
-                    if(errorReg.test(value[i])){
-                        invalid = true;
-                        break;
-                    }
-                    len += value[i]+1;
-                }
-                len-=1;
-                if(invalid){
-                    callback(new Error("属性中不能含有空哟~"));
-                }else if(len>limit){
-                    callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
-                }else{
-                    callback();
-                }
-            };
+            //property处理
+            // let propLenCheck = (rule,value,callback) => {
+            //     console.log('propLenCheck');
+            //     let len = 0;
+            //     const limit = 255;
+            //     let invalid = false;
+            //     let errorReg = /\s/;
+            //     for(let i = 0;i < value.length;i++){
+            //         if(errorReg.test(value[i])){
+            //             invalid = true;
+            //             break;
+            //         }
+            //         len += value[i]+1;
+            //     }
+            //     len-=1;
+            //     if(invalid){
+            //         callback(new Error("属性中不能含有空哟~"));
+            //     }else if(len>limit){
+            //         callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
+            //     }else{
+            //         callback();
+            //     }
+            // };
             return {
                 node0Edge1: 0,
                 // editMode: false,
@@ -140,9 +144,10 @@
                     type:[//如果设置了初始值，这里就不会被用到
                         {required:true,message:'请选择类型',trigger:'change'}
                     ],
-                    property:[
-                        {validator:propLenCheck,trigger:'change'}
-                    ]
+                    //property处理
+                    // property:[
+                    //     {validator:propLenCheck,trigger:'change'}
+                    // ]
                 },
                 formLabelWidth: '12%'
                 // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
@@ -505,10 +510,10 @@
                                 const data = target.data()
 
                                 const name = group === 'nodes' ? 'name' : 'relation'
-                                if(group==='nodes'){
+                                if(group==='nodes'){//property处理
                                     that.node0Edge1 = 0;
                                     that.givenType = that.nodeType;
-                                    that.form.property = data.property;
+                                    that.form.property = that.propertyToArray(data.property);
                                 }else{
                                     that.node0Edge1 = 1;
                                     that.givenType = that.edgeType;
@@ -522,8 +527,8 @@
                                         [name]: addForm.name,
                                         type: addForm.type,
                                     };
-                                    if(group==='nodes'){
-                                        obj.property = addForm.property;
+                                    if(group==='nodes'){//property处理
+                                        obj.property = that.arrayToProperty(addForm.property);
                                     }
                                     target.data(obj);
                                     let conflict = false;
@@ -651,7 +656,7 @@
                                         name:addForm.name,
                                         type:addForm.type,
                                         color:default_color,//和初始化时的颜色耦合，必须是相同的default_color
-                                        property:addForm.property
+                                        property:that.arrayToProperty(addForm.property)//property处理
                                     };
                                     let collection = cy.add(newObj);
                                     that.rendNode(collection[0], that);
@@ -885,7 +890,77 @@
             property2String(props){
                 let result = '';
                 for(let key in props){
-                    result += key + '-' + props[key] + '</br>';
+                    let val = props[key];
+                    if(val instanceof Array){
+                        result += key + '-' + val.join() + '</br>';
+                        result.push(key + ':' + val.join(','));
+                    }else{
+                        result += key + '-' + props[key] + '</br>';
+                    }
+
+                }
+                return result;
+            },
+
+            propertyToArray(props){
+                let result = [];
+                for(let key in props){
+                    let val = props[key];
+                    if(val instanceof Array){
+                        result.push(key + ':' + val.join(','));
+                    }else{
+                        result.push(key + ':' + val);
+                    }
+
+                }
+                return result;
+            },
+
+            arrayToProperty(array){
+                let result = {};
+                let defaultItem = [];
+                for(let item of array){
+                    let index = item.search(/[:：]/);
+                    if(index>0 && index<item.length-1){
+                        let key = item.slice(0,index);
+                        let content = item.slice(index+1);
+                        if(content.search(/[;,；，]/)===-1){
+                            result[key] = content
+                        }else{
+                            content = content.split(/[;,；，]/);
+                            if(content.length>0){
+                                let errorReg = /\s/;
+                                let validIndex = []
+                                for(let i = 0;i < content.length;i++){
+                                    if(!errorReg.test(content[i])){
+                                        validIndex.push(i)
+                                    }
+                                }
+                                if(validIndex.length>0){
+                                    let validItem = []
+                                    for(let i of validIndex){
+                                        validItem.push(content[i]);
+                                    }
+                                    result[key] = content;
+                                }
+                            }
+                        }
+
+                    } else{
+                        defaultItem.push(item);
+                    }
+                }
+                if(defaultItem.length>0){
+                    let defaultKey = "未命名";
+                    if(result.hasOwnProperty(defaultKey)){
+                        if(result[defaultKey] instanceof Array){
+                            result[defaultKey] += defaultItem;
+                        }else {
+                            result[defaultKey] = [result[defaultKey]] + defaultItem;
+                        }
+                    }else{
+                        result[defaultKey] = defaultItem;
+                    }
                 }
                 return result;
             }
