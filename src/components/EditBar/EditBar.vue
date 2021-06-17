@@ -253,12 +253,30 @@
           <el-radio :label="false">否</el-radio>
         </el-radio-group>
         <div class="item_title">| 节点字体大小</div>
+          <el-switch
+                  style="display: block"
+                  v-model="set_font_size"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="设置字体大小"
+                  inactive-text="不设置字体大小"
+          >
+          </el-switch>
         <div>
-          <el-slider :min="10" :max="100" v-model="font_size"></el-slider>
+          <el-slider v-if="set_font_size" :min="10" :max="100" v-model="font_size"></el-slider>
         </div>
         <div class="item_title">| 节点半径</div>
+          <el-switch
+                  style="display: block"
+                  v-model="set_node_radius"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="设置半径大小"
+                  inactive-text="不设置半径大小"
+          >
+          </el-switch>
         <div>
-          <el-slider :min="10" :max="100" v-model="node_radius"></el-slider>
+          <el-slider v-if="set_node_radius" :min="10" :max="100" v-model="node_radius"></el-slider>
         </div>
       </edit-bar-block>
 

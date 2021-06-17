@@ -99,7 +99,7 @@ export default {
 
       //显示部分图谱
       let condition = this.search_node_condition;
-      if(condition.length!==0){
+      if(condition.length!==0||!input){
         const byName = condition.includes('name');
         const byRelation = condition.includes('relation');
         const byProp = condition.includes('property');

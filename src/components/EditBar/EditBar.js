@@ -70,6 +70,9 @@ export default {
             layoutTypeNow : '',
 
             relation_label_enabled: true,
+
+            set_font_size: false,
+            set_node_radius: false,
             font_size: 20,
             node_radius: 20,
         }
@@ -143,61 +146,48 @@ export default {
                 }
             }
         },
-        font_size(newVal, oldVal) {
-            // let defaultSize = '25px';//默认值，25px是看workspace找到的
-            if (newVal === '') {
+        set_font_size(newVal, oldVal){
+            if(!newVal){
                 this.setNodeFontSize('');//同步改变workspace中的nodeNodeFontSize
                 //CytoscapeKG中在监听到workspace中nodeFontSize刚变回''时
                 //会根据节点大小和字数重新渲染各个节点的字体大小，所以不能用统一默认值
                 //此处什么也不需要做，因为CytoscapeKG里做了
-                return;
-            }
-            let size = Number(newVal);
-            if (!isNaN(size)) {
-                this.setNodeFontSize(newVal);//同步改变workspace中的nodeNodeFontSize
-                size = parseInt(size);
+            }else{
+                this.setNodeFontSize(this.font_size);//同步改变workspace中的nodeNodeFontSize
                 for (let node of this.cy.nodes()) {
-                    node.style('font-size', size + 'px');
+                    node.style('font-size', this.font_size + 'px');
                 }
-            }
-            else {
-                if (newVal !== '') {
-                    this.informMsg('error','请输入数字');
-                }
-                this.setNodeFontSize('');//同步改变workspace中的nodeNodeFontSize
-                //CytoscapeKG中在监听到workspace中nodeFontSize刚变回''时
-                //会根据节点大小和字数重新渲染各个节点的字体大小，所以不能用统一默认值
-                //此处什么也不需要做，因为CytoscapeKG里做了
             }
         },
-        node_radius(newVal, oldVal) {
-            if (newVal === '') {
+        font_size(newVal, oldVal) {
+            // let defaultSize = '25px';//默认值，25px是看workspace找到的
+            this.setNodeFontSize(newVal);//同步改变workspace中的nodeNodeFontSize
+            for (let node of this.cy.nodes()) {
+                node.style('font-size', newVal + 'px');
+            }
+        },
+        set_node_radius(newVal, oldVal){
+            if(!newVal){
                 this.setNodeRadius('');//同步改变workspace中的nodeRadius
                 for (let node of this.cy.nodes()) {
                     node.removeStyle('width');
                     node.removeStyle('height');
                 }
-                return;
-            }
-            let radius = Number(newVal);
-            if (!isNaN(radius)) {
-                radius = parseInt(radius);
-                let realRadius = radius * 2;
+            }else{
+                let realRadius = this.node_radius * 2;
                 this.setNodeRadius(realRadius+"");//同步改变workspace中的nodeRadius
                 for (let node of this.cy.nodes()) {//是不是要改成等比例扩大？
                     node.style('width', realRadius + 'px');
                     node.style('height', realRadius + 'px');
                 }
             }
-            else {
-                this.setNodeRadius('');//同步改变workspace中的nodeRadius
-                if (newVal !== '') {
-                    this.informMsg('error','请输入数字');
-                }
-                for (let node of this.cy.nodes()) {
-                    node.removeStyle('width');
-                    node.removeStyle('height');
-                }
+        },
+        node_radius(newVal, oldVal) {
+            let realRadius = newVal * 2;
+            this.setNodeRadius(realRadius+"");//同步改变workspace中的nodeRadius
+            for (let node of this.cy.nodes()) {//是不是要改成等比例扩大？
+                node.style('width', realRadius + 'px');
+                node.style('height', realRadius + 'px');
             }
         }
     },

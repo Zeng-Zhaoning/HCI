@@ -491,6 +491,7 @@
                             val.removeClass('removed');
                         }
                     });
+                    console.log("doubleTap",target);
                 });
 
                 // 绑定右键单击的事件
