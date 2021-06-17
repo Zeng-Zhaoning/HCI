@@ -1,8 +1,7 @@
 <template>
     <div class='knowledge-graph-cy'>
         <div id="graph">
-<!--            <el-button type="text" @click="addFormVisible = true">打开嵌套表单的 Dialog</el-button>-->
-        <el-dialog title="信息完善" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
+          <el-dialog title="信息完善" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
                 <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth" class="demo-ruleForm"><!-- class="demo-ruleForm"意义何在？-->
                     <el-form-item label="名称" prop="name" required>
                         <el-input v-model="form.name" autocomplete="off" style="width:90%"></el-input>
@@ -33,8 +32,8 @@
                     </span>
                 </template>
             </el-dialog>
-
         </div>
+
     </div>
 </template>
 
@@ -73,31 +72,31 @@
     export default {
         name: 'CytoscapeKG',
         data() {
-            let nameCheck = (rule,value,callback) => {
-                console.log('nameCheck');
-                let validName = value.trim();
-                if(this.form.nameNow&&this.form.nameNow===validName){
-                    return callback();
-                }
-                let nameValid = /\S/;
-                if(!nameValid.test(validName)){//可添加正则表达式等逻辑
-                    return callback(new Error('名称不能为空哟'));
-                }
-                if(this.node0Edge1===0){
-                    if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
-                        callback();
-                    }else {
-                        callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
-                    }
-                }else{
-                    let {source,target} = this.form.edgeCondition;
-                    let dupEdges = this.cy.edges().filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
-                    if(dupEdges.length===0||this.isUnique(dupEdges,val=>val.data("relation"),validName)){
-                        callback();
-                    }else{
-                        callback(new Error('该关系已存在哦，换一个名字吧，亲~'));
-                    }
-                }
+              let nameCheck = (rule,value,callback) => {
+                  console.log('nameCheck');
+                  let validName = value.trim();
+                  if(this.form.nameNow&&this.form.nameNow===validName){
+                      return callback();
+                  }
+                  let nameValid = /\S/;
+                  if(!nameValid.test(validName)){//可添加正则表达式等逻辑
+                      return callback(new Error('名称不能为空哟'));
+                  }
+                  if(this.node0Edge1===0){
+                      if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
+                          callback();
+                      }else {
+                          callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
+                      }
+                  }else{
+                      let {source,target} = this.form.edgeCondition;
+                      let dupEdges = this.cy.edges().filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
+                      if(dupEdges.length===0||this.isUnique(dupEdges,val=>val.data("relation"),validName)){
+                          callback();
+                      }else{
+                          callback(new Error('该关系已存在哦，换一个名字吧，亲~'));
+                      }
+                  }
 
             };
             //property处理
@@ -131,7 +130,7 @@
                 form: {
                     name: '',
                     type: '',
-                    property: {},
+                    property: [],
                     edgeCondition:{source:'',target:''},
                     //以下为借用form的reset来自动清空的属性
                     nameNow: '',
@@ -154,6 +153,7 @@
                 // https://github.com/yiminghe/async-validator
             };
         },
+
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
@@ -892,10 +892,9 @@
                 for(let key in props){
                     let val = props[key];
                     if(val instanceof Array){
-                        result += key + '-' + val.join() + '</br>';
-                        result.push(key + ':' + val.join(','));
+                        result += '· ' + key + '-' + val.join(',') + '</br>';
                     }else{
-                        result += key + '-' + props[key] + '</br>';
+                        result += '· ' + key + '-' + val + '</br>';
                     }
 
                 }
@@ -919,6 +918,7 @@
             arrayToProperty(array){
                 let result = {};
                 let defaultItem = [];
+                if(!array) return result;
                 for(let item of array){
                     let index = item.search(/[:：]/);
                     if(index>0 && index<item.length-1){
@@ -965,7 +965,6 @@
                 return result;
             }
         }
-
     }
 </script>
 
@@ -1043,5 +1042,4 @@
         top: 50%;
         transform: translateY(-50%);
     }
-
 </style>

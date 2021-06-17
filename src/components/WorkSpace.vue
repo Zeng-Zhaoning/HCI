@@ -36,20 +36,21 @@
         </div>
       </div>
     </div>
-
+    <q-a-panel class="qa-panel" v-show="showQAPanel"></q-a-panel>
   </div>
 </template>
 
 <script>
-import {mapGetters, mapState} from "vuex";
+import {mapState} from "vuex";
 import axios from "axios";
 import EditBar from "./EditBar/EditBar.vue";
 import kgTemplate from "./CytoscapeKG";
 import TypesetGraph from "@/components/TypesetGraph";
+import QAPanel from "@/components/QAPanel";
 
 export default {
   name: "WorkSpace",
-  components: {EditBar,kgTemplate,TypesetGraph},
+  components: {QAPanel, EditBar,kgTemplate,TypesetGraph},
   data(){
     return {
       ifShowChangeMode: false,
@@ -60,10 +61,9 @@ export default {
   },
   computed: {
     ...mapState({
-      // current_pid: state => state.current_pid,
       cy: state => state.workspace.cy,
+      showQAPanel: state => state.workspace.showQAPanel,
     }),
-    // ...mapGetters(['current_project']),
     isEditMode(){return this.mode === 'edit';},
     isTypesetMode(){return this.mode === 'typeset';},
     current_graph_component(){
@@ -75,6 +75,51 @@ export default {
       else if(this.mode === 'edit'){return 'edit-bar'}
     }
   },
+  mounted() {
+    let qaPanel = document.getElementsByClassName('qa-panel')[0];
+    let qaPanelTitle = qaPanel.getElementsByClassName('title-box')[0];
+    let x = 0;
+    let y = 0;
+    let l = 0;
+    let t = 0;
+    let isDown = false;
+    //鼠标按下事件
+    qaPanelTitle.onmousedown = function(e) {
+      //获取x坐标和y坐标
+      x = e.clientX;
+      y = e.clientY;
+
+      //获取左部和顶部的偏移量
+      l = qaPanel.offsetLeft;
+      t = qaPanel.offsetTop;
+      //开关打开
+      isDown = true;
+      //设置样式
+      qaPanelTitle.style.cursor = 'move';
+    }
+    //鼠标移动
+    window.onmousemove = function(e) {
+      if (isDown == false) {
+        return;
+      }
+      //获取x和y
+      let nx = e.clientX;
+      let ny = e.clientY;
+      //计算移动后的左偏移量和顶部的偏移量
+      let nl = nx - (x - l);
+      let nt = ny - (y - t);
+
+      qaPanel.style.left = nl + 'px';
+      qaPanel.style.top = nt + 'px';
+    }
+    //鼠标抬起事件
+    qaPanel.onmouseup = function() {
+      //开关关闭
+      isDown = false;
+      qaPanel.style.cursor = 'default';
+    }
+  }
+  ,
   watch: {
     json_src_path(now, old) {
       axios.get(now)
@@ -208,4 +253,14 @@ export default {
     display: inline;
   }
 }
+
+.qa-panel{
+  position: absolute;
+  top: 50%;
+  right: 320px;
+  transform: translateY(-50%);
+  background-color: white;
+}
+
+
 </style>

@@ -184,7 +184,7 @@ export const workspace = {
             {label: '同心圆', value: 'concentric'},
             {label: 'cose', value: 'cose'}
         ],
-
+        showQAPanel: false,
     },
 
     mutations: {
@@ -206,8 +206,8 @@ export const workspace = {
         trigger_statistic_data_change(state){
             state.statistic_data_change = ! state.statistic_data_change;
         },
-        trigger_current_project_change(state){
-            state.current_project_change = ! state.current_project_change;
+        changeShowQAPanel(state){
+            state.showQAPanel = !state.showQAPanel;
         }
     },
 

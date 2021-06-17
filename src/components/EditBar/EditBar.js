@@ -200,8 +200,6 @@ export default {
             }
         }
     },
-    mounted() {
-    },
     computed: {
         ...mapState({
             cy: state => state.workspace.cy,
@@ -222,11 +220,10 @@ export default {
             }
 
         },
-
     },
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
-            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject']),
+            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel']),
 
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
@@ -248,7 +245,6 @@ export default {
             }
         },
 
-        // TODO：要改数据格式
         save(){
             let data = {};
             try{
@@ -277,7 +273,6 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(255, 255,255, 0.8)'
             });
-            //todo 改接口
             inputKG(data).then(res => {
                 if(res.success){
                     this.setProject(data);
