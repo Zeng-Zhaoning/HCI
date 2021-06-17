@@ -450,6 +450,49 @@
                         }
                     })
 
+                let tappedBefore;
+                cy.on('tap', 'node', function (event) {
+                    let target = event.target || event.cyTarget;
+                    let tappedNow = target;//貌似等同于直接用this
+                    if (tappedBefore && tappedBefore.id() === tappedNow.id()) {
+                        tappedNow.trigger('doubleTap');
+                        tappedBefore = null;
+                    } else {
+                        tappedBefore = tappedNow;
+                        setTimeout(function () {
+                            tappedBefore = null;
+                        }, 300);
+                    }
+                });
+
+                cy.on('doubleTap', 'node', function (event) {
+                    /*
+                    var nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
+                    revertBorder(nodesWithHiddenNeighbor);
+                    api.show(cy.nodes(":selected").neighborhood().union(cy.nodes(":selected").neighborhood().parent()));
+                    nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
+                    changeBorder(nodesWithHiddenNeighbor);
+                    */
+
+                    // api.disableMarqueeZoom();
+                    // api.disableLassoMode();
+                    // getButtonsToDef();
+                    // var selectedNodes = cy.nodes(":selected");
+                    // var nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
+                    // revertBorder(nodesWithHiddenNeighbor);
+                    // api.showHiddenNeighbors(selectedNodes);
+                    // nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
+                    // changeBorder(nodesWithHiddenNeighbor);
+
+                    let target = event.target || event.cyTarget;
+                    let neighbor = target.openNeighborhood();
+                    neighbor.forEach(val=>{
+                        if(val.isNode()&&val.hasClass('removed')){
+                            val.removeClass('removed');
+                        }
+                    });
+                });
+
                 // 绑定右键单击的事件
                 const barHandler = event => {
                     if (allSelected('node')) {
