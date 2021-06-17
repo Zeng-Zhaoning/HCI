@@ -11,18 +11,18 @@
                             <el-option v-for="item in givenType" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
-<!--                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">-->
-<!--                        <el-select-->
-<!--                                v-model="form.property"-->
-<!--                                style="width:90%"-->
-<!--                                multiple-->
-<!--                                filterable-->
-<!--                                allow-create-->
-<!--                                default-first-option-->
-<!--                                no-data-text="输入已存在的属性会取消勾选哦"-->
-<!--                                placeholder="在这里可以输入属性哦">-->
-<!--                        </el-select>-->
-<!--                    </el-form-item>-->
+                    <el-form-item label="属性" prop="property" v-if="node0Edge1===0">
+                        <el-select
+                                v-model="form.property"
+                                style="width:90%"
+                                multiple
+                                filterable
+                                allow-create
+                                default-first-option
+                                no-data-text="输入已存在的属性会取消勾选哦"
+                                placeholder="在这里可以输入属性哦">
+                        </el-select>
+                    </el-form-item>
 
                 </el-form>
                 <template #footer>
@@ -38,6 +38,9 @@
 </template>
 
 <script>
+    //注意！！！
+    //所有对property的处理都标注了注释：property处理
+
     //日后修改：
     //颜色改变增加调色板选项
     //颜色的存储可以放在data（大小同理），读取时在渲染函数中访问data中相应字段来渲染，但是在其他样式与颜色解耦之前无意义（例：会把选中状态之类的颜色存进去）
@@ -95,59 +98,62 @@
                       }
                   }
 
-              };
-              let propLenCheck = (rule,value,callback) => {
-                  console.log('propLenCheck');
-                  let len = 0;
-                  const limit = 255;
-                  let invalid = false;
-                  let errorReg = /\s/;
-                  for(let i = 0;i < value.length;i++){
-                      if(errorReg.test(value[i])){
-                          invalid = true;
-                          break;
-                      }
-                      len += value[i]+1;
-                  }
-                  len-=1;
-                  if(invalid){
-                      callback(new Error("属性中不能含有空哟~"));
-                  }else if(len>limit){
-                      callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
-                  }else{
-                      callback();
-                  }
-              };
-              return {
-                  node0Edge1: 0,
-                  // editMode: false,
-                  addFormVisible : false,
-                  givenType: [],
-                  form: {
-                      name: '',
-                      type: '',
-                      property: {},
-                      edgeCondition:{source:'',target:''},
-                      //以下为借用form的reset来自动清空的属性
-                      nameNow: '',
-                      formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
-                  },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
-                  rules:{
-                      name:[
-                          {validator:nameCheck, trigger:'blur'}
-                      ],
-                      type:[//如果设置了初始值，这里就不会被用到
-                          {required:true,message:'请选择类型',trigger:'change'}
-                      ],
-                      property:[
-                          {validator:propLenCheck,trigger:'change'}
-                      ]
-                  },
-                  formLabelWidth: '12%'
-                  // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
-                  // https://github.com/yiminghe/async-validator
-              };
-          },
+            };
+            //property处理
+            // let propLenCheck = (rule,value,callback) => {
+            //     console.log('propLenCheck');
+            //     let len = 0;
+            //     const limit = 255;
+            //     let invalid = false;
+            //     let errorReg = /\s/;
+            //     for(let i = 0;i < value.length;i++){
+            //         if(errorReg.test(value[i])){
+            //             invalid = true;
+            //             break;
+            //         }
+            //         len += value[i]+1;
+            //     }
+            //     len-=1;
+            //     if(invalid){
+            //         callback(new Error("属性中不能含有空哟~"));
+            //     }else if(len>limit){
+            //         callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
+            //     }else{
+            //         callback();
+            //     }
+            // };
+            return {
+                node0Edge1: 0,
+                // editMode: false,
+                addFormVisible : false,
+                givenType: [],
+                form: {
+                    name: '',
+                    type: '',
+                    property: [],
+                    edgeCondition:{source:'',target:''},
+                    //以下为借用form的reset来自动清空的属性
+                    nameNow: '',
+                    formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
+                },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
+                rules:{
+                    name:[
+                        {validator:nameCheck, trigger:'blur'}
+                    ],
+                    type:[//如果设置了初始值，这里就不会被用到
+                        {required:true,message:'请选择类型',trigger:'change'}
+                    ],
+                    //property处理
+                    // property:[
+                    //     {validator:propLenCheck,trigger:'change'}
+                    // ]
+                },
+                formLabelWidth: '12%'
+                // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
+                // https://github.com/yiminghe/async-validator
+            };
+        },
+
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
@@ -503,10 +509,10 @@
                                 const data = target.data()
 
                                 const name = group === 'nodes' ? 'name' : 'relation'
-                                if(group==='nodes'){
+                                if(group==='nodes'){//property处理
                                     that.node0Edge1 = 0;
                                     that.givenType = that.nodeType;
-                                    that.form.property = data.property;
+                                    that.form.property = that.propertyToArray(data.property);
                                 }else{
                                     that.node0Edge1 = 1;
                                     that.givenType = that.edgeType;
@@ -520,8 +526,8 @@
                                         [name]: addForm.name,
                                         type: addForm.type,
                                     };
-                                    if(group==='nodes'){
-                                        obj.property = addForm.property;
+                                    if(group==='nodes'){//property处理
+                                        obj.property = that.arrayToProperty(addForm.property);
                                     }
                                     target.data(obj);
                                     let conflict = false;
@@ -649,7 +655,7 @@
                                         name:addForm.name,
                                         type:addForm.type,
                                         color:default_color,//和初始化时的颜色耦合，必须是相同的default_color
-                                        property:addForm.property
+                                        property:that.arrayToProperty(addForm.property)//property处理
                                     };
                                     let collection = cy.add(newObj);
                                     that.rendNode(collection[0], that);
@@ -796,12 +802,27 @@
             },
 
             //dialog组件
+            resetForm(){
+                this.$refs['ruleForm'].resetFields();
+                //本来只需要上面这一行
+                //由于上一行的作用是恢复至初始值，而由于编辑和添加dialog共用，如果先使用编辑，则编辑的值成为初始值
+                //为简单解决这一问题，附加一个手动清空form的操作如下
+                this.form = {
+                    name: '',
+                    type: '',
+                    property: [],
+                    edgeCondition:{source:'',target:''},
+                    nameNow: '',
+                    formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
+                };
+            },
+
             handleClose(done) {
                 let that = this;
                 this.$confirm('所作的编辑将不会保存')
                     .then(_ => {
                         done();
-                        that.$refs['ruleForm'].resetFields();
+                        that.resetForm();
                     })
                     .catch(_ => {});
             },
@@ -809,7 +830,8 @@
             //addForm组件
             addCancel(){
                 this.addFormVisible = false;
-                this.$refs['ruleForm'].resetFields();
+                this.resetForm();
+
             },
             addConfirm(){
                 this.$refs['ruleForm'].validate((valid) => {
@@ -818,9 +840,8 @@
                         let addForm = JSON.parse(JSON.stringify(this.form));//深拷贝后传参，不破坏原来的值//可能没必要
                         addForm.name = addForm.name.trim();//名称和校验时一样前后无空格
                         this.form.formCallback(addForm);
-                        this.$refs['ruleForm'].resetFields();
+                        this.resetForm();
                         this.trigger_statistic_data_change();
-                      console.log("触发");
                     } else {
                         alert('好像哪里有问题，操作失败了呢……');
                     }
@@ -885,7 +906,90 @@
             property2String(props){
                 let result = '';
                 for(let key in props){
-                    result += key + '-' + props[key] + '</br>';
+                    let val = props[key];
+                    if(val instanceof Array){
+                        result += '· ' + key + '-' + val.join(',') + '</br>';
+                    }else{
+                        result += '· ' + key + '-' + val + '</br>';
+                    }
+
+                }
+                return result;
+            },
+
+            propertyToArray(props){
+                let result = [];
+                for(let key in props){
+                    let val = props[key];
+                    if(val instanceof Array){
+                        result.push(key + ':' + val.join(','));
+                    }else{
+                        result.push(key + ':' + val);
+                    }
+
+                }
+                return result;
+            },
+
+            arrayToProperty(array){
+                let result = {};
+                let defaultItem = [];
+                if(!array) return result;
+                for(let item of array){
+                    let index = item.search(/[:：]/);
+                    let key='',content='';
+                    if(index>=0 && index<item.length-1){
+                        key = item.slice(0,index);
+                        content = item.slice(index+1);
+                    } else{
+                        content = item;
+                    }
+
+                    let pauseWord = /[;,.；，。]/;
+                    if(content.search(pauseWord)===-1){
+                        let errorReg = /\s/;
+                        if(key&&!errorReg.test(key)){
+                            result[key] = content;
+                        }else{
+                            defaultItem.push(item);
+                        }
+                    }else{
+                        content = content.split(pauseWord);
+                        if(content.length>0){
+                            // let errorReg = /\s/;
+                            let validIndex = []
+                            for(let i = 0;i < content.length;i++){
+                                content[i] = content[i].trim();
+                                if(content[i]){
+                                    validIndex.push(i)
+                                }
+                            }
+                            if(validIndex.length>0){
+                                let validItem = []
+                                for(let i of validIndex){
+                                    validItem.push(content[i]);
+                                }
+                                let errorReg = /\s/;
+                                if(key&&!errorReg.test(key)){
+                                    result[key] = validItem;
+                                }else{
+                                    defaultItem += validItem;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(defaultItem.length>0){
+                    let defaultKey = "未命名";
+                    if(result.hasOwnProperty(defaultKey)){
+                        if(result[defaultKey] instanceof Array){
+                            result[defaultKey] += defaultItem;
+                        }else {
+                            result[defaultKey] = [result[defaultKey]] + defaultItem;
+                        }
+                    }else{
+                        result[defaultKey] = defaultItem;
+                    }
                 }
                 return result;
             }
