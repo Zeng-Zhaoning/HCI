@@ -571,7 +571,17 @@ export default {
                     }
                     if(byProp){
                         propHit = false;
-                        for(let prop of valProps){
+                        let propArray = [];
+                        for(let key in valProps){
+                            propArray.push(key);
+                            let val = valProps[key];
+                            if(val instanceof Array){
+                                propArray = propArray.concat(val);
+                            }else{
+                                propArray.push(val);
+                            }
+                        }
+                        for(let prop of propArray){
                             if(this.fuzzyMatch(prop, key)){
                                 propHit=true;
                                 break;
