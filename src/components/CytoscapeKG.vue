@@ -803,12 +803,28 @@
             },
 
             //dialog组件
+            resetForm(){
+                this.$refs['ruleForm'].resetFields();
+                //本来只需要上面这一行
+                //由于上一行的作用是恢复至初始值，而由于编辑和添加dialog共用，如果先使用编辑，则编辑的值成为初始值
+                //为简单解决这一问题，附加一个手动清空form的操作如下
+                this.form = {
+                    name: '',
+                    type: '',
+                    property: [],
+                    edgeCondition:{source:'',target:''},
+                    //以下为借用form的reset来自动清空的属性
+                    nameNow: '',
+                    formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
+                };
+            },
+
             handleClose(done) {
                 let that = this;
                 this.$confirm('所作的编辑将不会保存')
                     .then(_ => {
                         done();
-                        that.$refs['ruleForm'].resetFields();
+                        that.resetForm();
                     })
                     .catch(_ => {});
             },
@@ -816,7 +832,8 @@
             //addForm组件
             addCancel(){
                 this.addFormVisible = false;
-                this.$refs['ruleForm'].resetFields();
+                this.resetForm();
+
             },
             addConfirm(){
                 this.$refs['ruleForm'].validate((valid) => {
@@ -825,7 +842,7 @@
                         let addForm = JSON.parse(JSON.stringify(this.form));//深拷贝后传参，不破坏原来的值//可能没必要
                         addForm.name = addForm.name.trim();//名称和校验时一样前后无空格
                         this.form.formCallback(addForm);
-                        this.$refs['ruleForm'].resetFields();
+                        this.resetForm();
                     } else {
                         alert('好像哪里有问题，添加失败了呢……');
                     }
