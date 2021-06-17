@@ -1,8 +1,7 @@
 <template>
     <div class='knowledge-graph-cy'>
         <div id="graph">
-<!--            <el-button type="text" @click="addFormVisible = true">打开嵌套表单的 Dialog</el-button>-->
-        <el-dialog title="信息完善" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
+          <el-dialog title="信息完善" v-model="addFormVisible" :before-close="handleClose" :append-to-body="true"><!--:append-to-body保证了弹窗时周围背景不能触发事件-->
                 <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth" class="demo-ruleForm"><!-- class="demo-ruleForm"意义何在？-->
                     <el-form-item label="名称" prop="name" required>
                         <el-input v-model="form.name" autocomplete="off" style="width:90%"></el-input>
@@ -33,8 +32,8 @@
                     </span>
                 </template>
             </el-dialog>
-
         </div>
+
     </div>
 </template>
 
@@ -70,85 +69,85 @@
     export default {
         name: 'CytoscapeKG',
         data() {
-            let nameCheck = (rule,value,callback) => {
-                console.log('nameCheck');
-                let validName = value.trim();
-                if(this.form.nameNow&&this.form.nameNow===validName){
-                    return callback();
-                }
-                let nameValid = /\S/;
-                if(!nameValid.test(validName)){//可添加正则表达式等逻辑
-                    return callback(new Error('名称不能为空哟'));
-                }
-                if(this.node0Edge1===0){
-                    if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
-                        callback();
-                    }else {
-                        callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
-                    }
-                }else{
-                    let {source,target} = this.form.edgeCondition;
-                    let dupEdges = this.cy.edges().filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
-                    if(dupEdges.length===0||this.isUnique(dupEdges,val=>val.data("relation"),validName)){
-                        callback();
-                    }else{
-                        callback(new Error('该关系已存在哦，换一个名字吧，亲~'));
-                    }
-                }
+              let nameCheck = (rule,value,callback) => {
+                  console.log('nameCheck');
+                  let validName = value.trim();
+                  if(this.form.nameNow&&this.form.nameNow===validName){
+                      return callback();
+                  }
+                  let nameValid = /\S/;
+                  if(!nameValid.test(validName)){//可添加正则表达式等逻辑
+                      return callback(new Error('名称不能为空哟'));
+                  }
+                  if(this.node0Edge1===0){
+                      if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
+                          callback();
+                      }else {
+                          callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
+                      }
+                  }else{
+                      let {source,target} = this.form.edgeCondition;
+                      let dupEdges = this.cy.edges().filter(val=>val.data("source")===source).filter(val=>val.data("target")===target);
+                      if(dupEdges.length===0||this.isUnique(dupEdges,val=>val.data("relation"),validName)){
+                          callback();
+                      }else{
+                          callback(new Error('该关系已存在哦，换一个名字吧，亲~'));
+                      }
+                  }
 
-            };
-            let propLenCheck = (rule,value,callback) => {
-                console.log('propLenCheck');
-                let len = 0;
-                const limit = 255;
-                let invalid = false;
-                let errorReg = /\s/;
-                for(let i = 0;i < value.length;i++){
-                    if(errorReg.test(value[i])){
-                        invalid = true;
-                        break;
-                    }
-                    len += value[i]+1;
-                }
-                len-=1;
-                if(invalid){
-                    callback(new Error("属性中不能含有空哟~"));
-                }else if(len>limit){
-                    callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
-                }else{
-                    callback();
-                }
-            };
-            return {
-                node0Edge1: 0,
-                // editMode: false,
-                addFormVisible : false,
-                givenType: [],
-                form: {
-                    name: '',
-                    type: '',
-                    property: {},
-                    edgeCondition:{source:'',target:''},
-                    //以下为借用form的reset来自动清空的属性
-                    nameNow: '',
-                    formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
-                },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
-                rules:{
-                    name:[
-                        {validator:nameCheck, trigger:'blur'}
-                    ],
-                    type:[//如果设置了初始值，这里就不会被用到
-                        {required:true,message:'请选择类型',trigger:'change'}
-                    ],
-                    property:[
-                        {validator:propLenCheck,trigger:'change'}
-                    ]
-                },
-                formLabelWidth: '12%'
-                // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
-                // https://github.com/yiminghe/async-validator
-            };
-        },
+              };
+              let propLenCheck = (rule,value,callback) => {
+                  console.log('propLenCheck');
+                  let len = 0;
+                  const limit = 255;
+                  let invalid = false;
+                  let errorReg = /\s/;
+                  for(let i = 0;i < value.length;i++){
+                      if(errorReg.test(value[i])){
+                          invalid = true;
+                          break;
+                      }
+                      len += value[i]+1;
+                  }
+                  len-=1;
+                  if(invalid){
+                      callback(new Error("属性中不能含有空哟~"));
+                  }else if(len>limit){
+                      callback(new Error("属性值数据量太大啦，麻烦去掉长度过长的属性哟~"));
+                  }else{
+                      callback();
+                  }
+              };
+              return {
+                  node0Edge1: 0,
+                  // editMode: false,
+                  addFormVisible : false,
+                  givenType: [],
+                  form: {
+                      name: '',
+                      type: '',
+                      property: {},
+                      edgeCondition:{source:'',target:''},
+                      //以下为借用form的reset来自动清空的属性
+                      nameNow: '',
+                      formCallback: ()=>{console.log("this.form.formCallback被意外调用")}
+                  },//此处的值会作为初始值存在，在this.$refs['ruleForm'].resetFields()后会恢复成初始值
+                  rules:{
+                      name:[
+                          {validator:nameCheck, trigger:'blur'}
+                      ],
+                      type:[//如果设置了初始值，这里就不会被用到
+                          {required:true,message:'请选择类型',trigger:'change'}
+                      ],
+                      property:[
+                          {validator:propLenCheck,trigger:'change'}
+                      ]
+                  },
+                  formLabelWidth: '12%'
+                  // 自定义校验 callback 必须被调用。 更多高级用法可参考 async-validator
+                  // https://github.com/yiminghe/async-validator
+              };
+          },
         computed: {
             ...mapState({
                 defaultStyle: state => state.workspace.defaultStyle,
@@ -890,7 +889,6 @@
                 return result;
             }
         }
-
     }
 </script>
 
@@ -968,5 +966,4 @@
         top: 50%;
         transform: translateY(-50%);
     }
-
 </style>

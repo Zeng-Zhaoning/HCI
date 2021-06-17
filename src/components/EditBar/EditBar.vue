@@ -28,7 +28,7 @@
               <div @click="exportJson" class="export-op">json</div>
             </div>
           </op-item>
-          <op-item op-name="智能问答" icon="#iconcomment" @click=""></op-item>
+          <op-item op-name="智能问答" icon="#iconcomment" @click="changeShowQAPanel"></op-item>
         </div>
       </edit-bar-block>
 
