@@ -6,10 +6,13 @@ export { getRecommend }
 let base =  '/api/recommend/';
 
 function getRecommend(question){
-    return axios.get(base + 'simple_question' + '?question=' + question)
-        .then(res => {
-            return res.data
-        }).catch(error => {
-            console.log(error);
+    return new Promise((resolve,reject) => {
+        axios.get(base + 'simple_question' + '?question=' + question)
+            .then(res => {
+                resolve(res.data);
+            }).catch(error => {
+                console.log(error);
+                reject(error);
         })
+    })
 }

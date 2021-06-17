@@ -15,8 +15,8 @@ function addKG(graph){
 }
 
 
-function getKG(num){
-    return axios.get(base + 'getKG?num=' + num)
+function getKG(){
+    return axios.get(base + 'getKG')
         .then(res => {
             return res.data
         }).catch(error => {

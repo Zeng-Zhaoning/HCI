@@ -118,8 +118,7 @@ export default {
       isDown = false;
       qaPanel.style.cursor = 'default';
     }
-  }
-  ,
+  },
   watch: {
     json_src_path(now, old) {
       axios.get(now)

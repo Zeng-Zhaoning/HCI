@@ -187,6 +187,12 @@ export const workspace = {
         showQAPanel: false,
     },
 
+    getters: {
+        get_statistic_data_change(state){
+            return state.statistic_data_change;
+        }
+    },
+
     mutations: {
         setCy(state, cy){
             state.cy = cy;

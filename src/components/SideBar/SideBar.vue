@@ -1,52 +1,118 @@
 <template>
   <div class="container">
-    <div class="user-info">
-      <div>
-        你好，
-        <span class="user-name">{{ user_name }}</span>
+    <div class="search-box">
+      <div class="header">
+        <span>搜索</span>
+        <div class="input-box">
+          <input v-model="input" @keyup="keyUpHandler" @keydown="keyDownHandler"/>
+          <svg class="icon" aria-hidden="true" @click="query">
+            <use xlink:href="#iconyou"></use>
+          </svg>
+        </div>
       </div>
-      <div class="prompt">新建或打开已有项目以开始操作</div>
     </div>
 
-    <div class="projects">
-      <div class="header">
-        <span>我的项目</span>
-<!--        <i class="el-icon-plus createbtn" @click="create_pro"></i>-->
+    <el-scrollbar>
+      <div class="result-box" v-loading="resultLoading">
+        <div class="title"><span>搜索结果</span></div>
+        <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
+        <div class="empty" v-if="showNoResult">无匹配，换个关键词搜索吧</div>
+        <div>
+          <div class="result-item" v-for="(value, key) in result">
+            <div class="key">{{ key }}</div>
+            <div class="value">{{ value }}</div>
+          </div>
+        </div>
       </div>
-      <div class="menu">
-<!--        <project-item v-for="(pro,i) of all_projects"-->
-<!--                      :pname="pro.project_name"-->
-<!--                      :pid="pro.pid"-->
-<!--                      :key="i"-->
-<!--                      @click="select(pro.pid)">-->
-<!--        </project-item>-->
-        <project-item pname="项目1" :pid="1" :key="0"></project-item>
+
+      <div class="recommendations-box" v-loading="recsLoading">
+        <div class="title"><span>猜你想看</span></div>
+        <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
+        <div class="empty" v-if="showNoRecs">暂无推荐</div>
+        <div>
+          <div class="recommendation-item"
+               v-for="(rec, index) in recommendations"
+               :key="rec">
+            <div class="index" :class="indexClass[index]">{{ index + 1 }}</div>
+            <div class="rec-text">{{ rec }}</div>
+          </div>
+        </div>
       </div>
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
 <script>
-import {mapState, mapMutations, mapGetters} from "vuex";
-import ProjectItem from "./ProjectItem"
+import { getRecommend } from "@/api/RecommendAPI"
+
 export default {
   name: "SideBar",
-  components:{ProjectItem},
-  computed:{
-    ...mapState([
-        "user_name"//, "all_projects", "workspace_text"
-    ]),
-    // ...mapGetters(['current_project'])
+  data(){
+    return {
+      searched: false,
+      input: '',
+      resultLoading: false,
+      result: {}, //返回的结果
+      showNoResult: false,
+      recsLoading: false,
+      recommendations: [],  //推荐条目
+      indexClass: ['index-1', 'index-2', 'index-3'],
+      showNoRecs: false,
+    }
   },
   methods:{
-    // ...mapMutations(['setCurrentProject','setWorkspaceText']),
-    // create_pro(){
-    //   alert("创建新项目")
-    // },
-    // select(pid){
-    //   this.setCurrentProject(pid);
-    //   this.setWorkspaceText(this.current_project.text);
-    // }
+    keyDownHandler(event){
+      if (event.keyCode == '13'){
+        event.preventDefault();
+      }
+    },
+    keyUpHandler(event){
+      if (event.keyCode == '13'){
+        this.query(event);
+      }
+    },
+    query(event){
+      if (this.question === ''){ return; }
+
+      let input = this.input;
+      this.input = "";
+      this.searched = true;
+      this.recsLoading = true;
+      this.resultLoading = true;
+      this.showNoResult = false;
+      this.showNoRecs = false;
+      this.recommendations = [];
+
+      //请求api获得搜索结果
+      this.result = {
+        "姓名": "哈利波特",
+        "年龄": "19岁",
+        "生日": "2000年",
+        "学院": "南大软院",
+      };
+      this.resultLoading = false;
+
+      //请求api获得推荐结果
+      getRecommend(input).then(res => {
+        if (res.success){
+          let recsObj = res.content;
+          if (res.content !== null){
+            //根据键值排序得到键名list
+            this.recommendations = Object.keys(recsObj).sort(function(a,b){return recsObj[b]-recsObj[a]});
+            this.recommendations = this.recommendations.slice(0,10);
+          }else{
+            this.showNoRecs = true;
+          }
+        }else {
+          this.$message.error(res.message);
+        }
+      }).catch(err => {
+        this.$message.error("请确保网络连接正常");
+        console.log("要么断网，要么服务器崩了",err);
+      }).finally(() => {
+        this.recsLoading = false;
+      });
+    },
   }
 }
 </script>
@@ -54,6 +120,7 @@ export default {
 <style scoped lang="less">
 @import "../../assets/css/colors.less";
 @pad : 15px;
+@len1 : 20px;
 
 .container{
   height: 100%;
@@ -61,50 +128,140 @@ export default {
   flex-direction: column;
   overflow: hidden;
 }
-.user-info{
-  padding: @pad;
-  font-size: 13px;
-  height: 120px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  border-top: 2px solid @theme;
-  width: 220px - 2 * @pad;
-}
-.user-name{
-  color: @theme;
-  font-size: 16px;
-  font-weight: bold;
-}
-.prompt{
-  color: @prompt;
-}
-.projects{
-  flex-grow: 1;
-}
+
 .header{
   background: @theme;
-  padding: @pad;
-  height: 40px;
-  width: 220px - 2 * @pad;
-  font-size: 16px;
+  padding-top: @pad;
+  height: 65px;
+  line-height: 30px;
+  width: 300px;
+  font-size: 17px;
   font-weight: bold;
   color: white;
-  line-height: 40px;
-  display: flex;
-  justify-content: space-between;
-}
-.createbtn{
   text-align: center;
-  height: 50px;
-  width: 40px;
-  line-height: 40px;
+  margin-bottom: 30px;
 }
-.createbtn:hover{
+
+.search-box{
+  .input-box{
+    height: 40px;
+    width: 100% - 15px;
+    margin: 8px auto;
+    position: relative;
+  }
+  input{
+    border: 2px solid @separator;
+    border-radius: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    outline: none;
+    font-size: 15px;
+    font-family: 微软雅黑;
+    letter-spacing:1px;
+    width: 100% - 8px;
+    height: 100%;
+    color: #565657;
+  }
+  input:hover{
+    border-color: @prompt;
+  }
+  input:focus{
+    border-color: @theme;
+  }
+}
+
+svg{
+  position: absolute;
+  right: 5px;
+  top: 13px;
+  width: 20px;
+  height: 20px;
+  background: white;
+}
+svg:hover{
   cursor: pointer;
 }
-.menu{
-  width: 220px;
-  border-right: 1px solid white;
+
+.title{
+  color: @theme;
+  font-size: 14px;
+  font-family: 微软雅黑;
+  height: @len1;
+  span{
+    line-height: @len1;
+  }
 }
+
+.result-box{
+  padding: @pad;
+  min-height: 100px;
+  font-family: 微软雅黑;
+  font-size: 14px;
+  color: #565657;
+}
+
+.result-item{
+  display: flex;
+  flex-direction: row;
+  margin: 8px;
+}
+
+.key{
+  //color: @theme;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 4px;
+  text-align: center;
+  color: white;
+  background: @theme;
+  padding: 0 4px;
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+
+/* 建议栏 */
+.recommendations-box{
+  padding: @pad;
+  font-family: 微软雅黑;
+  font-size: 14px;
+}
+.recommendation-item{
+  display: flex;
+  flex-direction: row;
+  margin: 8px;
+  color: #565657;
+}
+.index{
+  height: 20px;
+  line-height: 20px;
+  width: 20px;
+  border-radius: 4px;
+  text-align: center;
+}
+.index-1{
+  background: @set2-blush;
+  color: white;
+}
+.index-2{
+  background: @set1-dandelion;
+  color: white;
+}
+.index-3{
+  background: @set4-neptune;
+  color: white;
+}
+.rec-text{
+  margin-left: 10px;
+  letter-spacing: 0.5px;
+}
+
+.empty{
+  color: @prompt;
+  font-size: 14px;
+  font-family: 微软雅黑;
+  text-align: center;
+  margin: 20px;
+}
+
 </style>

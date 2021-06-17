@@ -1,6 +1,6 @@
 <template>
   <el-container id="home">
-    <el-aside width="220px">
+    <el-aside width="300px">
       <side-bar class="side-bar"></side-bar>
     </el-aside>
     <el-main>
@@ -19,14 +19,17 @@ export default {
   name: 'Home',
   components: {
     WorkSpace,
-    SideBar
+    SideBar,
+  },
+  computed: {
+    project: state => state.project,
   },
   methods: {
     ...mapMutations(['setProject']),
     ...mapActions(['loadProject']),
   },
   created(){
-    //this.loadProject(0);
+    //this.loadProject();
     this.setProject({
       "nodes": [
         {
@@ -119,7 +122,7 @@ export default {
           }
         }
       ]
-    })
+    });
   }
 }
 </script>

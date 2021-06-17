@@ -9,7 +9,6 @@ export default createStore({
     },
 
     state: {
-        user_name: "Administer",
         project: null,
     },
 
@@ -20,9 +19,9 @@ export default createStore({
     },
 
     actions: {
-        loadProject({commit}, num){
+        loadProject({state,commit}){
             return new Promise((resolve,reject) => {
-                getKG(num).then(res => {
+                getKG().then(res => {
                     if (res.success){
                         commit('setProject', res.content);
                     }else {

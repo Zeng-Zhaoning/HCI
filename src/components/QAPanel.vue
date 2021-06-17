@@ -79,7 +79,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 @import "../assets/css/colors.less";
 .qa-panel{
   width: 300px;
@@ -93,7 +93,6 @@ export default {
 }
 
 .title-box{
-  //color: #82bbb5;
   color: @theme;
   font-weight: bold;
   font-size: 15px;

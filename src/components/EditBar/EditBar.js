@@ -80,6 +80,7 @@ export default {
             this.layoutTypeNow = newValue.options().layout.name;
         },
         statistic_data_change(newValue, oldValue){
+            console.log("检测到数据变化")
             this.get_statistic_data();
         },
 
@@ -91,7 +92,7 @@ export default {
                 layout.stop();
             }
             if(newVal==='preset'){
-                console.log("elements stored: ",this.elements);
+                //console.log("elements stored: ",this.elements);
                 let nodes = this.elements.nodes;
                 let positions = node=>{
                     let nodeId = node.data("id");
@@ -462,7 +463,11 @@ export default {
                 total: nodes.length
             };
             for (let node of nodes){
-                EData[node.data.type] ++;
+                if (!(node.data.type == 'individual' || node.data.type == 'organization' || node.data.type == 'thing')){
+                    EData['default'] ++;
+                }else {
+                    EData[node.data.type] ++;
+                }
             }
             let RData = {
                 connection: 0,

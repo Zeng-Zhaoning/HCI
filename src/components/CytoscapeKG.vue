@@ -191,14 +191,13 @@
             // document.oncontextmenu = () => {
             //     event.returnValue = false;
             // }
-            // if (this.current_project !== undefined && this.current_project !== null){
-            //   let data = {
-            //     edges: this.current_project.edges,
-            //     nodes: this.current_project.nodes,
-            //   };
-            //   this.dataHandle(data);
-            // }
-            this.dataHandle(this.project);
+            if (this.project !== undefined && this.project !== null){
+              let data = {
+                edges: this.project.edges,
+                nodes: this.project.nodes,
+              };
+              this.dataHandle(data);
+            }
         },
         methods: {
             ...mapMutations(['setCy','setElements','trigger_statistic_data_change', 'setProject']),
@@ -820,8 +819,10 @@
                         addForm.name = addForm.name.trim();//名称和校验时一样前后无空格
                         this.form.formCallback(addForm);
                         this.$refs['ruleForm'].resetFields();
+                        this.trigger_statistic_data_change();
+                      console.log("触发");
                     } else {
-                        alert('好像哪里有问题，添加失败了呢……');
+                        alert('好像哪里有问题，操作失败了呢……');
                     }
                 });
             },
