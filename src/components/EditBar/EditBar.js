@@ -249,7 +249,7 @@ export default {
 
         save(){
             let data = {};
-            //todo 把下面这段获得待保存数据的方法改成：合并 ...this.getDataJsonObject() 和state.project_left
+            // 把下面这段获得待保存数据的方法改成：合并 ...this.getDataJsonObject() 和state.project_left
             let graphData = this.getDataJsonObject();
             data = {
                 nodes: graphData.nodes.concat(this.project_left.nodes),

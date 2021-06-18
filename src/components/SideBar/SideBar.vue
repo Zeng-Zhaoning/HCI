@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="container">
     <div class="search-box">
       <div class="header">
@@ -17,10 +17,19 @@
         <div class="title"><span>搜索结果</span></div>
         <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
         <div class="empty" v-if="showNoResult">无匹配，换个关键词搜索吧</div>
-        <div>
-          <div class="result-item" v-for="(value, key) in result">
-            <div class="key">{{ key }}</div>
-            <div class="value">{{ value }}</div>
+        <div class="ans" v-if="showAns">
+          <div v-for="ansItem in ans">{{ ansItem }}</div>
+        </div>
+        <div v-if="showNodeInfo">
+          <div class="result-item">
+            <div class="result-name">{{ result.data.name }}</div>
+          </div>
+          <div class="result-item" v-for="(value, key) in result.data.property">
+            <span class="key">{{ key }}</span>
+            <span class="value">
+              <span v-if="typeof value === 'string'">{{ value }}</span>
+              <span v-else-if="Array.isArray(value)">{{ value.join('，') }}</span>
+            </span>
           </div>
         </div>
       </div>
@@ -56,6 +65,9 @@ export default {
       resultLoading: false,
       result: {}, //返回的结果
       showNoResult: false,
+      ans: [],//['凤凰社','哈利波特'],
+      showAns: false,
+      showNodeInfo: false,
       recsLoading: false,
       recommendations: [],  //推荐条目
       indexClass: ['index-1', 'index-2', 'index-3'],
@@ -90,6 +102,8 @@ export default {
       this.resultLoading = true;
       this.showNoResult = false;
       this.showNoRecs = false;
+      this.showAns = false;
+      this.showNodeInfo = false;
       this.recommendations = [];
 
       //请求api获得搜索结果
@@ -97,15 +111,19 @@ export default {
         if (res.success && res.content !== null){
           let nodes = res.content.nodes;
           let ans = res.content.ans;
+          this.ans = ans;
           if (ans.length > 0){
             if (nodes !== null && nodes.length > 0){
               if (nodes.length === 1){
+                this.showNodeInfo = true;
                 this.result = nodes[0];
+                //图谱展示
+                this.showGraph(this.result.data.id);
               }else {
-                // 展示ans
+                this.showAns = true;
               }
             }else {
-              //展示ans
+              this.showAns = true;
             }
           }else {
             this.showNoResult = true;
@@ -116,12 +134,11 @@ export default {
       }).catch(err => {
         this.$message.error("请确保网络连接正常");
         console.log("要么断网，要么服务器崩了",err);
+        //this.showAns = true;
       }).finally(() => {
         this.resultLoading = false;
       });
 
-      //图谱展示
-      this.showGraph(this.result["id"]);
 
       //请求api获得推荐结果
       getRecommend(input).then(res => {
@@ -146,7 +163,7 @@ export default {
     },
 
     showGraph(nodeID){
-      //todo 根据id获得其相邻的三层节点集和边集，并设置到state.project; 其余没被展示的点集、边集设置到state.project_left
+      // 根据id获得其相邻的三层节点集和边集，并设置到state.project; 其余没被展示的点集、边集设置到state.project_left
       let nodeIDs = new Set([nodeID]);
       let edges = new Set();
       for (let edge of this.whole_project.edges){
@@ -271,13 +288,26 @@ svg:hover{
   color: #565657;
 }
 
+.ans{
+  margin: 8px;
+}
+
+.result-name{
+  font-size: 17px;
+  font-weight: bold;
+  color: #565657;
+  margin: 25px 0;
+}
+
 .result-item{
-  display: flex;
-  flex-direction: row;
+  //display: flex;
+  //flex-direction: row;
   margin: 8px;
 }
 
 .key{
+  display: inline-block;
+  letter-spacing: 1px;
   //color: @theme;
   height: 20px;
   line-height: 20px;
@@ -285,10 +315,11 @@ svg:hover{
   text-align: center;
   color: white;
   background: @theme;
-  padding: 0 4px;
+  padding: 1px 4px;
   font-size: 13px;
   margin-right: 8px;
 }
+
 
 
 /* 建议栏 */
