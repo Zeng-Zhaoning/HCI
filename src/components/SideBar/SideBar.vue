@@ -44,6 +44,7 @@
 
 <script>
 import { getRecommend } from "@/api/RecommendAPI"
+import { grammar_analyse } from "@/api/GrammarAPI"
 import {mapMutations, mapState} from "vuex";
 
 export default {
@@ -92,14 +93,32 @@ export default {
       this.recommendations = [];
 
       //请求api获得搜索结果
-      this.result = {
-        "姓名": "哈利波特",
-        "年龄": "19岁",
-        "生日": "2000年",
-        "学院": "南大软院",
-        "id": "184",
-      };
-      this.resultLoading = false;
+      grammar_analyse(input).then(res => {
+        if (res.success && res.content !== null){
+          let nodes = res.content.nodes;
+          let ans = res.content.ans;
+          if (ans.length > 0){
+            if (nodes !== null && nodes.length > 0){
+              if (nodes.length === 1){
+                this.result = nodes[0];
+              }else {
+                // 展示ans
+              }
+            }else {
+              //展示ans
+            }
+          }else {
+            this.showNoResult = true;
+          }
+        }else {
+          this.$message.error(res.message);
+        }
+      }).catch(err => {
+        this.$message.error("请确保网络连接正常");
+        console.log("要么断网，要么服务器崩了",err);
+      }).finally(() => {
+        this.resultLoading = false;
+      });
 
       //图谱展示
       this.showGraph(this.result["id"]);
@@ -125,6 +144,7 @@ export default {
         this.recsLoading = false;
       });
     },
+
     showGraph(nodeID){
       //todo 根据id获得其相邻的三层节点集和边集，并设置到state.project; 其余没被展示的点集、边集设置到state.project_left
       let nodeIDs = new Set([nodeID]);
@@ -134,7 +154,7 @@ export default {
           edges.add(edge);
           nodeIDs.add(edge.data.target);
           let node2ID = edge.data.target;
-          // 要展示第三层的话下面注释掉。不过只拿“哈利波特来搜索的话，三层已经太多了”
+          // 要展示第三层的话下面注释去掉。不过只拿“哈利波特”来搜索的话，三层已经太多了
           // for (let edge2 of this.whole_project.edges){
           //   if (edge2.data.source === node2ID){
           //     edges.add(edge2);

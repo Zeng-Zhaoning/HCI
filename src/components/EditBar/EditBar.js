@@ -256,15 +256,17 @@ export default {
                 edges: graphData.edges.concat(this.project_left.edges)
             };
 
-            for (let node of data.nodes){
-                let temp_nodes = this.cy.nodes();
-                for (let temp_node of temp_nodes){
-                    if (temp_node.data('id') === node.data.id){
-                        node.data.typeset = temp_node.data('typeset');
-                        break;
-                    }
-                }
-            }
+            data = this.getCleanData(data);
+
+            // for (let node of data.nodes){
+            //     let temp_nodes = this.cy.nodes();
+            //     for (let temp_node of temp_nodes){
+            //         if (temp_node.data('id') === node.data.id){
+            //             node.data.typeset = temp_node.data('typeset');
+            //             break;
+            //         }
+            //     }
+            // }
             console.log("要保存的数据：",data);
 
             const loading = this.$loading({
@@ -360,6 +362,38 @@ export default {
                     eles.nodes.forEach(val => {
                         obj.nodes.push({
                             data: val.data,
+                            position: val.position
+                        });
+                    });
+                }
+            }
+            return obj;
+        },
+        getCleanData(eles) {
+            let obj = {"edges": [], "nodes": []};
+            if (JSON.stringify(eles) !== '{}') {
+                if (eles.edges !== undefined && eles.edges.length > 0) {
+                    eles.edges.forEach(val => {
+                        obj.edges.push({
+                            data: {
+                                id:val.data.id,
+                                type:val.data.type,
+                                relation:val.data.relation,
+                                source:val.data.source,
+                                target:val.data.target
+                            }
+                        });
+                    });
+                }
+                if (eles.nodes !== undefined && eles.nodes.length > 0) {
+                    eles.nodes.forEach(val => {
+                        obj.nodes.push({
+                            data: {
+                                id:val.data.id,
+                                type:val.data.type,
+                                name:val.data.name,
+                                property:val.data.property
+                            },
                             position: val.position
                         });
                     });
