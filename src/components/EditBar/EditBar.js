@@ -70,9 +70,6 @@ export default {
             layoutTypeNow : '',
 
             relation_label_enabled: true,
-
-            set_font_size: false,
-            set_node_radius: false,
             font_size: 20,
             node_radius: 20,
         }
@@ -146,48 +143,61 @@ export default {
                 }
             }
         },
-        set_font_size(newVal, oldVal){
-            if(!newVal){
+        font_size(newVal, oldVal) {
+            // let defaultSize = '25px';//默认值，25px是看workspace找到的
+            if (newVal === '') {
                 this.setNodeFontSize('');//同步改变workspace中的nodeNodeFontSize
                 //CytoscapeKG中在监听到workspace中nodeFontSize刚变回''时
                 //会根据节点大小和字数重新渲染各个节点的字体大小，所以不能用统一默认值
                 //此处什么也不需要做，因为CytoscapeKG里做了
-            }else{
-                this.setNodeFontSize(this.font_size);//同步改变workspace中的nodeNodeFontSize
+                return;
+            }
+            let size = Number(newVal);
+            if (!isNaN(size)) {
+                this.setNodeFontSize(newVal);//同步改变workspace中的nodeNodeFontSize
+                size = parseInt(size);
                 for (let node of this.cy.nodes()) {
-                    node.style('font-size', this.font_size + 'px');
+                    node.style('font-size', size + 'px');
                 }
             }
-        },
-        font_size(newVal, oldVal) {
-            // let defaultSize = '25px';//默认值，25px是看workspace找到的
-            this.setNodeFontSize(newVal);//同步改变workspace中的nodeNodeFontSize
-            for (let node of this.cy.nodes()) {
-                node.style('font-size', newVal + 'px');
+            else {
+                if (newVal !== '') {
+                    this.informMsg('error','请输入数字');
+                }
+                this.setNodeFontSize('');//同步改变workspace中的nodeNodeFontSize
+                //CytoscapeKG中在监听到workspace中nodeFontSize刚变回''时
+                //会根据节点大小和字数重新渲染各个节点的字体大小，所以不能用统一默认值
+                //此处什么也不需要做，因为CytoscapeKG里做了
             }
         },
-        set_node_radius(newVal, oldVal){
-            if(!newVal){
+        node_radius(newVal, oldVal) {
+            if (newVal === '') {
                 this.setNodeRadius('');//同步改变workspace中的nodeRadius
                 for (let node of this.cy.nodes()) {
                     node.removeStyle('width');
                     node.removeStyle('height');
                 }
-            }else{
-                let realRadius = this.node_radius * 2;
+                return;
+            }
+            let radius = Number(newVal);
+            if (!isNaN(radius)) {
+                radius = parseInt(radius);
+                let realRadius = radius * 2;
                 this.setNodeRadius(realRadius+"");//同步改变workspace中的nodeRadius
                 for (let node of this.cy.nodes()) {//是不是要改成等比例扩大？
                     node.style('width', realRadius + 'px');
                     node.style('height', realRadius + 'px');
                 }
             }
-        },
-        node_radius(newVal, oldVal) {
-            let realRadius = newVal * 2;
-            this.setNodeRadius(realRadius+"");//同步改变workspace中的nodeRadius
-            for (let node of this.cy.nodes()) {//是不是要改成等比例扩大？
-                node.style('width', realRadius + 'px');
-                node.style('height', realRadius + 'px');
+            else {
+                this.setNodeRadius('');//同步改变workspace中的nodeRadius
+                if (newVal !== '') {
+                    this.informMsg('error','请输入数字');
+                }
+                for (let node of this.cy.nodes()) {
+                    node.removeStyle('width');
+                    node.removeStyle('height');
+                }
             }
         }
     },
@@ -199,22 +209,23 @@ export default {
             edgeType: state => state.workspace.edgeType,
             layoutType: state => state.workspace.layoutType,
             elements: state => state.workspace.elements,
+            project_left: state => state.project_left,
         }),
-        // node_checkList_disabled: {
-        //     get() {
-        //         return !this.filter_node_checked;
-        //     }
-        // },
-        // edge_checkList_disabled: {
-        //     get() {
-        //         return !this.filter_edge_checked;
-        //     }
-        //
-        // },
+        node_checkList_disabled: {
+            get() {
+                return !this.filter_node_checked;
+            }
+        },
+        edge_checkList_disabled: {
+            get() {
+                return !this.filter_edge_checked;
+            }
+
+        },
     },
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
-            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel']),
+            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel', 'setWholeProject']),
 
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
@@ -238,25 +249,23 @@ export default {
 
         save(){
             let data = {};
-            try{
-                data = {
-                    ...this.getDataJsonObject()
-                };
-                for (let node of data.nodes){//可以移动到getDataJsonObject?
-                    let temp_nodes = this.cy.nodes();
-                    for (let temp_node of temp_nodes){
-                        if (temp_node.data('id') === node.data.id){
-                            node.data.typeset = temp_node.data('typeset');
-                            break;
-                        }
+            //todo 把下面这段获得待保存数据的方法改成：合并 ...this.getDataJsonObject() 和state.project_left
+            let graphData = this.getDataJsonObject();
+            data = {
+                nodes: graphData.nodes.concat(this.project_left.nodes),
+                edges: graphData.edges.concat(this.project_left.edges)
+            };
+
+            for (let node of data.nodes){
+                let temp_nodes = this.cy.nodes();
+                for (let temp_node of temp_nodes){
+                    if (temp_node.data('id') === node.data.id){
+                        node.data.typeset = temp_node.data('typeset');
+                        break;
                     }
                 }
-                console.log("要保存的数据：",data);
-            }catch (e) {
-                console.log("Error occurs:"+e);
-                alert("保存不了哦，请检查是否连接到Server");
-                return false;
             }
+            console.log("要保存的数据：",data);
 
             const loading = this.$loading({
                 lock: true,
@@ -266,7 +275,8 @@ export default {
             });
             inputKG(data).then(res => {
                 if(res.success){
-                    this.setProject(data);
+                    this.setWholeProject(data);
+                    this.setProject(JSON.parse(JSON.stringify(graphData)));
                     this.$message.success('保存成功');
                 }else{
                     this.$message.error( '保存失败')
@@ -561,17 +571,7 @@ export default {
                     }
                     if(byProp){
                         propHit = false;
-                        let propArray = [];
-                        for(let key in valProps){
-                            propArray.push(key);
-                            let val = valProps[key];
-                            if(val instanceof Array){
-                                propArray = propArray.concat(val);
-                            }else{
-                                propArray.push(val);
-                            }
-                        }
-                        for(let prop of propArray){
+                        for(let prop of valProps){
                             if(this.fuzzyMatch(prop, key)){
                                 propHit=true;
                                 break;

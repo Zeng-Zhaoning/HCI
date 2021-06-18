@@ -3,47 +3,14 @@
     <div class="search-box">
       <div class="header">
         <span>搜索</span>
-        <div class="input-box" v-if="!truly_removed">
-          <input v-model="input" @keyup="keyUpHandler" @keydown="keyDownHandler" />
+        <div class="input-box">
+          <input v-model="input" @keyup="keyUpHandler" @keydown="keyDownHandler"/>
           <svg class="icon" aria-hidden="true" @click="query">
             <use xlink:href="#iconyou"></use>
           </svg>
         </div>
-        <div class="input-box" v-else>
-          <input v-model="input" disabled />
-          <svg class="icon" aria-hidden="true" >
-            <use xlink:href="#iconyou"></use>
-          </svg>
-        </div>
-        <el-checkbox-group v-model="search_node_condition" v-if="!back_end">
-          <el-checkbox label="name">实体名</el-checkbox>
-          <el-checkbox label="relation">拥有关系</el-checkbox>
-          <el-checkbox label="property">属性</el-checkbox>
-        </el-checkbox-group>
-        <el-switch
-                style="display: block"
-                v-model="truly_removed"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-text="移除被过滤的节点"
-                inactive-text="隐藏被过滤的节点"
-        >
-        </el-switch>
-        <el-switch
-                style="display: block"
-                v-model="back_end"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-text="语义搜索"
-                inactive-text="简单搜索"
-        >
-        </el-switch>
       </div>
     </div>
-
-    <br/>
-    <br/>
-    <br/>
 
     <el-scrollbar>
       <div class="result-box" v-loading="resultLoading">
@@ -92,67 +59,17 @@ export default {
       recommendations: [],  //推荐条目
       indexClass: ['index-1', 'index-2', 'index-3'],
       showNoRecs: false,
-      search_node_condition: ['name','relation','property'],//搜索的筛选条件
-      truly_removed: false,
-      removed_eles: null,
-      back_end: false,
-      // changing: false
     }
   },
   computed: {
     ...mapState({
-      cy: state => state.workspace.cy
-    })
-  },
-  watch:{
-    truly_removed(newVal,oldVal){//尽可能加上缓冲提示//尝试写了缓冲但是不奏效
-      console.log("start")
-      const loading = this.$loading({
-        lock: true,
-        text: '...切换中...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(255, 255,255, 0.8)'
-      });
-      let that = this;
-      let func = (function(){
-        return new Promise(function(resolve,reject){
-          console.log("change to ",newVal,", into promise")
-          if(newVal){
-            let tmp_removed = that.cy.collection();
-            that.cy.nodes().forEach(val=>{
-              if(val.hasClass("removed")){
-                tmp_removed = tmp_removed.union(val.remove());
-              }
-            });
-            that.removed_eles = tmp_removed;
-            console.log("removed",that.removed_eles);
-            // that.changing = false;
-          }else{
-            if(!that.removed_eles){
-              that.removed_eles = that.cy.collection();
-            }
-            console.log("restore",that.removed_eles);
-            that.removed_eles.restore();
-            // that.changing = false;
-          }
-          that.trigger_statistic_data_change();
-          resolve();
-          console.log("over")
-        });
-      });
-      func().then(function(){
-        console.log("success")
-      }).catch(function(){
-        console.log("error")
-      }).finally(function(){
-        console.log("finally")
-        loading.close();
-      });
-
-    }
+      whole_project: state => state.whole_project,
+      project_left: state => state.project_left,
+      project: state => state.project,
+    }),
   },
   methods:{
-    ...mapMutations(['trigger_statistic_data_change']),
+    ...mapMutations(['setProject','setProjectLeft']),
     keyDownHandler(event){
       if (event.keyCode == '13'){
         event.preventDefault();
@@ -164,85 +81,9 @@ export default {
       }
     },
     query(event){
+      if (this.input === ''){ return; }
+
       let input = this.input;
-      // this.input = "";//不一定要清空把
-
-      //基于前端搜索，显示部分图谱，用于测试，不用删，真的不用删
-      if(!this.back_end){
-        let condition = this.search_node_condition;
-        if(condition.length!==0){
-          const byName = condition.includes('name');
-          const byRelation = condition.includes('relation');
-          const byProp = condition.includes('property');
-          let funcFront = val=>{
-            let valName = val.data("name");
-            let valProps = val.data("property");
-            let edges = val.connectedEdges();
-            let hit = false;
-            if(input){//假设input存在且为字符串
-              // let byName=true,byProp=true,byRelation=true;
-              let relaHit;
-              let propHit;
-              let keyWords = [input];//假设input为字符串
-              for(let key of keyWords){
-                if(byName&&this.fuzzyMatch(valName, key)) {
-                  hit = true;
-                  break;
-                }
-                if(byProp){
-                  propHit = false;
-                  let propArray = [];
-                  for(let key in valProps){
-                    propArray.push(key);
-                    let val = valProps[key];
-                    if(val instanceof Array){
-                      propArray = propArray.concat(val);
-                    }else{
-                      propArray.push(val);
-                    }
-                  }
-                  for(let prop of propArray){
-                    if(this.fuzzyMatch(prop, key)){
-                      propHit=true;
-                      break;
-                    }
-                  }
-                  if(propHit){
-                    hit = true;
-                    break;
-                  }
-                }
-                if(byRelation){
-                  relaHit = false;
-                  for(let edge of edges){
-                    let edgeName = edge.data("relation");
-                    if(this.fuzzyMatch(edgeName, key)){
-                      relaHit = true;
-                      break;
-                    }
-                  }
-                  if(relaHit){
-                    hit = true;
-                    break;
-                  }
-                }
-              }
-            }else{
-              // hit = true;//若无输入则复原所有节点
-            }
-            if(!hit&&!val.hasClass('removed')) {
-              console.log("hide")
-              val.addClass('removed');
-            }else if(hit&&val.hasClass('removed')){
-              console.log("show")
-              val.removeClass('removed');
-            }
-          };
-          this.cy.nodes().forEach(funcFront);
-        }
-      }
-
-      if(this.input==='')return;
       this.searched = true;
       this.recsLoading = true;
       this.resultLoading = true;
@@ -256,8 +97,12 @@ export default {
         "年龄": "19岁",
         "生日": "2000年",
         "学院": "南大软院",
+        "id": "184",
       };
       this.resultLoading = false;
+
+      //图谱展示
+      this.showGraph(this.result["id"]);
 
       //请求api获得推荐结果
       getRecommend(input).then(res => {
@@ -267,27 +112,6 @@ export default {
             //根据键值排序得到键名list
             this.recommendations = Object.keys(recsObj).sort(function(a,b){return recsObj[b]-recsObj[a]});
             this.recommendations = this.recommendations.slice(0,10);
-
-            //基于后端返回，显示部分图谱
-            if(this.back_end){
-              let funcBack = val=>{
-                let valid = node=>{
-/////////////////////////////////////////////////////////////接口在这里//////////////////////////////////////////////////////////
-                  //此处填写对于节点是否为后端返回的节点的判断
-
-                  return true;
-                };
-                let hit = valid(val);
-                if(!hit&&!val.hasClass('removed')) {
-                  console.log("hide")
-                  val.addClass('removed');
-                }else if(hit&&val.hasClass('removed')){
-                  console.log("show")
-                  val.removeClass('removed');
-                }
-              };
-              this.cy.nodes().forEach(funcBack);
-            }
           }else{
             this.showNoRecs = true;
           }
@@ -301,29 +125,44 @@ export default {
         this.recsLoading = false;
       });
     },
-
-    fuzzyMatch(str, key){//不知道需不需要再加一下忽略大小写？
-      let index = -1, flag = false;
-      for(let i = 0, arr = key.split(""); i < arr.length; i++ ){
-        //有一个关键字都没匹配到，则没有匹配到数据
-        if(str.indexOf(arr[i]) < 0){
-          break;
-        }else{
-          let match = str.matchAll(arr[i]);
-          let next = match.next();
-          while (!next.done){
-            if(next.value.index > index){
-              index = next.value.index;
-              if(i === arr.length - 1){
-                flag = true
-              }
-              break;
-            }
-            next = match.next();
-          }
+    showGraph(nodeID){
+      //todo 根据id获得其相邻的三层节点集和边集，并设置到state.project; 其余没被展示的点集、边集设置到state.project_left
+      let nodeIDs = new Set([nodeID]);
+      let edges = new Set();
+      for (let edge of this.whole_project.edges){
+        if (edge.data.source === nodeID){
+          edges.add(edge);
+          nodeIDs.add(edge.data.target);
+          let node2ID = edge.data.target;
+          // 要展示第三层的话下面注释掉。不过只拿“哈利波特来搜索的话，三层已经太多了”
+          // for (let edge2 of this.whole_project.edges){
+          //   if (edge2.data.source === node2ID){
+          //     edges.add(edge2);
+          //     nodeIDs.add(edge2.data.target);
+          //   }
+          // }
         }
       }
-      return flag;
+
+      let project_left = {nodes:[], edges:[]};
+      let project = {nodes:[], edges:[]};
+      project.edges = Array.from(edges);
+
+      for (let node of this.whole_project.nodes){
+        if (nodeIDs.has(node.data.id)){
+          project.nodes.push(node);
+        }else {
+          project_left.nodes.push(node);
+        }
+      }
+      for (let edge of this.whole_project.edges){
+        if (!edges.has(edge)){
+          project_left.edges.push(edge);
+        }
+      }
+
+      this.setProject(JSON.parse(JSON.stringify(project)));
+      this.setProjectLeft(JSON.parse(JSON.stringify(project_left)));
     }
   }
 }

@@ -10,20 +10,28 @@ export default createStore({
 
     state: {
         project: null,
+        whole_project: null,
+        project_left: null,
     },
 
     mutations: {
         setProject(state, project){
             state.project = project;
         },
+        setWholeProject(state, whole){
+            state.whole_project = whole;
+        },
+        setProjectLeft(state, left){
+            state.project_left = left;
+        }
     },
 
     actions: {
-        loadProject({state,commit}){
+        loadWholeProject({state,commit}){
             return new Promise((resolve,reject) => {
                 getKG().then(res => {
                     if (res.success){
-                        commit('setProject', res.content);
+                        commit('setWholeProject', res.content);
                     }else {
                         console.log(res.message);
                     }

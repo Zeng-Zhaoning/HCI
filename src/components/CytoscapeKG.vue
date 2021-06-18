@@ -229,13 +229,7 @@
                     val.data.type = val.data.type || 'default';
                 })
                 let default_color = "#9c8f96";//和add-node方法中初始化颜色耦合，必须同时修改
-                let initCount = 0;
                 data.nodes.forEach((val) => {
-                    if(initCount>0){
-                        initCount--;
-                    }else{
-                        val.classes = 'removed';
-                    }
                     val.data.type = val.data.type || 'default';
                     val.data.color = val.data.color || default_color;//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
                     val.data.typeset = val.data.typeset || {x: -1, y: -1, parent: ''};
@@ -455,50 +449,6 @@
                             // console.log(target.scratch());
                         }
                     })
-
-                let tappedBefore;
-                cy.on('tap', 'node', function (event) {
-                    let target = event.target || event.cyTarget;
-                    let tappedNow = target;//貌似等同于直接用this
-                    if (tappedBefore && tappedBefore.id() === tappedNow.id()) {
-                        tappedNow.trigger('doubleTap');
-                        tappedBefore = null;
-                    } else {
-                        tappedBefore = tappedNow;
-                        setTimeout(function () {
-                            tappedBefore = null;
-                        }, 300);
-                    }
-                });
-
-                cy.on('doubleTap', 'node', function (event) {
-                    /*
-                    var nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
-                    revertBorder(nodesWithHiddenNeighbor);
-                    api.show(cy.nodes(":selected").neighborhood().union(cy.nodes(":selected").neighborhood().parent()));
-                    nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
-                    changeBorder(nodesWithHiddenNeighbor);
-                    */
-
-                    // api.disableMarqueeZoom();
-                    // api.disableLassoMode();
-                    // getButtonsToDef();
-                    // var selectedNodes = cy.nodes(":selected");
-                    // var nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
-                    // revertBorder(nodesWithHiddenNeighbor);
-                    // api.showHiddenNeighbors(selectedNodes);
-                    // nodesWithHiddenNeighbor = cy.edges(":hidden").connectedNodes(':visible');
-                    // changeBorder(nodesWithHiddenNeighbor);
-
-                    let target = event.target || event.cyTarget;
-                    let neighbor = target.openNeighborhood();
-                    neighbor.forEach(val=>{
-                        if(val.isNode()&&val.hasClass('removed')){
-                            val.removeClass('removed');
-                        }
-                    });
-                    console.log("doubleTap",target);
-                });
 
                 // 绑定右键单击的事件
                 const barHandler = event => {
@@ -1023,7 +973,7 @@
                                 if(key&&!errorReg.test(key)){
                                     result[key] = validItem;
                                 }else{
-                                    defaultItem = defaultItem.concat(validItem);
+                                    defaultItem += validItem;
                                 }
                             }
                         }
@@ -1033,7 +983,7 @@
                     let defaultKey = "未命名";
                     if(result.hasOwnProperty(defaultKey)){
                         if(result[defaultKey] instanceof Array){
-                            result[defaultKey] = result[defaultKey].concat(defaultItem);
+                            result[defaultKey] += defaultItem;
                         }else {
                             result[defaultKey] = [result[defaultKey]] + defaultItem;
                         }

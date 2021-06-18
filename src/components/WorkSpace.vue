@@ -15,13 +15,6 @@
           </svg>
         </div>
       </el-tooltip>
-      <el-tooltip effect="dark" content="自适应屏幕" placement="right" :enterable="false">
-        <div class="view-op" @click="fitScreen" v-show="isEditMode">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icondingwei"></use>
-          </svg>
-        </div>
-      </el-tooltip>
       <div class="view-op" @mouseover="showChangeMode" @mouseout="showChangeMode">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#iconqiehuan1"></use>
@@ -146,9 +139,6 @@ export default {
         zoom: this.initZoom,
         pan: this.initPan,
       })
-    },
-    fitScreen(){
-      this.cy.fit();
     },
 
     showChangeMode(e){

@@ -26,10 +26,10 @@ export default {
   },
   methods: {
     ...mapMutations(['setProject']),
-    ...mapActions(['loadProject']),
+    ...mapActions(['loadWholeProject']),
   },
   created(){
-    this.loadProject();
+    this.loadWholeProject();
     // this.setProject({
     //   "nodes": [
     //     {
