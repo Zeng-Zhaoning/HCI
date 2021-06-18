@@ -77,7 +77,7 @@
 
 <script>
 import { getRecommend } from "@/api/RecommendAPI"
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
 
 export default {
   name: "SideBar",
@@ -96,7 +96,7 @@ export default {
       truly_removed: false,
       removed_eles: null,
       back_end: false,
-      changing: false
+      // changing: false
     }
   },
   computed: {
@@ -105,29 +105,54 @@ export default {
     })
   },
   watch:{
-    truly_removed(newVal,oldVal){//尽可能加上缓冲提示
-      this.changing = true;
-      if(newVal){
-        let tmp_removed = this.cy.collection();
-        this.cy.nodes().forEach(val=>{
-          if(val.hasClass("removed")){
-            tmp_removed = tmp_removed.union(val.remove());
+    truly_removed(newVal,oldVal){//尽可能加上缓冲提示//尝试写了缓冲但是不奏效
+      console.log("start")
+      const loading = this.$loading({
+        lock: true,
+        text: '...切换中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255,255, 0.8)'
+      });
+      let that = this;
+      let func = (function(){
+        return new Promise(function(resolve,reject){
+          console.log("change to ",newVal,", into promise")
+          if(newVal){
+            let tmp_removed = that.cy.collection();
+            that.cy.nodes().forEach(val=>{
+              if(val.hasClass("removed")){
+                tmp_removed = tmp_removed.union(val.remove());
+              }
+            });
+            that.removed_eles = tmp_removed;
+            console.log("removed",that.removed_eles);
+            // that.changing = false;
+          }else{
+            if(!that.removed_eles){
+              that.removed_eles = that.cy.collection();
+            }
+            console.log("restore",that.removed_eles);
+            that.removed_eles.restore();
+            // that.changing = false;
           }
+          that.trigger_statistic_data_change();
+          resolve();
+          console.log("over")
         });
-        this.removed_eles = tmp_removed;
-        console.log("removed",this.removed_eles);
-        this.changing = false;
-      }else{
-        if(!this.removed_eles){
-          this.removed_eles = this.cy.collection();
-        }
-        console.log("restore",this.removed_eles);
-        this.removed_eles.restore();
-        this.changing = false;
-      }
+      });
+      func().then(function(){
+        console.log("success")
+      }).catch(function(){
+        console.log("error")
+      }).finally(function(){
+        console.log("finally")
+        loading.close();
+      });
+
     }
   },
   methods:{
+    ...mapMutations(['trigger_statistic_data_change']),
     keyDownHandler(event){
       if (event.keyCode == '13'){
         event.preventDefault();
@@ -139,36 +164,11 @@ export default {
       }
     },
     query(event){
-
       let input = this.input;
       // this.input = "";//不一定要清空把
-      this.searched = true;
-      this.recsLoading = true;
-      this.resultLoading = true;
-      this.showNoResult = false;
-      this.showNoRecs = false;
-      this.recommendations = [];
 
-      //显示部分图谱
-      if(this.back_end){
-        let funcBack = val=>{
-          let valid = node=>{
-            //此处填写对于节点是否为后端返回的节点的判断
-            return true;
-          };
-          let hit = valid(val);
-
-
-          if(!hit&&!val.hasClass('removed')) {
-            console.log("hide")
-            val.addClass('removed');
-          }else if(hit&&val.hasClass('removed')){
-            console.log("show")
-            val.removeClass('removed');
-          }
-        };
-        this.cy.nodes().forEach(funcBack);
-      }else{
+      //基于前端搜索，显示部分图谱，用于测试，不用删，真的不用删
+      if(!this.back_end){
         let condition = this.search_node_condition;
         if(condition.length!==0){
           const byName = condition.includes('name');
@@ -242,8 +242,13 @@ export default {
         }
       }
 
-
       if(this.input==='')return;
+      this.searched = true;
+      this.recsLoading = true;
+      this.resultLoading = true;
+      this.showNoResult = false;
+      this.showNoRecs = false;
+      this.recommendations = [];
 
       //请求api获得搜索结果
       this.result = {
@@ -262,6 +267,27 @@ export default {
             //根据键值排序得到键名list
             this.recommendations = Object.keys(recsObj).sort(function(a,b){return recsObj[b]-recsObj[a]});
             this.recommendations = this.recommendations.slice(0,10);
+
+            //基于后端返回，显示部分图谱
+            if(this.back_end){
+              let funcBack = val=>{
+                let valid = node=>{
+/////////////////////////////////////////////////////////////接口在这里//////////////////////////////////////////////////////////
+                  //此处填写对于节点是否为后端返回的节点的判断
+                  
+                  return true;
+                };
+                let hit = valid(val);
+                if(!hit&&!val.hasClass('removed')) {
+                  console.log("hide")
+                  val.addClass('removed');
+                }else if(hit&&val.hasClass('removed')){
+                  console.log("show")
+                  val.removeClass('removed');
+                }
+              };
+              this.cy.nodes().forEach(funcBack);
+            }
           }else{
             this.showNoRecs = true;
           }
