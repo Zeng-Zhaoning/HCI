@@ -3,7 +3,7 @@ import axios from "axios";
 
 export { grammar_analyse }
 
-let base =  '/api/grammar/';
+let base =  '/demo/api/grammar/';
 
 function grammar_analyse(question){
     return new Promise((resolve, reject) => {

@@ -3,7 +3,7 @@ import axios from "axios";
 
 export {addKG, getKG, inputKG}
 
-let base =  '/api/basic/';
+let base =  '/demo/api/basic/';
 
 function addKG(graph){
     return axios.post(base + 'addKG', graph)

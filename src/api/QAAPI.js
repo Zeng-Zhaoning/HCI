@@ -3,7 +3,7 @@ import axios from "axios";
 
 export { simple_question }
 
-let base =  '/api/qa/';
+let base =  '/demo/api/qa/';
 
 function simple_question(question){
     return new Promise(function (resolve, reject){

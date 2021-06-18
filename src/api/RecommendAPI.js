@@ -3,7 +3,7 @@ import axios from "axios";
 
 export { getRecommend }
 
-let base =  '/api/recommend/';
+let base =  '/demo/api/recommend/';
 
 function getRecommend(question){
     return new Promise((resolve,reject) => {
