@@ -229,7 +229,7 @@
                     val.data.type = val.data.type || 'default';
                 })
                 let default_color = "#9c8f96";//和add-node方法中初始化颜色耦合，必须同时修改
-                let initCount = 50;
+                let initCount = 0;
                 data.nodes.forEach((val) => {
                     if(initCount>0){
                         initCount--;
