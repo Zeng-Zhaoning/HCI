@@ -121,8 +121,8 @@ export default {
       data.nodes.forEach((val) => {
         val.data.type = val.data.type || 'default';
         val.data.color = val.data.color || default_color;//将颜色绑定在数据里，在workspace中修改为background-color:data(color),实现颜色持久化
-        val.position.x = val.data.typeset.x === -1? val.position.x : val.data.typeset.x;
-        val.position.y = val.data.typeset.y === -1? val.position.y : val.data.typeset.y;
+        val.position.x = (!val.data.typeset||val.data.typeset.x === -1)? val.position.x : val.data.typeset.x;
+        val.position.y = (!val.data.typeset||val.data.typeset.y === -1)? val.position.y : val.data.typeset.y;
       })
       let that = this;
       const loading = this.$loading({
