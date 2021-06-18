@@ -200,17 +200,17 @@ export default {
             layoutType: state => state.workspace.layoutType,
             elements: state => state.workspace.elements,
         }),
-        node_checkList_disabled: {
-            get() {
-                return !this.filter_node_checked;
-            }
-        },
-        edge_checkList_disabled: {
-            get() {
-                return !this.filter_edge_checked;
-            }
-
-        },
+        // node_checkList_disabled: {
+        //     get() {
+        //         return !this.filter_node_checked;
+        //     }
+        // },
+        // edge_checkList_disabled: {
+        //     get() {
+        //         return !this.filter_edge_checked;
+        //     }
+        //
+        // },
     },
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
@@ -242,7 +242,7 @@ export default {
                 data = {
                     ...this.getDataJsonObject()
                 };
-                for (let node of data.nodes){
+                for (let node of data.nodes){//可以移动到getDataJsonObject?
                     let temp_nodes = this.cy.nodes();
                     for (let temp_node of temp_nodes){
                         if (temp_node.data('id') === node.data.id){
