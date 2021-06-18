@@ -65,7 +65,7 @@ export default {
       resultLoading: false,
       result: {}, //返回的结果
       showNoResult: false,
-      ans: [],//['凤凰社','哈利波特'],
+      ans: [],
       showAns: false,
       showNodeInfo: false,
       recsLoading: false,
@@ -105,6 +105,10 @@ export default {
       this.showAns = false;
       this.showNodeInfo = false;
       this.recommendations = [];
+      this.ans = [];
+      this.result = {};
+      this.setProject({nodes: [], edges:[]});
+      this.setProjectLeft(JSON.parse(JSON.stringify(this.whole_project)));
 
       //请求api获得搜索结果
       grammar_analyse(input).then(res => {
