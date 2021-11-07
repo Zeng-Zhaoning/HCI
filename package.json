@@ -1,0 +1,58 @@
+{
+  "name": "knowledgegraph",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "core-js": "^3.6.5",
+    "cytoscape": "^3.18.1",
+    "cytoscape-compound-drag-and-drop": "^1.0.0",
+    "cytoscape-context-menus": "^4.0.0",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "cytoscape-d3-force": "^1.1.4",
+    "cytoscape-dagre": "^2.3.2",
+    "cytoscape-fcose": "^2.0.0",
+    "cytoscape-navigator": "^2.0.1",
+    "cytoscape-panzoom": "^2.5.3",
+    "cytoscape-popper": "^2.0.0",
+    "cytoscape-spread": "^3.0.0",
+    "d3": "^4.13.0",
+    "element-plus": "^1.0.2-beta.34",
+    "jquery": "^3.6.0",
+    "tippy.js": "^6.3.1",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-e2e-cypress": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "@vue/test-utils": "^2.0.0-0",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "typescript": "~3.9.3",
+    "vue-jest": "^5.0.0-0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "jest": {
+    "preset": "@vue/cli-plugin-unit-jest",
+    "transform": {
+      "^.+\\.vue$": "vue-jest"
+    }
+  }
+}

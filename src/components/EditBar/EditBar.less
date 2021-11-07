@@ -1,0 +1,164 @@
+@import "../../assets/css/colors.less";
+@len1 : 10px;
+@len2 : 12px;
+.edit-bar-container{
+  position: fixed;
+  top: 1%;
+  right: 5px;
+  height: 97.5%;
+  background: none;
+}
+.helper-edit-bar-container{
+  max-height: 100%;
+  overflow-y: scroll;
+  width: 300px;
+  background: none;
+  box-shadow: -5px 0 10px #e6e6e6;
+}
+.helper-edit-bar-container::-webkit-scrollbar {
+  display: none;
+}
+.hideEditBarAni{
+  animation-name: editBarAni;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.6, 0, 1.00, 1.0);
+  animation-fill-mode: forwards;
+}
+@keyframes editBarAni {
+  0%{ right: 5px; }
+  100%{ right: -290px; }
+}
+.ShowEditBarAni{
+  animation-name: editBarAni-reverse;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0,0,0.8,1.0);
+  animation-fill-mode: forwards;
+}
+@keyframes editBarAni-reverse {
+  0%{ right: -290px; }
+  100%{ right: 5px; }
+}
+
+.control-edit-bar{
+  background: white;
+  border-radius: 4px 0 0 4px;
+  width: 20px;
+  height: 60px;
+  line-height: 60px;
+  padding-left: 2px;
+  position: absolute;
+  top: 0;
+  left: -20px;
+  box-shadow:-40px 0 40px #e6e6e6;
+  border-left: 3px solid @theme;
+  z-index: 1;
+}
+.control-edit-bar:hover{
+  cursor: pointer;
+}
+
+.btn-box1 {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row-reverse;
+  .my-button {
+    width: 100px;
+    height: 35px;
+    margin-left: 10px;
+  }
+}
+
+.operations{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.op-info{
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: @len2;
+  color: #e0e0e0;
+  &:hover{
+    cursor: pointer;
+    color: @theme;
+  }
+}
+
+.choose-format-box{
+  background-color: @separator;
+}
+
+.separator{
+  height: 20px;
+  width: 0.5px;
+  background-color: @separator;
+}
+
+.table_name{
+  font-size: 14px;
+  color: @theme;
+  font-weight: bold;
+}
+
+.el-table{
+  margin-bottom: @len1;
+}
+
+.item_title{
+  font-size: 14px;
+  color: @theme;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.el-checkbox-group{
+  margin-top: 7px;
+}
+
+.el-checkbox__label{
+  color: #777779;
+}
+
+label .el-checkbox__input.is-checked+.el-checkbox__label {
+  color: #6d95ac;
+}
+
+span.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+  border-color: #8ebdd9;
+  background: #8ebdd9;
+}
+
+.btn-box2 {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: row-reverse;
+  .my-button {
+    width: 100px;
+    height: 35px;
+  }
+}
+
+span.el-radio__input.is-checked .el-radio__inner{
+  border-color: #8ebdd9;
+  background: #8ebdd9;
+}
+
+label .el-radio__input.is-checked+.el-radio__label{
+  color: #6d95ac;
+}
+
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected span{
+  color: #8ebdd9;
+  background-color: #FFF;
+}
+
+div .el-slider__bar{
+  background-color: #8ebdd9;
+}
+
+div .el-slider__button{
+  border-color: #8ebdd9;
+}
