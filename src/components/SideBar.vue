@@ -18,13 +18,13 @@
         <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
         <div class="empty" v-if="showNoResult">无匹配，换个关键词搜索吧</div>
         <div class="ans" v-if="showAns">
-          <div v-for="ansItem in ans">{{ ansItem }}</div>
+          <div v-for="ansItem in ans" :key="ansItem">{{ ansItem }}</div>
         </div>
         <div v-if="showNodeInfo">
           <div class="result-item">
             <div class="result-name">{{ result.data.name }}</div>
           </div>
-          <div class="result-item" v-for="(value, key) in result.data.property">
+          <div class="result-item" v-for="(value, key) in result.data.property" :key="key">
             <span class="key">{{ key }}</span>
             <span class="value">
               <span v-if="typeof value === 'string'">{{ value }}</span>
@@ -53,7 +53,6 @@
 
 <script>
 import { getRecommend } from "@/api/RecommendAPI"
-import { grammar_analyse } from "@/api/GrammarAPI"
 import {mapMutations, mapState} from "vuex";
 
 export default {
@@ -76,13 +75,12 @@ export default {
   },
   computed: {
     ...mapState({
-      whole_project: state => state.whole_project,
-      project_left: state => state.project_left,
       project: state => state.project,
+      pid: state => state.pid,
     }),
   },
   methods:{
-    ...mapMutations(['setProject','setProjectLeft']),
+    ...mapMutations(['setProject']),
     keyDownHandler(event){
       if (event.keyCode == '13'){
         event.preventDefault();
@@ -107,45 +105,11 @@ export default {
       this.recommendations = [];
       this.ans = [];
       this.result = {};
-      this.setProject({nodes: [], edges:[]});
-      this.setProjectLeft(JSON.parse(JSON.stringify(this.whole_project)));
 
-      //请求api获得搜索结果
-      grammar_analyse(input).then(res => {
-        if (res.success && res.content !== null){
-          let nodes = res.content.nodes;
-          let ans = res.content.ans;
-          this.ans = ans;
-          if (ans.length > 0){
-            if (nodes !== null && nodes.length > 0){
-              if (nodes.length === 1){
-                this.showNodeInfo = true;
-                this.result = nodes[0];
-                //图谱展示
-                this.showGraph(this.result.data.id);
-              }else {
-                this.showAns = true;
-              }
-            }else {
-              this.showAns = true;
-            }
-          }else {
-            this.showNoResult = true;
-          }
-        }else {
-          this.$message.error(res.message);
-        }
-      }).catch(err => {
-        this.$message.error("请确保网络连接正常");
-        console.log("要么断网，要么服务器崩了",err);
-        //this.showAns = true;
-      }).finally(() => {
-        this.resultLoading = false;
-      });
+      //TODO: 挪用右边栏的搜索功能
 
-
-      //请求api获得推荐结果
-      getRecommend(input).then(res => {
+      //请求api获得“猜你想看”结果
+      getRecommend(input, this.pid).then(res => {
         if (res.success){
           let recsObj = res.content;
           if (res.content !== null){
@@ -165,52 +129,12 @@ export default {
         this.recsLoading = false;
       });
     },
-
-    showGraph(nodeID){
-      // 根据id获得其相邻的三层节点集和边集，并设置到state.project; 其余没被展示的点集、边集设置到state.project_left
-      let nodeIDs = new Set([nodeID]);
-      let edges = new Set();
-      for (let edge of this.whole_project.edges){
-        if (edge.data.source === nodeID){
-          edges.add(edge);
-          nodeIDs.add(edge.data.target);
-          let node2ID = edge.data.target;
-          // 要展示第三层的话下面注释去掉。不过只拿“哈利波特”来搜索的话，三层已经太多了
-          // for (let edge2 of this.whole_project.edges){
-          //   if (edge2.data.source === node2ID){
-          //     edges.add(edge2);
-          //     nodeIDs.add(edge2.data.target);
-          //   }
-          // }
-        }
-      }
-
-      let project_left = {nodes:[], edges:[]};
-      let project = {nodes:[], edges:[]};
-      project.edges = Array.from(edges);
-
-      for (let node of this.whole_project.nodes){
-        if (nodeIDs.has(node.data.id)){
-          project.nodes.push(node);
-        }else {
-          project_left.nodes.push(node);
-        }
-      }
-      for (let edge of this.whole_project.edges){
-        if (!edges.has(edge)){
-          project_left.edges.push(edge);
-        }
-      }
-
-      this.setProject(JSON.parse(JSON.stringify(project)));
-      this.setProjectLeft(JSON.parse(JSON.stringify(project_left)));
-    }
   }
 }
 </script>
 
 <style scoped lang="less">
-@import "../../assets/css/colors.less";
+@import "../assets/css/colors.less";
 @pad : 15px;
 @len1 : 20px;
 

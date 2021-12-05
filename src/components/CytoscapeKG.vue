@@ -13,14 +13,14 @@
                     </el-form-item>
                     <el-form-item label="属性" prop="property" v-if="node0Edge1===0">
                         <el-select
-                                v-model="form.property"
-                                style="width:90%"
-                                multiple
-                                filterable
-                                allow-create
-                                default-first-option
-                                no-data-text="输入已存在的属性会取消勾选哦"
-                                placeholder="在这里可以输入属性哦">
+                            v-model="form.property"
+                            style="width:90%"
+                            multiple
+                            filterable
+                            allow-create
+                            default-first-option
+                            no-data-text="输入已存在的属性会取消勾选哦"
+                            placeholder="在这里可以输入属性哦">
                         </el-select>
                     </el-form-item>
 
@@ -54,7 +54,7 @@
     import axios from 'axios'
     import $ from 'jquery'
     import cytoscape from 'cytoscape'
-    import { mapState,mapMutations,mapGetters } from 'vuex';
+    import { mapState, mapMutations } from 'vuex';
 
     import d3Force from 'cytoscape-d3-force';
     cytoscape.use( d3Force );

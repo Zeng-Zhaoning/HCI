@@ -1,22 +1,12 @@
 import axios from "axios";
 
 
-export {addKG, getKG, inputKG}
+export {getKG, inputKG}
 
-let base =  '/demo/api/basic/';
+let base =  '/demo/api/basic';
 
-function addKG(graph){
-    return axios.post(base + 'addKG', graph)
-        .then(res => {
-            return res.data
-        }).catch(error => {
-            console.log(error);
-        })
-}
-
-
-function getKG(){
-    return axios.get(base + 'getKG')
+function getKG(pid){
+    return axios.get(`${base}/getKG?pid=${pid}`)
         .then(res => {
             return res.data
         }).catch(error => {
@@ -25,7 +15,8 @@ function getKG(){
 }
 
 function inputKG(graph){
-    return axios.post(base + 'inputKG', graph)
+    console.log('看graph', graph);
+    return axios.post(base + '/inputKG', graph)
         .then(res => {
             return res.data
         }).catch(error => {

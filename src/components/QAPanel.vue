@@ -26,6 +26,7 @@
 <script>
 import MyButton from "@/components/Tools/MyButton";
 import {simple_question} from "@/api/QAAPI"
+import { mapState } from 'vuex';
 export default {
   name: "QAPanel",
   components: {MyButton},
@@ -40,6 +41,11 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapState({
+      pid: state => state.pid,
+    }),
   },
   methods:{
     keyDownHandler(event){
@@ -60,7 +66,7 @@ export default {
         this.loading = true;
         let scrollView = document.getElementsByClassName("el-scrollbar__wrap")[0];
         scrollView.scrollTop = scrollView.scrollHeight;
-        simple_question(question).then(res => {
+        simple_question(question, this.pid).then(res => {
           this.loading = false;
           if (res.data.success){
             this.texts.push({from: 1, text: res.data.content});

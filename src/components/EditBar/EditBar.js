@@ -1,4 +1,4 @@
-import { mapState,mapMutations,mapActions,mapGetters } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import { inputKG } from "../../api/basicAPI";
 import OpItem from './OpItem';
 import EditBarBlock from "./EditBarBlock";
@@ -209,7 +209,7 @@ export default {
             edgeType: state => state.workspace.edgeType,
             layoutType: state => state.workspace.layoutType,
             elements: state => state.workspace.elements,
-            project_left: state => state.project_left,
+            pid: state => state.pid,
         }),
         node_checkList_disabled: {
             get() {
@@ -225,7 +225,7 @@ export default {
     },
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
-            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel', 'setWholeProject']),
+            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel']),
 
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
@@ -249,24 +249,13 @@ export default {
 
         save(){
             let data = {};
-            // 把下面这段获得待保存数据的方法改成：合并 ...this.getDataJsonObject() 和state.project_left
             let graphData = this.getDataJsonObject();
             data = {
-                nodes: graphData.nodes.concat(this.project_left.nodes),
-                edges: graphData.edges.concat(this.project_left.edges)
+                nodes: graphData.nodes,
+                edges: graphData.edges
             };
 
             data = this.getCleanData(data);
-
-            // for (let node of data.nodes){
-            //     let temp_nodes = this.cy.nodes();
-            //     for (let temp_node of temp_nodes){
-            //         if (temp_node.data('id') === node.data.id){
-            //             node.data.typeset = temp_node.data('typeset');
-            //             break;
-            //         }
-            //     }
-            // }
             console.log("要保存的数据：",data);
 
             const loading = this.$loading({
@@ -275,10 +264,9 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(255, 255,255, 0.8)'
             });
-            inputKG(data).then(res => {
+            inputKG({...data, pid: this.pid}).then(res => {
                 if(res.success){
-                    this.setWholeProject(data);
-                    this.setProject(JSON.parse(JSON.stringify(graphData)));
+                    this.setProject(data);
                     this.$message.success('保存成功');
                 }else{
                     this.$message.error( '保存失败')
@@ -444,45 +432,6 @@ export default {
         },
 
         /**
-         * 导出局部图片.暂时不用
-         */
-        exportCutPng() {
-            let unselectedVertexes = this.cy.elements('node:unselected')
-            if (!unselectedVertexes || 0 === unselectedVertexes.length) {
-                this.exportPng();
-            }else{
-                let remove = unselectedVertexes.remove(); // 保留删除内容
-                this.exportPng();
-                (remove && remove.length) && (remove.restore()); // 恢复删除内容
-            }
-        },
-
-
-        /**
-         * 保存输入的文本并解析成图
-         */
-        saveAndAnalyse(){
-            let data = {
-                pid: this.current_pid,
-                text: this.workspace_text
-            }
-            this.postText(data).then(res => {
-                this.$message({
-                    message: '保存文本成功',
-                    type: 'success',
-                    duration: 1500
-                })
-            }).catch(err => {
-                this.$message({
-                    message: '保存文本失败',
-                    type: 'error',
-                    duration: 1500
-                });
-            })
-        },
-
-
-        /**
          * 获取统计数据，即给 data 中的 entities_data 和 relaions_data 赋值
          */
         get_statistic_data(){
@@ -516,33 +465,7 @@ export default {
             this.relations_data = [RData];
         },
 
-        ///////////////////////////////////此处为搜索相关代码段///////////////////////////////////
-        // getSearchType(search_type) {
-        //     return search_type === '1' ? this.cy.nodes() : this.cy.edges();
-        // },
-        //
-        //
-        // getName(search_type, val) {
-        //     return search_type === '1' ? val.data().name : val.data().relation;
-        // },
-        //
-        // setSearchParams() {
-        //     this.currentSearch.params = {
-        //         search_text: this.search_text,
-        //         search_type: this.search_type,
-        //         select_value: this.select_value
-        //     }
-        // },
-        //
-        // clearSearchContent() {
-        //     this.search_text = '';
-        //     this.search_type = '';
-        //     this.select_value = '';
-        //     this.currentSearch = {
-        //         params: {},
-        //         result: []
-        //     };
-        // },
+        // 以下为搜索相关
 
         checkKeyWords(text){
             let nameValid = /\S/;
@@ -701,76 +624,6 @@ export default {
             });
         },
 
-        // //根据具体搜索条件还需进行修改
-        // search() {
-        //     let flag = this.checkParams();
-        //
-        //     if (!flag) {
-        //         return;
-        //     }
-        //     //保存搜索参数
-        //     this.setSearchParams();
-        //
-        //     //搜索
-        //     let params = this.currentSearch.params;
-        //     let target = this.getSearchType(params.search_type);
-        //     let name;
-        //     let count = 0;
-        //     console.log(target)
-        //     target.forEach((val) =>{
-        //         name = this.getName(params.search_type, val);
-        //         console.log(name);
-        //         let flagName = params.search_text === '' ? true : this.fuzzyMatch(name, params.search_text);
-        //         console.log('flagName', flagName)
-        //
-        //
-        //
-        //         if (this.search_type === '2') {
-        //             if (flagName) {
-        //                 count++;
-        //                 this.currentSearch.result.push(val.data());
-        //                 val.source().addClass('searchedNode');
-        //                 val.target().addClass('searchedNode')
-        //             }
-        //             console.log(val)
-        //         }
-        //         else {
-        //             let flagProperty;
-        //             flagProperty = params.select_value === '' ? true : val.data().property.includes(params.select_value);
-        //             console.log('flagProperty', flagProperty)
-        //             if (flagName && flagProperty) {
-        //                 count++;
-        //                 this.currentSearch.result.push(val.data());
-        //                 val.addClass('searchedNode');
-        //             }
-        //         }
-        //
-        //
-        //     });
-        //
-        //     console.log(this.currentSearch)
-        //
-        //     if (count > 0) {
-        //         //let display = this.getDisplay(params.search_type);
-        //         //this.searchDisplay(display);
-        //         this.$message({
-        //             message: '搜索完毕',
-        //             type: 'success',
-        //             duration: 1500
-        //         });
-        //     }
-        //     else {
-        //         this.$message({
-        //             message: '未找到符合条件的结果',
-        //             type: 'error',
-        //             duration: 1500
-        //         });
-        //     }
-        //
-        //     this.showEnabled = true;
-        //
-        // },
-
         fuzzyMatch(str, key){//不知道需不需要再加一下忽略大小写？
             let index = -1, flag = false;
             for(let i = 0, arr = key.split(""); i < arr.length; i++ ){
@@ -819,27 +672,6 @@ export default {
             });
         },
 
-        // desearch() {
-        //     let params = this.currentSearch.params;
-        //     let target = this.cy.nodes();
-        //
-        //     target.forEach((val) =>{
-        //
-        //         if (val.hasClass('searchedNode')) {
-        //             console.log(val);
-        //             val.removeClass('searchedNode');
-        //         }
-        //     });
-        //
-        //     this.clearSearchContent();
-        //
-        //     this.showEnabled = false;
-        //
-        //     this.searchLog.push(this.currentSearch);
-        //
-        //     console.log('searchLog', this.searchLog)
-        // },
-
 
         ///////////////////////////////////此处为过滤代码///////////////////////////////////////
 
@@ -883,60 +715,5 @@ export default {
             });
             this.filter_edge_checkList = [];
         },
-
-        // filter() {
-        //     console.log("execute filter")
-        //     let flag = this.filter_node_checked || this.filter_edge_checked;
-        //     if (!flag) {
-        //         this.informMsg('error','请选择过滤类型')
-        //         return;
-        //     }
-        //
-        //     if (this.filter_node_checked) {
-        //         let checkList = this.filter_node_checkList;
-        //         let target_nodes = this.cy.nodes().filter(function (ele) {
-        //             return !checkList.includes(ele.data('type'));
-        //         });
-        //         for (let node of target_nodes) {
-        //             node.addClass('removde');
-        //         }
-        //     }
-        //     if (this.filter_edge_checked) {
-        //         let checkList = this.filter_edge_checkList;
-        //         let target_edges = this.cy.edges().filter(function (ele) {
-        //             return !checkList.includes(ele.data('type'));
-        //         })
-        //         for (let edge of target_edges) {
-        //             edge.addClass('hidden');
-        //         }
-        //     }
-        //     this.filterShowEnabled = true;
-        // },
-        //
-        // defilter() {
-        //     for (let target of this.cy.elements()) {
-        //         if(target.hasClass('removed')){
-        //             target.removeClass('removed');
-        //         }
-        //         if(target.hasClass('hidden')){
-        //             target.removeClass('hidden');
-        //         }
-        //     }
-        //     this.filterShowEnabled = false;
-        //     this.clearFilterParams();
-        // },
-        //
-        // clearFilterParams() {
-        //     this.filter_node_checkList = [];
-        //     this.filter_edge_checkList = [];
-        //     this.filter_node_checked = false;
-        //     this.filter_edge_checked = false;
-        // }
-        /////////////////////////////////////////////////////////////////////////////////////
-
-        ///////////////////////////////////此处为视图代码///////////////////////////////////////
-
-        /////////////////////////////////////////////////////////////////////////////////////
-
     }
 }

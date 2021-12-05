@@ -3,11 +3,11 @@ import axios from "axios";
 
 export { simple_question }
 
-let base =  '/demo/api/qa/';
+let base =  '/demo/api/qa';
 
-function simple_question(question){
+function simple_question(question, pid){
     return new Promise(function (resolve, reject){
-        axios.get(base + 'simple_question?question=' + question)
+        axios.get(`${base}/simple_question?question=${question}&pid=${pid}`)
             .then(res => {
                 resolve(res);
             }).catch(error => {
