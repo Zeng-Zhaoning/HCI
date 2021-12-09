@@ -52,6 +52,7 @@
           <div
             class="recommendation-item"
             v-for="(rec, index) in recommendations"
+            @click="recommendEvent(rec)"
             :key="rec"
           >
             <div class="index" :class="indexClass[index]">{{ index + 1 }}</div>
@@ -114,11 +115,8 @@ export default {
         this.query(event);
       }
     },
-    query(event) {
-      if (this.input === "") {
-        return;
-      }
-
+    recommendEvent(content){
+      this.input = content;
       let input = this.input;
       this.searched = true;
       this.recsLoading = true;
@@ -135,6 +133,70 @@ export default {
       this.searchNode();
 
       //请求api获得“猜你想看”结果
+      let recommendationlist = {
+        "詹姆·斯图尔特": 20,
+        "玛莎·斯图尔特": 19,
+        "伊索特·塞耶": 18,
+        "查威克·布特": 17,
+        "韦伯·布特": 16,
+        "雷欧娜·斯图尔特": 15,
+        "伊尔弗莫尼魔法学校": 14,
+        "威廉·塞耶": 13,
+        "雷欧娜·塞耶": 12,
+        "葛姆蕾·冈特": 11,
+        "萨拉查·斯莱特林": 10,
+      };
+
+      // recommendation
+      this.recommendations = Object.keys(recommendationlist).sort(function (a, b) {
+        return recommendationlist[b] - recommendationlist[a];
+      });
+      this.recommendations = this.recommendations.slice(0, 10);
+      this.recsLoading = false;
+    },
+    query(event) {
+      if (this.input === "") {
+        return;
+      }
+      let input = this.input;
+      this.searched = true;
+      this.recsLoading = true;
+      this.resultLoading = true;
+      this.showNoResult = false;
+      this.showNoRecs = false;
+      this.showAns = false;
+      this.showNodeInfo = false;
+      this.recommendations = [];
+      this.ans = [];
+      this.result = {};
+
+      //TODO: 挪用右边栏的搜索功能
+      this.searchNode();
+
+      //请求api获得“猜你想看”结果
+      let recommendationlist = {
+        "詹姆·斯图尔特": 20,
+        "玛莎·斯图尔特": 19,
+        "伊索特·塞耶": 18,
+        "查威克·布特": 17,
+        "韦伯·布特": 16,
+        "雷欧娜·斯图尔特": 15,
+        "伊尔弗莫尼魔法学校": 14,
+        "威廉·塞耶": 13,
+        "雷欧娜·塞耶": 12,
+        "葛姆蕾·冈特": 11,
+        "萨拉查·斯莱特林": 10,
+      };
+
+      // recommendation
+      this.recommendations = Object.keys(recommendationlist).sort(function (a, b) {
+        return recommendationlist[b] - recommendationlist[a];
+      });
+      this.recommendations = this.recommendations.slice(0, 10);
+
+      this.recsLoading = false;
+
+      /*
       getRecommend(input, this.pid)
         .then((res) => {
           if (res.success) {
@@ -159,6 +221,7 @@ export default {
         .finally(() => {
           this.recsLoading = false;
         });
+        */
     },
     ///////////////////////////////////////
     checkKeyWords(text) {
@@ -386,6 +449,7 @@ svg:hover {
   flex-direction: row;
   margin: 8px;
   color: #565657;
+  cursor:pointer;
 }
 .index {
   height: 20px;
@@ -418,4 +482,5 @@ svg:hover {
   text-align: center;
   margin: 20px;
 }
+
 </style>
