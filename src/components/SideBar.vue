@@ -4,7 +4,11 @@
       <div class="header">
         <span>搜索</span>
         <div class="input-box">
-          <input v-model="input" @keyup="keyUpHandler" @keydown="keyDownHandler"/>
+          <input
+            v-model="input"
+            @keyup="keyUpHandler"
+            @keydown="keyDownHandler"
+          />
           <svg class="icon" aria-hidden="true" @click="query">
             <use xlink:href="#iconyou"></use>
           </svg>
@@ -24,11 +28,17 @@
           <div class="result-item">
             <div class="result-name">{{ result.data.name }}</div>
           </div>
-          <div class="result-item" v-for="(value, key) in result.data.property" :key="key">
+          <div
+            class="result-item"
+            v-for="(value, key) in result.data.property"
+            :key="key"
+          >
             <span class="key">{{ key }}</span>
             <span class="value">
               <span v-if="typeof value === 'string'">{{ value }}</span>
-              <span v-else-if="Array.isArray(value)">{{ value.join('，') }}</span>
+              <span v-else-if="Array.isArray(value)">{{
+                value.join("，")
+              }}</span>
             </span>
           </div>
         </div>
@@ -39,9 +49,11 @@
         <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
         <div class="empty" v-if="showNoRecs">暂无推荐</div>
         <div>
-          <div class="recommendation-item"
-               v-for="(rec, index) in recommendations"
-               :key="rec">
+          <div
+            class="recommendation-item"
+            v-for="(rec, index) in recommendations"
+            :key="rec"
+          >
             <div class="index" :class="indexClass[index]">{{ index + 1 }}</div>
             <div class="rec-text">{{ rec }}</div>
           </div>
@@ -52,15 +64,16 @@
 </template>
 
 <script>
-import { getRecommend } from "@/api/RecommendAPI"
-import {mapMutations, mapState} from "vuex";
+import { getRecommend } from "@/api/RecommendAPI";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "SideBar",
-  data(){
+  data() {
     return {
       searched: false,
-      input: '',
+      input: "",
+      searchedNode: {},
       resultLoading: false,
       result: {}, //返回的结果
       showNoResult: false,
@@ -68,31 +81,43 @@ export default {
       showAns: false,
       showNodeInfo: false,
       recsLoading: false,
-      recommendations: [],  //推荐条目
-      indexClass: ['index-1', 'index-2', 'index-3'],
+      recommendations: [], //推荐条目
+      indexClass: ["index-1", "index-2", "index-3"],
       showNoRecs: false,
-    }
+      initZoom: 1.0,
+      initPan: {}
+    };
   },
   computed: {
     ...mapState({
-      project: state => state.project,
-      pid: state => state.pid,
+      cy: (state) => state.workspace.cy,
+      project: (state) => state.project,
+      pid: (state) => state.pid,
     }),
   },
-  methods:{
-    ...mapMutations(['setProject']),
-    keyDownHandler(event){
-      if (event.keyCode == '13'){
+  watch: {
+    cy(newValue, oldValue){
+      this.initZoom = newValue._private.zoom;
+      let p_pan = this.cy._private.pan
+      this.initPan = {x: p_pan.x, y: p_pan.y};
+    }
+  },
+  methods: {
+    ...mapMutations(["setProject"]),
+    keyDownHandler(event) {
+      if (event.keyCode == "13") {
         event.preventDefault();
       }
     },
-    keyUpHandler(event){
-      if (event.keyCode == '13'){
+    keyUpHandler(event) {
+      if (event.keyCode == "13") {
         this.query(event);
       }
     },
-    query(event){
-      if (this.input === ''){ return; }
+    query(event) {
+      if (this.input === "") {
+        return;
+      }
 
       let input = this.input;
       this.searched = true;
@@ -107,45 +132,147 @@ export default {
       this.result = {};
 
       //TODO: 挪用右边栏的搜索功能
+      this.searchNode();
 
       //请求api获得“猜你想看”结果
-      getRecommend(input, this.pid).then(res => {
-        if (res.success){
-          let recsObj = res.content;
-          if (res.content !== null){
-            //根据键值排序得到键名list
-            this.recommendations = Object.keys(recsObj).sort(function(a,b){return recsObj[b]-recsObj[a]});
-            this.recommendations = this.recommendations.slice(0,10);
-          }else{
-            this.showNoRecs = true;
+      getRecommend(input, this.pid)
+        .then((res) => {
+          if (res.success) {
+            let recsObj = res.content;
+            if (res.content !== null) {
+              //根据键值排序得到键名list
+              this.recommendations = Object.keys(recsObj).sort(function (a, b) {
+                return recsObj[b] - recsObj[a];
+              });
+              this.recommendations = this.recommendations.slice(0, 10);
+            } else {
+              this.showNoRecs = true;
+            }
+          } else {
+            this.$message.error(res.message);
           }
-        }else {
-          this.$message.error(res.message);
+        })
+        .catch((err) => {
+          this.$message.error("请确保网络连接正常");
+          console.log("要么断网，要么服务器崩了", err);
+        })
+        .finally(() => {
+          this.recsLoading = false;
+        });
+    },
+    ///////////////////////////////////////
+    checkKeyWords(text) {
+      let nameValid = /\S/;
+      let keyWords = [];
+      /*
+      text.forEach((val) => {
+        //校验、去重
+        if (nameValid.test(val)) {
+          let item = val.trim();
+          if (!keyWords.includes(item)) keyWords.push(item);
         }
-      }).catch(err => {
-        this.$message.error("请确保网络连接正常");
-        console.log("要么断网，要么服务器崩了",err);
-      }).finally(() => {
-        this.recsLoading = false;
+      });
+      */
+      if (nameValid.test(text)) {
+        let item = text.trim();
+        if (!keyWords.includes(item)) keyWords.push(item);
+      }
+      return keyWords;
+    },
+    searchNode() {
+      let keyWords = this.checkKeyWords(this.input);
+      if (keyWords.length === 0) {
+        this.informMsg("error", "请确认搜索内容和筛选条件都不为空哦");
+        return;
+      }
+      //开始一次搜索
+      let nodes = this.cy.nodes();
+      let count = 0;
+      nodes.forEach((val) => {
+        if (val.hasClass("searchedNode")) {
+          val.removeClass("searchedNode");
+        }
+        let hit = false;
+        let valName = val.data("name");
+        for (let key of keyWords) {
+          if (this.fuzzyMatch(valName, key)) {
+            hit = true;
+            break;
+          }
+        }
+        if (hit) {
+          this.searchedNode = val;
+          count += 1;
+          val.addClass("searchedNode");
+          // 先回原点
+          this.cy.viewport({
+            zoom: this.initZoom,
+            pan: this.initPan,
+          });
+          this.cy.zoom({
+            level: 2.0,
+            position: val.position(),
+          });
+        }
+      });
+      this.informResult(count > 0, "搜索完毕", "未找到符合条件的结果");
+    },
+    informMsg(type, msg) {
+      this.$message({
+        message: msg,
+        type: type,
+        duration: 1500,
       });
     },
-  }
-}
+    informResult(isSuccess, success_msg, error_msg) {
+      if (isSuccess) {
+        this.informMsg("success", success_msg);
+      } else {
+        this.informMsg("error", error_msg);
+      }
+    },
+    fuzzyMatch(str, key) {
+      //不知道需不需要再加一下忽略大小写？
+      let index = -1,
+        flag = false;
+      for (let i = 0, arr = key.split(""); i < arr.length; i++) {
+        //有一个关键字都没匹配到，则没有匹配到数据
+        if (str.indexOf(arr[i]) < 0) {
+          break;
+        } else {
+          let match = str.matchAll(arr[i]);
+          let next = match.next();
+          while (!next.done) {
+            if (next.value.index > index) {
+              index = next.value.index;
+              if (i === arr.length - 1) {
+                flag = true;
+              }
+              break;
+            }
+            next = match.next();
+          }
+        }
+      }
+      return flag;
+    },
+  },
+};
 </script>
 
 <style scoped lang="less">
 @import "../assets/css/colors.less";
-@pad : 15px;
-@len1 : 20px;
+@pad: 15px;
+@len1: 20px;
 
-.container{
+.container {
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.header{
+.header {
   background: @theme;
   padding-top: @pad;
   height: 65px;
@@ -158,14 +285,14 @@ export default {
   margin-bottom: 30px;
 }
 
-.search-box{
-  .input-box{
+.search-box {
+  .input-box {
     height: 40px;
     width: 100% - 15px;
     margin: 8px auto;
     position: relative;
   }
-  input{
+  input {
     border: 2px solid @separator;
     border-radius: 8px;
     padding-left: 10px;
@@ -173,20 +300,20 @@ export default {
     outline: none;
     font-size: 15px;
     font-family: 微软雅黑;
-    letter-spacing:1px;
+    letter-spacing: 1px;
     width: 100% - 8px;
     height: 100%;
     color: #565657;
   }
-  input:hover{
+  input:hover {
     border-color: @prompt;
   }
-  input:focus{
+  input:focus {
     border-color: @theme;
   }
 }
 
-svg{
+svg {
   position: absolute;
   right: 5px;
   top: 13px;
@@ -194,21 +321,21 @@ svg{
   height: 20px;
   background: white;
 }
-svg:hover{
+svg:hover {
   cursor: pointer;
 }
 
-.title{
+.title {
   color: @theme;
   font-size: 14px;
   font-family: 微软雅黑;
   height: @len1;
-  span{
+  span {
     line-height: @len1;
   }
 }
 
-.result-box{
+.result-box {
   padding: @pad;
   min-height: 100px;
   font-family: 微软雅黑;
@@ -216,24 +343,24 @@ svg:hover{
   color: #565657;
 }
 
-.ans{
+.ans {
   margin: 8px;
 }
 
-.result-name{
+.result-name {
   font-size: 17px;
   font-weight: bold;
   color: #565657;
   margin: 25px 0;
 }
 
-.result-item{
+.result-item {
   //display: flex;
   //flex-direction: row;
   margin: 8px;
 }
 
-.key{
+.key {
   display: inline-block;
   letter-spacing: 1px;
   //color: @theme;
@@ -248,50 +375,47 @@ svg:hover{
   margin-right: 8px;
 }
 
-
-
 /* 建议栏 */
-.recommendations-box{
+.recommendations-box {
   padding: @pad;
   font-family: 微软雅黑;
   font-size: 14px;
 }
-.recommendation-item{
+.recommendation-item {
   display: flex;
   flex-direction: row;
   margin: 8px;
   color: #565657;
 }
-.index{
+.index {
   height: 20px;
   line-height: 20px;
   width: 20px;
   border-radius: 4px;
   text-align: center;
 }
-.index-1{
+.index-1 {
   background: @set2-blush;
   color: white;
 }
-.index-2{
+.index-2 {
   background: @set1-dandelion;
   color: white;
 }
-.index-3{
+.index-3 {
   background: @set4-neptune;
   color: white;
 }
-.rec-text{
+.rec-text {
   margin-left: 10px;
   letter-spacing: 0.5px;
 }
 
-.empty{
+.empty {
   color: @prompt;
   font-size: 14px;
   font-family: 微软雅黑;
   text-align: center;
   margin: 20px;
 }
-
 </style>
