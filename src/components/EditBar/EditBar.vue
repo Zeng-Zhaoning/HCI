@@ -32,20 +32,6 @@
         </div>
       </edit-bar-block>
 
-<!--      <edit-bar-block block-name="待解析文本">-->
-<!--        <el-input-->
-<!--            disabled-->
-<!--            class="el-input"-->
-<!--            type="textarea"-->
-<!--            :rows="6"-->
-<!--            placeholder="请输入待解析文本"-->
-<!--            v-model="text">-->
-<!--        </el-input>-->
-<!--        <div class="btn-box">-->
-<!--          <my-button disabled :loading="false" @click="saveAndAnalyse">保存并解析</my-button>-->
-<!--        </div>-->
-<!--      </edit-bar-block>-->
-
       <edit-bar-block block-name="统计">
         <div class="table_name">| 实体</div>
         <el-table
@@ -69,126 +55,6 @@
         </el-table>
       </edit-bar-block>
 
-
-    <!--///////////////////////////////////此处为搜索相关代码段///////////////////////////////////////-->
-      <edit-bar-block block-name="搜索">
-        <div class="item_title">| 实体搜索</div>
-        <el-select
-                v-model="search_node_text"
-                style="width:100%"
-                multiple
-                filterable
-                allow-create
-                default-first-option
-                clearable
-                no-data-text="重复输入关键词会抵消哦"
-                placeholder="可输入多个关键词搜索">
-<!--          el-select在开了allow-create后有奇怪的bug，reserve-keyword估计也没用，最终选择文字提示-->
-<!--          我目前的理解是这样，可信度等于四五个小时的debug（太菜了┭┮﹏┭┮），等一个大佬弄清楚原理漂亮地解决-->
-            <el-option :disabled="true" >
-              <span style="position: relative;display: block">注意！如果没有选中下拉框中的一项</span>
-            </el-option>
-            <el-option :disabled="true">
-              <span style="position: relative;display: block">这时类似是选中了未显示的自建选项缓存</span>
-            </el-option>
-            <el-option :disabled="true">
-              <span style="position: relative;display: block">未防止已选项和选中的未显示的相同数据抵消</span>
-            </el-option>
-            <el-option :disabled="true">
-              <span style="position: relative;display: block">请确认下拉框中的选项的选中状况符合预期</span>
-            </el-option>
-            <el-option  v-for="item in search_node_log"
-                        :key="item"
-                        :label="item"
-                        :value="item">
-            </el-option>
-        </el-select>
-
-        <el-checkbox-group v-model="search_node_condition" >
-          <el-checkbox label="name">实体名</el-checkbox>
-          <el-checkbox label="relation">拥有关系</el-checkbox>
-          <el-checkbox label="property">属性</el-checkbox>
-        </el-checkbox-group>
-        <div class="btn-box1">
-          <my-button class="my-button" @click="searchNode">搜索</my-button>
-          <my-button class="my-button" v-show="node_searched" @click="desearchNode">取消</my-button>
-        </div>
-
-        <div class="item_title">| 关系搜索</div>
-        <el-select
-                v-model="search_edge_text"
-                style="width:100%"
-                multiple
-                filterable
-                allow-create
-                default-first-option
-                clearable
-                no-data-text="重复输入关键词会抵消哦"
-                placeholder="可输入多个关键词搜索">
-          <!--          el-select在开了allow-create后有奇怪的bug，reserve-keyword估计也没用，最终选择文字提示-->
-          <!--          我目前的理解是这样，可信度等于四五个小时的debug（太菜了┭┮﹏┭┮），等一个大佬弄清楚原理漂亮地解决-->
-          <el-option :disabled="true" >
-            <span style="position: relative;display: block">注意！如果没有选中下拉框中的一项</span>
-          </el-option>
-          <el-option :disabled="true">
-            <span style="position: relative;display: block">这时类似是选中了未显示的自建选项缓存</span>
-          </el-option>
-          <el-option :disabled="true">
-            <span style="position: relative;display: block">未防止已选项和选中的未显示的相同数据抵消</span>
-          </el-option>
-          <el-option :disabled="true">
-            <span style="position: relative;display: block">请确认下拉框中的选项的选中状况符合预期</span>
-          </el-option>
-
-          <el-option  v-for="item in search_edge_log"
-                      :key="item"
-                      :label="item"
-                      :value="item">
-          </el-option>
-        </el-select>
-        <el-checkbox-group v-model="search_edge_condition" >
-          <el-checkbox label="relation">关系名</el-checkbox>
-          <el-checkbox label="source">源实体</el-checkbox>
-          <el-checkbox label="target">目标实体</el-checkbox>
-        </el-checkbox-group>
-        <div class="btn-box1">
-          <my-button class="my-button" @click="searchEdge">搜索</my-button>
-          <my-button class="my-button" v-show="edge_searched" @click="desearchEdge">取消</my-button>
-        </div>
-
-
-<!--        <div class="item_title">| 节点名称</div>-->
-<!--        <el-input-->
-<!--                class="el-input"-->
-<!--                clearable-->
-<!--                placeholder="请输入搜索内容"-->
-<!--                v-model="search_text">-->
-<!--        </el-input>-->
-<!--        <div class="item_title">| 图元类型</div>-->
-<!--        <el-select v-model="search_type" clearable placeholder="请选择类型">-->
-<!--          <el-option-->
-<!--              v-for="type in types"-->
-<!--              :key="type.value"-->
-<!--              :label="type.label"-->
-<!--              :value="type.value">-->
-<!--          </el-option>-->
-<!--        </el-select>-->
-<!--        <div class="item_title">| 属性</div>-->
-<!--        <el-input-->
-<!--            class="el-input"-->
-<!--            clearable-->
-<!--            :rows="1"-->
-<!--            placeholder="请输入搜索属性"-->
-<!--            v-model="select_value"-->
-<!--            :disabled="edgeDisabled">-->
-<!--        </el-input>-->
-<!--        <div class="btn-box">-->
-<!--          <my-button @click="search">搜索</my-button>-->
-<!--          <my-button v-show="showEnabled" @click="desearch">取消</my-button>-->
-<!--        </div>-->
-      </edit-bar-block>
-    <!--/////////////////////////////////////////////////////////////////////////////////////////-->
-
     <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
       <edit-bar-block block-name="过滤">
         <div class="item_title">| 滤去实体</div>
@@ -208,28 +74,6 @@
           </el-col>
         </div>
       </edit-bar-block>
-
-
-<!--      <edit-bar-block block-name="节点过滤">-->
-<!--        <el-checkbox v-model="filter_node_checked" border size="small">节点</el-checkbox>-->
-<!--        <el-checkbox-group v-model="filter_node_checkList" :disabled="node_checkList_disabled">-->
-<!--          <el-checkbox label="individual">个体</el-checkbox>-->
-<!--          <el-checkbox label="organization">团体</el-checkbox>-->
-<!--          <el-checkbox label="thing">事务</el-checkbox>-->
-<!--          <el-checkbox label="default">未知</el-checkbox>-->
-<!--        </el-checkbox-group>-->
-<!--        <el-checkbox v-model="filter_edge_checked" border size="small">关系</el-checkbox>-->
-<!--        <el-checkbox-group v-model="filter_edge_checkList" :disabled="edge_checkList_disabled">-->
-<!--          <el-checkbox label="connection">关联</el-checkbox>-->
-<!--          <el-checkbox label="inheritance">继承</el-checkbox>-->
-<!--          <el-checkbox label="default">未知</el-checkbox>-->
-<!--        </el-checkbox-group>-->
-<!--        <div class="btn-box">-->
-<!--          <my-button @click="filter">过滤</my-button>-->
-<!--          <my-button @click="defilter" v-show="filterShowEnabled">撤销</my-button>-->
-<!--        </div>-->
-<!--      </edit-bar-block>-->
-    <!--////////////////////////////////////////////////////////////////////////////////////////-->
 
       <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->
       <edit-bar-block block-name="视图调整">
