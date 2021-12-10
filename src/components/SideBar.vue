@@ -8,6 +8,7 @@
             v-model="input"
             @keyup="keyUpHandler"
             @keydown="keyDownHandler"
+            placeholder="输入图中的节点名"
           />
           <svg class="icon" aria-hidden="true" @click="query">
             <use xlink:href="#iconyou"></use>
@@ -21,16 +22,13 @@
         <div class="title"><span>搜索结果</span></div>
         <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
         <div class="empty" v-if="showNoResult">无匹配，换个关键词搜索吧</div>
-        <div class="ans" v-if="showAns">
-          <div v-for="ansItem in ans" :key="ansItem">{{ ansItem }}</div>
-        </div>
         <div v-if="showNodeInfo">
           <div class="result-item">
-            <div class="result-name">{{ result.data.name }}</div>
+            <div class="result-name">{{ result.data('name') }}</div>
           </div>
           <div
             class="result-item"
-            v-for="(value, key) in result.data.property"
+            v-for="(value, key) in result.data('property')"
             :key="key"
           >
             <span class="key">{{ key }}</span>
@@ -65,7 +63,6 @@
 </template>
 
 <script>
-import { getRecommend } from "@/api/RecommendAPI";
 import { mapMutations, mapState } from "vuex";
 
 export default {
@@ -74,12 +71,9 @@ export default {
     return {
       searched: false,
       input: "",
-      searchedNode: {},
       resultLoading: false,
-      result: {}, //返回的结果
+      result: {}, //返回的结果，是一个cy的点
       showNoResult: false,
-      ans: [],
-      showAns: false,
       showNodeInfo: false,
       recsLoading: false,
       recommendations: [], //推荐条目
@@ -117,61 +111,24 @@ export default {
     },
     recommendEvent(content){
       this.input = content;
-      let input = this.input;
-      this.searched = true;
-      this.recsLoading = true;
-      this.resultLoading = true;
-      this.showNoResult = false;
-      this.showNoRecs = false;
-      this.showAns = false;
-      this.showNodeInfo = false;
-      this.recommendations = [];
-      this.ans = [];
-      this.result = {};
-
-      //TODO: 挪用右边栏的搜索功能
-      this.searchNode();
-
-      //请求api获得“猜你想看”结果
-      let recommendationlist = {
-        "詹姆·斯图尔特": 20,
-        "玛莎·斯图尔特": 19,
-        "伊索特·塞耶": 18,
-        "查威克·布特": 17,
-        "韦伯·布特": 16,
-        "雷欧娜·斯图尔特": 15,
-        "伊尔弗莫尼魔法学校": 14,
-        "威廉·塞耶": 13,
-        "雷欧娜·塞耶": 12,
-        "葛姆蕾·冈特": 11,
-        "萨拉查·斯莱特林": 10,
-      };
-
-      // recommendation
-      this.recommendations = Object.keys(recommendationlist).sort(function (a, b) {
-        return recommendationlist[b] - recommendationlist[a];
-      });
-      this.recommendations = this.recommendations.slice(0, 10);
-      this.recsLoading = false;
+      this.query();
     },
     query(event) {
       if (this.input === "") {
         return;
       }
-      let input = this.input;
       this.searched = true;
       this.recsLoading = true;
       this.resultLoading = true;
       this.showNoResult = false;
       this.showNoRecs = false;
-      this.showAns = false;
       this.showNodeInfo = false;
       this.recommendations = [];
-      this.ans = [];
       this.result = {};
 
       //TODO: 挪用右边栏的搜索功能
       this.searchNode();
+      this.resultLoading = false;
 
       //请求api获得“猜你想看”结果
       let recommendationlist = {
@@ -195,47 +152,11 @@ export default {
       this.recommendations = this.recommendations.slice(0, 10);
 
       this.recsLoading = false;
-
-      /*
-      getRecommend(input, this.pid)
-        .then((res) => {
-          if (res.success) {
-            let recsObj = res.content;
-            if (res.content !== null) {
-              //根据键值排序得到键名list
-              this.recommendations = Object.keys(recsObj).sort(function (a, b) {
-                return recsObj[b] - recsObj[a];
-              });
-              this.recommendations = this.recommendations.slice(0, 10);
-            } else {
-              this.showNoRecs = true;
-            }
-          } else {
-            this.$message.error(res.message);
-          }
-        })
-        .catch((err) => {
-          this.$message.error("请确保网络连接正常");
-          console.log("要么断网，要么服务器崩了", err);
-        })
-        .finally(() => {
-          this.recsLoading = false;
-        });
-        */
     },
-    ///////////////////////////////////////
+
     checkKeyWords(text) {
       let nameValid = /\S/;
       let keyWords = [];
-      /*
-      text.forEach((val) => {
-        //校验、去重
-        if (nameValid.test(val)) {
-          let item = val.trim();
-          if (!keyWords.includes(item)) keyWords.push(item);
-        }
-      });
-      */
       if (nameValid.test(text)) {
         let item = text.trim();
         if (!keyWords.includes(item)) keyWords.push(item);
@@ -264,7 +185,8 @@ export default {
           }
         }
         if (hit) {
-          this.searchedNode = val;
+          this.result = val;
+          this.showNodeInfo = true;
           count += 1;
           val.addClass("searchedNode");
           // 先回原点
@@ -373,6 +295,9 @@ export default {
   }
   input:focus {
     border-color: @theme;
+  }
+  input::placeholder {
+    color: @prompt;
   }
 }
 

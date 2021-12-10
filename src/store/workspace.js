@@ -177,12 +177,11 @@ export const workspace = {
         layoutType: [
             {label: '预设', value: 'preset'},
             {label:'力导图',value:'d3-force'},
-            {label: '随机', value: 'random'},
             {label: '层级', value: 'breadthfirst'},
             {label: '圆环', value: 'circle'},
             {label: '网格', value: 'grid'},
             {label: '同心圆', value: 'concentric'},
-            {label: 'cose', value: 'cose'}
+            {label: '自适应', value: 'cose'}
         ],
         showQAPanel: false,
     },
