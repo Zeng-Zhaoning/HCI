@@ -5,8 +5,12 @@
   position: fixed;
   top: 1%;
   right: 5px;
-  height: 97.5%;
+  max-height: 97.5%;
+  overflow: scroll;
   background: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 .helper-edit-bar-container{
   max-height: 100%;
@@ -14,9 +18,9 @@
   width: 300px;
   background: none;
   box-shadow: -5px 0 10px #e6e6e6;
-}
-.helper-edit-bar-container::-webkit-scrollbar {
-  display: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 .hideEditBarAni{
   animation-name: editBarAni;
