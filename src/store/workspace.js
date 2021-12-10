@@ -17,7 +17,7 @@ export const workspace = {
                     'text-outline-color': '#888',
                     'text-valign': 'center',
                     'text-halign': 'center',
-                    'padding': '25px',
+                    'padding': '30px',
                     "background-color": 'data(color)',//颜色持久化
                 }
             },
@@ -37,9 +37,9 @@ export const workspace = {
                     "text-opacity": 1,
                     "text-valign": "center",
                     "text-halign": "center",
-                    "text-border-color": "#eea39d",
-                    "text-border-opacity": "1",
-                    "text-border-width": "2px",
+                    // "text-border-color": "#eea39d",
+                    // "text-border-opacity": "1",
+                    // "text-border-width": "2px",
                     "text-background-color": "#f1f1f5",
                     "text-background-shape": "roundrectangle",
                     "text-background-padding": "5px",
@@ -180,7 +180,6 @@ export const workspace = {
             {label: '层级', value: 'breadthfirst'},
             {label: '圆环', value: 'circle'},
             {label: '网格', value: 'grid'},
-            {label: '同心圆', value: 'concentric'},
             {label: '自适应', value: 'cose'}
         ],
         showQAPanel: false,

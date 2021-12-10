@@ -422,6 +422,7 @@ export default {
         generateFileName(){
             let name = "";
             try{
+                // TODO: 项目名
                 name = this.current_project.project_name;
             }catch (e) {
                 console.log("Error occurs:"+e);

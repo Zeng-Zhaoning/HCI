@@ -33,10 +33,16 @@
           >
             <span class="key">{{ key }}</span>
             <span class="value">
-              <span v-if="typeof value === 'string'">{{ value }}</span>
-              <span v-else-if="Array.isArray(value)">{{
-                value.join("，")
-              }}</span>
+              <div v-if="keyEditing !== key" @click="edit(key, value)">
+                {{ Array.isArray(value) ? value.join("，") : value }}
+              </div>
+              <input
+                v-else
+                v-model="valueEditing"
+                @blur="editPropertyBlur"
+                @keyup="editPropertyKeyUp"
+                @keydown="editPropertyKeyDown"
+              />
             </span>
           </div>
         </div>
@@ -75,6 +81,8 @@ export default {
       result: {}, //返回的结果，是一个cy的点
       showNoResult: false,
       showNodeInfo: false,
+      keyEditing: '', // 正被编辑的属性名
+      valueEditing: '', // 正在输入的属性值
       recsLoading: false,
       recommendations: [], //推荐条目
       indexClass: ["index-1", "index-2", "index-3"],
@@ -126,7 +134,6 @@ export default {
       this.recommendations = [];
       this.result = {};
 
-      //TODO: 挪用右边栏的搜索功能
       this.searchNode();
       this.resultLoading = false;
 
@@ -153,7 +160,6 @@ export default {
 
       this.recsLoading = false;
     },
-
     checkKeyWords(text) {
       let nameValid = /\S/;
       let keyWords = [];
@@ -195,7 +201,7 @@ export default {
             pan: this.initPan,
           });
           this.cy.zoom({
-            level: 2.0,
+            level: 1.4,
             position: val.position(),
           });
         }
@@ -240,6 +246,36 @@ export default {
         }
       }
       return flag;
+    },
+    edit(key, value){
+      this.keyEditing = key;
+      this.valueEditing = value;
+      setTimeout(() => {
+        document.querySelector('.value input').focus();
+      }, 0);
+    },
+    editPropertyKeyDown(event) {
+      if (event.keyCode == "13") {
+        event.preventDefault();
+      }
+    },
+    editPropertyKeyUp(event) {
+      if (event.keyCode == "13") {
+        event.target.blur();
+      }
+    },
+    editPropertyBlur(){
+      if (this.valueEditing !== this.result.data('property')[this.keyEditing]) {
+        this.$message.success('修改成功，记得保存噢');
+      }
+      this.result.data('property', {
+        ...this.result.data('property'),
+        [this.keyEditing]: this.valueEditing,
+      });
+      // TODO: 这里严谨来说需要 setProject 一下，更新仓库里的 project，这里嫌麻烦省略了，应该不会有大问题。
+
+      this.keyEditing = '';
+      this.valueEditing = '';
     },
   },
 };
@@ -308,9 +344,9 @@ svg {
   width: 20px;
   height: 20px;
   background: white;
-}
-svg:hover {
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .title {
@@ -331,10 +367,6 @@ svg:hover {
   color: #565657;
 }
 
-.ans {
-  margin: 8px;
-}
-
 .result-name {
   font-size: 17px;
   font-weight: bold;
@@ -343,15 +375,14 @@ svg:hover {
 }
 
 .result-item {
-  //display: flex;
-  //flex-direction: row;
   margin: 8px;
+  display: flex;
+  flex-direction: row;
 }
 
 .key {
   display: inline-block;
   letter-spacing: 1px;
-  //color: @theme;
   height: 20px;
   line-height: 20px;
   border-radius: 4px;
@@ -361,6 +392,23 @@ svg:hover {
   padding: 1px 4px;
   font-size: 13px;
   margin-right: 8px;
+}
+
+.value {
+  flex: 1;
+  span {
+    width: 100%;
+  }
+  input {
+    border: none;
+    border-bottom: 1px solid @theme;
+    outline: none;
+    font-family: 微软雅黑;
+    font-size: 14px;
+    color: #565657;
+    padding: 0;
+    width: 100%;
+  }
 }
 
 /* 建议栏 */
@@ -398,6 +446,13 @@ svg:hover {
 .rec-text {
   margin-left: 10px;
   letter-spacing: 0.5px;
+  &:hover {
+    color: @theme;
+    text-decoration: underline;
+  }
+  &:active {
+    color: tomato;
+  }
 }
 
 .empty {
