@@ -9,6 +9,7 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^0.2.4",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "cytoscape": "^3.18.1",

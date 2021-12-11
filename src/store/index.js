@@ -9,6 +9,7 @@ export default createStore({
     },
 
     state: {
+        uid: 1,
         pid: 1,
         project: null,
     },

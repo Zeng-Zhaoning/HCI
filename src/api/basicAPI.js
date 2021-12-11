@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-export {getKG, inputKG}
+export {getKG, inputKG, getProjectList, getUserInfo}
 
 let base =  '/demo/api/basic';
 
@@ -22,4 +22,22 @@ function inputKG(graph){
         }).catch(error => {
             console.log(error);
         })
+}
+
+function getProjectList(uid){
+    return axios.get(`${base}/getUserProjects?uid=${uid}`)
+    .then(res => {
+        return res.data
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function getUserInfo(uid){
+    return axios.get(`${base}/getUserInfo?uid=${uid}`)
+    .then(res => {
+        return res.data
+    }).catch(err => {
+        console.log(err);
+    })
 }

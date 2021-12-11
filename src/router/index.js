@@ -1,11 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import Lobby from '../views/Lobby.vue'
+
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    // component: Home
+    component: Lobby
+  },{
+    path: '/lobby',
+    name: 'Lobby',
+    component: () => import('../views/Lobby.vue')
   },
   {
     path: '/CytoscapeKG',
