@@ -6,10 +6,17 @@ import Lobby from '../views/Lobby.vue'
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'Login',
     // component: Home
-    component: Lobby
-  },{
+    component: () => import('../components/User/Login.vue')
+  },
+  {
+    path: '/Register',
+    name: 'Register',
+    // component: Home
+    component: () => import('../components/User/Register.vue')
+  },
+  {
     path: '/lobby',
     name: 'Lobby',
     component: () => import('../views/Lobby.vue')
