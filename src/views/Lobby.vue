@@ -56,7 +56,7 @@
           <div class="inner-card">
             <img src="/icons/book.png" />
             <div class="implicit-btns">
-              <div class="hidden-box-1" title="编辑" @click="edit">
+              <div class="hidden-box-1" title="编辑" @click="edit(proj)">
                 <svg class="card-icon">
                   <use xlink:href="#iconbianji"></use>
                 </svg>
@@ -128,6 +128,7 @@ export default {
   computed: {
     ...mapState({
       uid: (state) => state.uid,
+      pid: (state) => state.pid
     }),
   },
   mounted() {
@@ -158,6 +159,7 @@ export default {
     });
   },
   methods: {
+    ...mapMutations(["setPid"]),
     newProject(){
       let name = ""
       this.$prompt('请输入项目名称', {
@@ -214,7 +216,13 @@ export default {
       console.log(this.projectList);
       console.log(this.show_projectList);
     },
-    edit(){
+    edit(proj){
+      // update pid
+      Object.keys(this.projectList).forEach((val) => {
+        if (proj === this.projectList[val]) {
+          this.setPid(val);
+        }
+      });
       this.$router.push({name: 'Home'});
     }
   },

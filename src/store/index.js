@@ -10,7 +10,7 @@ export default createStore({
 
     state: {
         uid: 1,
-        pid: 1,
+        pid: 0,
         project: null,
     },
 
@@ -18,6 +18,9 @@ export default createStore({
         setProject(state, project){
             state.project = project;
         },
+        setPid(state, pid){
+            state.pid = pid;
+        }
     },
 
     actions: {
