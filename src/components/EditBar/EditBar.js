@@ -226,7 +226,9 @@ export default {
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
             'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel']),
-
+        testtest(){
+            console.log(this.nodeType);
+        },
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
         },
