@@ -5,7 +5,7 @@
         <img src="/icons/knowledgegraph.png" class="logo-title" />
       </div>
       <div class="left-box">
-        <svg class="left-icon" style="color: #ff6161">
+        <svg class="left-icon" style="color: #ff6161" @click="newProject">
           <use xlink:href="#iconjiahao2fill"></use>
         </svg>
         <div class="left-context">新建</div>
@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { getProjectList, getUserInfo } from "@/api/basicAPI";
+import { getProjectList, getUserInfo , newProject} from "@/api/basicAPI";
 import { mapMutations, mapState } from "vuex";
 import { Calendar, Search } from "@element-plus/icons-vue";
 export default {
@@ -158,6 +158,35 @@ export default {
     });
   },
   methods: {
+    newProject(){
+      let name = ""
+      this.$prompt('请输入项目名称', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        // inputPattern:
+        // inputErrorMessage:
+      }).then(({ value }) => {
+        this.$message({
+          type: 'success',
+          message: '你新建了项目: ' + value
+        });
+        name = value
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '新建已取消'
+        });
+      });
+      newProject({name: name, uid:1}).then((res) =>{
+        if(res.success) {
+          let pid = res.content
+          //TODO
+        }
+        else{
+          this.$message.error(res.message);
+        }
+      })
+    },
     keyDownHandler(event) {
       if (event.keyCode == "13") {
         event.preventDefault();

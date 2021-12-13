@@ -10,7 +10,7 @@ export default {
     components: {OpItem,EditBarBlock, MyButton},
     data(){
         return{
-            showEditBar: true,
+            showEditBar: false,
             showExportOps: false,
             opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
             entities_data: [],
@@ -507,5 +507,5 @@ export default {
             });
             this.filter_edge_checkList = [];
         },
-    }
+    },
 }

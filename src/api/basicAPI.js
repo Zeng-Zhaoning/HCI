@@ -33,6 +33,16 @@ function getProjectList(uid){
     })
 }
 
+export function newProject(project){
+    console.log('新建project');
+    return axios.post(base + '/createProject', project)
+        .then(res => {
+            return res.data
+        }).catch(error => {
+            console.log(error);
+        })
+}
+
 function getUserInfo(uid){
     return axios.get(`${base}/getUserInfo?uid=${uid}`)
     .then(res => {

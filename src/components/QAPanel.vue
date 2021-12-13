@@ -1,6 +1,10 @@
 <template>
   <div class="qa-panel">
-    <div class="title-box">智能问答</div>
+    <div class="title-box">
+      <div style="min-width: 60px; margin-top: 12px">智能问答</div>
+      <div class="qa-button"><el-button icon="el-icon-close" circle @click="changeShowQAPanel"></el-button></div>
+    </div>
+
     <div class="message-box">
       <el-scrollbar>
         <div class="message-item" v-for="text in texts">
@@ -26,7 +30,7 @@
 <script>
 import MyButton from "@/components/Tools/MyButton";
 import {simple_question} from "@/api/QAAPI"
-import { mapState } from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 export default {
   name: "QAPanel",
   components: {MyButton},
@@ -48,6 +52,7 @@ export default {
     }),
   },
   methods:{
+    ...mapMutations(['changeShowQAPanel']),
     keyDownHandler(event){
       if (event.keyCode == '13'){
         event.preventDefault();
@@ -103,10 +108,12 @@ export default {
   font-weight: bold;
   font-size: 15px;
   font-family: 微软雅黑;
-  height: 20px;
+  height: 40px;
   line-height: 20px;
   padding: 14px;
   border-bottom: 1px solid #eeeeee;
+  display: flex;
+  flex-direction: row;
 }
 
 .message-box{
@@ -127,7 +134,11 @@ export default {
   flex-direction: column;
   margin-bottom: 5px;
 }
-
+.qa-button{
+  margin-left: 180px;
+  margin-bottom: 30px;
+  align-content: center;
+}
 .name{
   color: @myblack;
   font-size: 14px;

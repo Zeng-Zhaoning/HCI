@@ -20,14 +20,14 @@ export default {
   },
   data(){
     return {
-      show: true,
+      show: this.blockName==="操作",
     }
   },
   methods:{
     changeShow(){
       this.show = ! this.show;
     }
-  }
+  },
 }
 </script>
 

@@ -2,24 +2,25 @@
   <div class="edit-bar-container" :class="{ hideEditBarAni: !showEditBar, ShowEditBarAni: showEditBar }">
     <div class="control-edit-bar" @click="changeEditBarState">
       <i :class="{'el-icon-arrow-right': showEditBar, 'el-icon-arrow-left': !showEditBar}"></i>
+      <div class="control-edit-bar-label">工具</div>
     </div>
 
     <div class="helper-edit-bar-container">
       <edit-bar-block block-name="操作">
-        <el-popover
-            placement="bottom"
-            title="操作说明"
-            :width="180"
-            trigger="hover"
-            :content="opInfo">
-          <template #reference>
-            <i class="el-icon-info op-info"></i>
-          </template>
-        </el-popover>
+<!--        <el-popover-->
+<!--            placement="bottom"-->
+<!--            title="操作说明"-->
+<!--            :width="180"-->
+<!--            trigger="hover"-->
+<!--            :content="opInfo">-->
+<!--          <template #reference>-->
+<!--            <i class="el-icon-info op-info"></i>-->
+<!--          </template>-->
+<!--        </el-popover>-->
         <div class="operations">
-          <op-item op-name="打开" icon="#iconfile-open" @click="open">
-            <input type="file" class="choose-file" style="display: none" @change="getFilePath">
-          </op-item>
+<!--          <op-item op-name="新建" icon="#iconfile-open" @click="open">-->
+<!--            <input type="file" class="choose-file" style="display: none" @change="getFilePath">-->
+<!--          </op-item>-->
           <op-item op-name="保存" icon="#iconsave" @click="save"></op-item>
           <op-item op-name="导出" icon="#iconshare" @click="changeExportState">
             <div class="choose-format-box" :class="{collapsed:!showExportOps, expanded:showExportOps}">
@@ -55,56 +56,56 @@
         </el-table>
       </edit-bar-block>
 
-      <!-- <edit-bar-block block-name="过滤">
-        <div class="item_title">| 滤去实体</div>
-        <el-select 
-        v-model="filter_node_checkList" 
-        @change="nodeFilter" 
-        collapse-tags 
-        multiple
-        placeholder="请选择过滤的实体"
-        style="width: 100%"
-        >
-          <el-option v-for="item in nodeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-        <div class="item_title">| 滤去关系</div>
-        <el-select v-model="filter_edge_checkList" @change="edgeFilter" collapse-tags multiple placeholder="在这里选择要滤去的关系" style="width: 100%">
-          <el-option v-for="item in edgeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-        <div class="btn-box2">
-          <el-col :span="11">
-            <my-button class="my-button" @click="edgeDefilter">还原关系</my-button>
-          </el-col>
-          <el-col :span="11">
-            <my-button class="my-button" @click="nodeDefilter">还原实体</my-button>
-          </el-col>
-        </div>
-      </edit-bar-block> -->
+<!--      <edit-bar-block block-name="过滤">-->
+<!--        <div class="item_title">| 滤去实体</div>-->
+<!--        <el-select-->
+<!--        v-model="filter_node_checkList"-->
+<!--        @change="nodeFilter"-->
+<!--        collapse-tags-->
+<!--        multiple-->
+<!--        placeholder="请选择过滤的实体"-->
+<!--        style="width: 100%"-->
+<!--        >-->
+<!--          <el-option v-for="item in nodeType" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
+<!--        </el-select>-->
+<!--        <div class="item_title">| 滤去关系</div>-->
+<!--        <el-select v-model="filter_edge_checkList" @change="edgeFilter" collapse-tags multiple placeholder="在这里选择要滤去的关系" style="width: 100%">-->
+<!--          <el-option v-for="item in edgeType" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
+<!--        </el-select>-->
+<!--        <div class="btn-box2">-->
+<!--          <el-col :span="11">-->
+<!--            <my-button class="my-button" @click="edgeDefilter">还原关系</my-button>-->
+<!--          </el-col>-->
+<!--          <el-col :span="11">-->
+<!--            <my-button class="my-button" @click="nodeDefilter">还原实体</my-button>-->
+<!--          </el-col>-->
+<!--        </div>-->
+<!--      </edit-bar-block>-->
 
-      <!-- <edit-bar-block block-name="视图调整">
-        <div class="item_title">| 布局</div>
-        <el-select v-model="layoutTypeNow" placeholder="请选择布局类型">
-          <el-option
-              v-for="type in layoutType"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value">
-          </el-option>
-        </el-select>
-        <div class="item_title">| 关系显示</div>
-        <el-radio-group v-model="relation_label_enabled">
-          <el-radio :label="true">是</el-radio>
-          <el-radio :label="false">否</el-radio>
-        </el-radio-group>
-        <div class="item_title">| 节点字体大小</div>
-        <div>
-          <el-slider :min="10" :max="100" v-model="font_size"></el-slider>
-        </div>
-        <div class="item_title">| 节点半径</div>
-        <div>
-          <el-slider :min="10" :max="100" v-model="node_radius"></el-slider>
-        </div>
-      </edit-bar-block> -->
+<!--      <edit-bar-block block-name="视图调整">-->
+<!--        <div class="item_title">| 布局</div>-->
+<!--        <el-select v-model="layoutTypeNow" placeholder="请选择布局类型">-->
+<!--          <el-option-->
+<!--              v-for="type in layoutType"-->
+<!--              :key="type.value"-->
+<!--              :label="type.label"-->
+<!--              :value="type.value">-->
+<!--          </el-option>-->
+<!--        </el-select>-->
+<!--        <div class="item_title">| 关系显示</div>-->
+<!--        <el-radio-group v-model="relation_label_enabled">-->
+<!--          <el-radio :label="true">是</el-radio>-->
+<!--          <el-radio :label="false">否</el-radio>-->
+<!--        </el-radio-group>-->
+<!--        <div class="item_title">| 节点字体大小</div>-->
+<!--        <div>-->
+<!--          <el-slider :min="10" :max="100" v-model="font_size"></el-slider>-->
+<!--        </div>-->
+<!--        <div class="item_title">| 节点半径</div>-->
+<!--        <div>-->
+<!--          <el-slider :min="10" :max="100" v-model="node_radius"></el-slider>-->
+<!--        </div>-->
+<!--      </edit-bar-block>-->
 
     </div>
   </div>

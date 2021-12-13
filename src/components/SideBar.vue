@@ -2,11 +2,14 @@
   <div class="container">
     <div class="search-box">
       <div class="header">
-        <div>
-          <!-- <svg class="icon-back" @click="lastPage">
-            <use xlink:href="#iconzuojiantou"></use>
-          </svg> -->
-          <span>搜索</span>
+        <div style="display: flex; flex-direction: row">
+<!--          <svg class="icon-back" @click="lastPage">-->
+<!--            <use xlink:href="#iconzuojiantou"></use>-->
+<!--          </svg>-->
+          <div style="margin-left: 10px; margin-bottom: 10px">
+            <el-button icon="el-icon-back" circle @click="lastPage"></el-button>
+          </div>
+          <span style="margin-left: 80px; margin-top: 10px">搜索</span>
         </div>
         <div class="input-box">
           <input
