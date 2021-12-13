@@ -26,7 +26,7 @@
         @keydown="keyDownHandler"/>
       </div>
       <el-menu
-        default-active="3"
+        default-active="1"
         class="vertical-menu"
         text-color="#525E71"
         active-text-color="#6a85ce"
@@ -47,25 +47,16 @@
     </el-col>
     <el-col :span="20" class="left-3-col">
       <div class="box-11">全部项目</div>
-      <el-menu :default-active="1" mode="horizontal" class="horizontal-menu">
+      <el-menu :default-active="'1'" mode="horizontal" class="horizontal-menu">
         <el-menu-item index="1">当前</el-menu-item>
         <el-menu-item index="2">已锁定</el-menu-item>
       </el-menu>
-
-      <!-- <el-tooltip
-        effect="dark"
-        content="Top Left prompts info"
-        placement="top-start"
-      >
-        <el-button>top-start</el-button>
-      </el-tooltip> -->
-
       <div class="inner-box">
         <div :key="ind" v-for="(proj, ind) in show_projectList" class="card">
           <div class="inner-card">
             <img src="/icons/book.png" />
             <div class="implicit-btns">
-              <div class="hidden-box-1" title="编辑">
+              <div class="hidden-box-1" title="编辑" @click="edit">
                 <svg class="card-icon">
                   <use xlink:href="#iconbianji"></use>
                 </svg>
@@ -193,6 +184,9 @@ export default {
       });
       console.log(this.projectList);
       console.log(this.show_projectList);
+    },
+    edit(){
+      this.$router.push({name: 'Home'});
     }
   },
 };
@@ -475,6 +469,7 @@ export default {
 }
 
 .user-info {
+  border: 1px solid #333333;
   border-radius: 15px;
   position: absolute;
   right: 50px;

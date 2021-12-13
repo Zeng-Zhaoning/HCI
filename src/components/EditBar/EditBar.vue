@@ -55,10 +55,16 @@
         </el-table>
       </edit-bar-block>
 
-    <!--/////////////////////////////////////此处为过滤相关////////////////////////////////////////-->
-      <edit-bar-block block-name="过滤">
+      <!-- <edit-bar-block block-name="过滤">
         <div class="item_title">| 滤去实体</div>
-        <el-select v-model="filter_node_checkList" @change="nodeFilter" collapse-tags multiple placeholder="在这里选择要滤去的实体" style="width: 100%">
+        <el-select 
+        v-model="filter_node_checkList" 
+        @change="nodeFilter" 
+        collapse-tags 
+        multiple
+        placeholder="请选择过滤的实体"
+        style="width: 100%"
+        >
           <el-option v-for="item in nodeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
         <div class="item_title">| 滤去关系</div>
@@ -73,17 +79,11 @@
             <my-button class="my-button" @click="nodeDefilter">还原实体</my-button>
           </el-col>
         </div>
-      </edit-bar-block>
+      </edit-bar-block> -->
 
-      <!--///////////////////////////////////////展示效果调节////////////////////////////////////-->
-      <edit-bar-block block-name="视图调整">
+      <!-- <edit-bar-block block-name="视图调整">
         <div class="item_title">| 布局</div>
-      <!-- 当前做法：v-model绑定到editbar本身的变量，然后初始化放在watch中cy的函数里，
-      由于每次cy改变都要改一次，所以每次设置layoutTypeNow都会因改变了cy而重复再设置一次该字段
-      又因监听layoutTypeNow的函数需要重跑layout，在cy初始化时会白白重新布局一遍（就一遍好像也没啥）-->
         <el-select v-model="layoutTypeNow" placeholder="请选择布局类型">
-      <!-- 另一种实现思路：bind上workspace中的layoutTypeNow，然后用@change调用mutation改变它，
-      layoutTypeNow初始化放在初始化cy的setCy方法里，这样修改起来不会有重复操作-->
           <el-option
               v-for="type in layoutType"
               :key="type.value"
@@ -104,9 +104,8 @@
         <div>
           <el-slider :min="10" :max="100" v-model="node_radius"></el-slider>
         </div>
-      </edit-bar-block>
+      </edit-bar-block> -->
 
-      <!--////////////////////////////////////////////////////////////////////////////////////-->
     </div>
   </div>
 </template>

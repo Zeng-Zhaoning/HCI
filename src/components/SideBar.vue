@@ -2,7 +2,12 @@
   <div class="container">
     <div class="search-box">
       <div class="header">
-        <span>搜索</span>
+        <div>
+          <!-- <svg class="icon-back" @click="lastPage">
+            <use xlink:href="#iconzuojiantou"></use>
+          </svg> -->
+          <span>搜索</span>
+        </div>
         <div class="input-box">
           <input
             v-model="input"
@@ -24,7 +29,7 @@
         <div class="empty" v-if="showNoResult">无匹配，换个关键词搜索吧</div>
         <div v-if="showNodeInfo">
           <div class="result-item">
-            <div class="result-name">{{ result.data('name') }}</div>
+            <div class="result-name">{{ result.data("name") }}</div>
           </div>
           <div
             class="result-item"
@@ -81,14 +86,14 @@ export default {
       result: {}, //返回的结果，是一个cy的点
       showNoResult: false,
       showNodeInfo: false,
-      keyEditing: '', // 正被编辑的属性名
-      valueEditing: '', // 正在输入的属性值
+      keyEditing: "", // 正被编辑的属性名
+      valueEditing: "", // 正在输入的属性值
       recsLoading: false,
       recommendations: [], //推荐条目
       indexClass: ["index-1", "index-2", "index-3"],
       showNoRecs: false,
       initZoom: 1.0,
-      initPan: {}
+      initPan: {},
     };
   },
   computed: {
@@ -99,14 +104,17 @@ export default {
     }),
   },
   watch: {
-    cy(newValue, oldValue){
+    cy(newValue, oldValue) {
       this.initZoom = newValue._private.zoom;
-      let p_pan = this.cy._private.pan
-      this.initPan = {x: p_pan.x, y: p_pan.y};
-    }
+      let p_pan = this.cy._private.pan;
+      this.initPan = { x: p_pan.x, y: p_pan.y };
+    },
   },
   methods: {
     ...mapMutations(["setProject"]),
+    lastPage() {
+      this.$router.go(-1);
+    },
     keyDownHandler(event) {
       if (event.keyCode == "13") {
         event.preventDefault();
@@ -117,7 +125,7 @@ export default {
         this.query(event);
       }
     },
-    recommendEvent(content){
+    recommendEvent(content) {
       this.input = content;
       this.query();
     },
@@ -145,7 +153,7 @@ export default {
         "查威克·布特": 17,
         "韦伯·布特": 16,
         "雷欧娜·斯图尔特": 15,
-        "伊尔弗莫尼魔法学校": 14,
+        伊尔弗莫尼魔法学校: 14,
         "威廉·塞耶": 13,
         "雷欧娜·塞耶": 12,
         "葛姆蕾·冈特": 11,
@@ -153,7 +161,10 @@ export default {
       };
 
       // recommendation
-      this.recommendations = Object.keys(recommendationlist).sort(function (a, b) {
+      this.recommendations = Object.keys(recommendationlist).sort(function (
+        a,
+        b
+      ) {
         return recommendationlist[b] - recommendationlist[a];
       });
       this.recommendations = this.recommendations.slice(0, 10);
@@ -247,11 +258,11 @@ export default {
       }
       return flag;
     },
-    edit(key, value){
+    edit(key, value) {
       this.keyEditing = key;
       this.valueEditing = value;
       setTimeout(() => {
-        document.querySelector('.value input').focus();
+        document.querySelector(".value input").focus();
       }, 0);
     },
     editPropertyKeyDown(event) {
@@ -264,18 +275,18 @@ export default {
         event.target.blur();
       }
     },
-    editPropertyBlur(){
-      if (this.valueEditing !== this.result.data('property')[this.keyEditing]) {
-        this.$message.success('修改成功，记得保存噢');
+    editPropertyBlur() {
+      if (this.valueEditing !== this.result.data("property")[this.keyEditing]) {
+        this.$message.success("修改成功，记得保存噢");
       }
-      this.result.data('property', {
-        ...this.result.data('property'),
+      this.result.data("property", {
+        ...this.result.data("property"),
         [this.keyEditing]: this.valueEditing,
       });
       // TODO: 这里严谨来说需要 setProject 一下，更新仓库里的 project，这里嫌麻烦省略了，应该不会有大问题。
 
-      this.keyEditing = '';
-      this.valueEditing = '';
+      this.keyEditing = "";
+      this.valueEditing = "";
     },
   },
 };
@@ -304,6 +315,21 @@ export default {
   color: white;
   text-align: center;
   margin-bottom: 30px;
+}
+
+.icon-back {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  color: red;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .search-box {
@@ -422,7 +448,7 @@ svg {
   flex-direction: row;
   margin: 8px;
   color: #565657;
-  cursor:pointer;
+  cursor: pointer;
 }
 .index {
   height: 20px;
@@ -462,5 +488,4 @@ svg {
   text-align: center;
   margin: 20px;
 }
-
 </style>
