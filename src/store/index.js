@@ -12,6 +12,7 @@ export default createStore({
         uid: 1,
         pid: 0,
         project: null,
+        project_name: '',
     },
 
     mutations: {
@@ -20,7 +21,10 @@ export default createStore({
         },
         setPid(state, pid){
             state.pid = pid;
-        }
+        },
+        setProjectName(state, name){
+            state.project_name = name;
+        },
     },
 
     actions: {

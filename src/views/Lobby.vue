@@ -20,16 +20,19 @@
     <el-col :span="3" :offset="0.1" class="left-2-col">
       <div class="input-box">
         <img src="/icons/search.png" class="icon" />
-        <input v-model="searchText" 
-        placeholder="搜索项目" 
-        @keyup="keyUpHandler"
-        @keydown="keyDownHandler"/>
+        <input
+          v-model="searchText"
+          placeholder="搜索项目"
+          @keyup="keyUpHandler"
+          @keydown="keyDownHandler"
+        />
       </div>
       <el-menu
         default-active="1"
         class="vertical-menu"
         text-color="#525E71"
         active-text-color="#6a85ce"
+        @select="show_menu_items"
       >
         <el-menu-item index="1" class="vertical-menu-item">
           <img src="/icons/proj.png" class="vertical-menu-icon" />
@@ -46,11 +49,14 @@
       </el-menu>
     </el-col>
     <el-col :span="20" class="left-3-col">
-      <div class="box-11">全部项目</div>
-      <el-menu :default-active="'1'" mode="horizontal" class="horizontal-menu">
+      <div class="box-11" v-if="show_state==1">全部项目</div>
+      <div class="box-11" v-if="show_state==2">收藏项目</div>
+      <div class="box-11" v-if="show_state==3">回收站</div>
+      <el-menu :default-active="'1'" mode="horizontal" class="horizontal-menu" v-if="show_state==1" @select="show_lock_item">
         <el-menu-item index="1">当前</el-menu-item>
         <el-menu-item index="2">已锁定</el-menu-item>
       </el-menu>
+      <img class="no_proj" src="/icons/no_proj.png" v-if="show_no_proj" />
       <div class="inner-box">
         <div :key="ind" v-for="(proj, ind) in show_projectList" class="card">
           <div class="inner-card">
@@ -102,7 +108,7 @@
 </template>
 
 <script>
-import { getProjectList, getUserInfo , newProject} from "@/api/basicAPI";
+import { getProjectList, getUserInfo, newProject } from "@/api/basicAPI";
 import { mapMutations, mapState } from "vuex";
 import { Calendar, Search } from "@element-plus/icons-vue";
 export default {
@@ -114,7 +120,7 @@ export default {
   data() {
     return {
       show_projectList: [], // 展示的项目列表，键不保证是项目id
-      projectList: [],  // 用户原始的所有的项目
+      projectList: [], // 用户原始的所有的项目
       searchText: "",
       show_qa: false,
       show_account: false,
@@ -123,12 +129,14 @@ export default {
       avatar_url:
         // "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
         "https://s4.ax1x.com/2021/12/12/oHD6gO.jpg",
+      show_state: 1,
+      show_no_proj: false,
     };
   },
   computed: {
     ...mapState({
       uid: (state) => state.uid,
-      pid: (state) => state.pid
+      pid: (state) => state.pid,
     }),
   },
   mounted() {
@@ -159,35 +167,38 @@ export default {
     });
   },
   methods: {
-    ...mapMutations(["setPid"]),
-    newProject(){
-      let name = ""
-      this.$prompt('请输入项目名称', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+    ...mapMutations(["setPid", "setProjectName"]),
+    newProject() {
+      this.$prompt("请输入项目名称", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
         // inputPattern:
         // inputErrorMessage:
-      }).then(({ value }) => {
-        this.$message({
-          type: 'success',
-          message: '你新建了项目: ' + value
-        });
-        name = value
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '新建已取消'
-        });
-      });
-      newProject({name: name, uid:1}).then((res) =>{
-        if(res.success) {
-          let pid = res.content
-          //TODO
-        }
-        else{
-          this.$message.error(res.message);
-        }
       })
+        .then(({ value }) => {
+          this.$message({
+            type: "success",
+            message: "你新建了项目: " + value,
+          });
+          // api
+          newProject({ name: value, uid: this.uid }).then((res) => {
+            if (res.success) {
+              let new_pid = res.content;
+              //TODO
+              this.setPid(new_pid);
+              this.setProjectName(value);
+              this.$router.push({ name: "Home" });
+            } else {
+              this.$message.error(res.message);
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "新建已取消",
+          });
+        });
     },
     keyDownHandler(event) {
       if (event.keyCode == "13") {
@@ -205,7 +216,7 @@ export default {
     accountShow() {
       this.show_account = !this.show_account;
     },
-    search_project(event){
+    search_project(event) {
       this.show_projectList = [];
       let mod = new RegExp(this.searchText);
       Object.keys(this.projectList).forEach((val) => {
@@ -216,14 +227,44 @@ export default {
       console.log(this.projectList);
       console.log(this.show_projectList);
     },
-    edit(proj){
+    edit(proj) {
       // update pid
       Object.keys(this.projectList).forEach((val) => {
         if (proj === this.projectList[val]) {
           this.setPid(val);
+          this.setProjectName(proj);
         }
       });
-      this.$router.push({name: 'Home'});
+      this.$router.push({ name: "Home" });
+    },
+    show_all_projects(){
+      this.show_projectList = this.projectList;
+    },
+    show_menu_items(index){
+      this.show_state = index;
+      if (index == 1) {
+        this.show_projectList = this.projectList;
+        if (this.show_projectList != []) {
+          this.show_no_proj = false;
+        }
+      }else if (index == 2) {
+        this.show_projectList = [];
+        this.show_no_proj = true;
+      }else{
+        this.show_projectList = [];
+        this.show_no_proj = true;
+      }
+    },
+    show_lock_item(index) {
+      if (index == 1) {
+        this.show_projectList = this.projectList;
+        if (this.show_projectList != []) {
+          this.show_no_proj = false;
+        }
+      }else{
+        this.show_projectList = [];
+        this.show_no_proj = true;
+      }
     }
   },
 };
@@ -392,9 +433,11 @@ export default {
 }
 
 .card {
+  display: inline-block;
   padding: 8px 8px;
   width: 10%;
   text-align: center;
+  margin: 0 10px;
 
   .inner-card {
     height: 50px;
@@ -549,4 +592,10 @@ export default {
     cursor: pointer;
   }
 }
+
+.no_proj {
+  margin-left: 35%;
+  margin-top: 15%;
+}
+
 </style>

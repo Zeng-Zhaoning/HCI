@@ -1,11 +1,16 @@
 import axios from "axios";
 
 
-export {getKG, inputKG, getProjectList, getUserInfo}
+export {
+    getKG,
+    inputKG,
+    getProjectList,
+    getUserInfo
+}
 
-let base =  '/demo/api/basic';
+let base = '/demo/api/basic';
 
-function getKG(pid){
+function getKG(pid) {
     return axios.get(`${base}/getKG?pid=${pid}`)
         .then(res => {
             return res.data
@@ -14,7 +19,7 @@ function getKG(pid){
         })
 }
 
-function inputKG(graph){
+function inputKG(graph) {
     console.log('看graph', graph);
     return axios.post(base + '/inputKG', graph)
         .then(res => {
@@ -24,16 +29,16 @@ function inputKG(graph){
         })
 }
 
-function getProjectList(uid){
+function getProjectList(uid) {
     return axios.get(`${base}/getUserProjects?uid=${uid}`)
-    .then(res => {
-        return res.data
-    }).catch(err => {
-        console.log(err);
-    })
+        .then(res => {
+            return res.data
+        }).catch(err => {
+            console.log(err);
+        })
 }
 
-export function newProject(project){
+export function newProject(project) {
     console.log('新建project');
     return axios.post(base + '/createProject', project)
         .then(res => {
@@ -43,11 +48,20 @@ export function newProject(project){
         })
 }
 
-function getUserInfo(uid){
+function getUserInfo(uid) {
     return axios.get(`${base}/getUserInfo?uid=${uid}`)
-    .then(res => {
-        return res.data
-    }).catch(err => {
-        console.log(err);
-    })
+        .then(res => {
+            return res.data
+        }).catch(err => {
+            console.log(err);
+        })
 }
+
+// function removeProject(pid) {
+//     return axios.get(`${base}/removeProject?pid=${pid}`)
+//         .then(res => {
+//             return res.data
+//         }).catch(err => {
+//             console.log(err);
+//         })
+// }

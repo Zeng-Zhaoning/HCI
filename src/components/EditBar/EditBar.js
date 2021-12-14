@@ -86,7 +86,7 @@ export default {
 
         /////////////////////////////展示相关//////////////////////////////
         layoutTypeNow(newVal, oldVal) {
-            console.log("layout watched: '",oldVal,"' to '",newVal,"'");
+            // console.log("layout watched: '",oldVal,"' to '",newVal,"'");
             let layout = this.layout;
             if(layout!==null){
                 layout.stop();
@@ -226,9 +226,6 @@ export default {
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
             'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel']),
-        testtest(){
-            console.log(this.nodeType);
-        },
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
         },

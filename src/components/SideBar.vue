@@ -3,13 +3,13 @@
     <div class="search-box">
       <div class="header">
         <div style="display: flex; flex-direction: row">
-<!--          <svg class="icon-back" @click="lastPage">-->
-<!--            <use xlink:href="#iconzuojiantou"></use>-->
-<!--          </svg>-->
-          <div style="margin-left: 10px; margin-bottom: 10px">
+          <!-- <div style="margin-left: 10px; margin-bottom: 10px">
             <el-button icon="el-icon-back" circle @click="lastPage"></el-button>
-          </div>
-          <span style="margin-left: 80px; margin-top: 10px">搜索</span>
+          </div> -->
+          <svg class="icon-back" @click="lastPage">
+              <use xlink:href="#iconweibiaoti--"></use>
+            </svg>
+          <span>{{ this.proj_name }}</span>
         </div>
         <div class="input-box">
           <input
@@ -103,6 +103,7 @@ export default {
     ...mapState({
       cy: (state) => state.workspace.cy,
       project: (state) => state.project,
+      proj_name: (state) => state.project_name,
       pid: (state) => state.pid,
     }),
   },
@@ -156,7 +157,7 @@ export default {
         "查威克·布特": 17,
         "韦伯·布特": 16,
         "雷欧娜·斯图尔特": 15,
-        "伊尔弗莫尼魔法学校": 14,
+        伊尔弗莫尼魔法学校: 14,
         "威廉·塞耶": 13,
         "雷欧娜·塞耶": 12,
         "葛姆蕾·冈特": 11,
@@ -318,15 +319,21 @@ export default {
   color: white;
   text-align: center;
   margin-bottom: 30px;
+
+  span {
+    margin: 5px auto;
+    font-size: 20px;
+  }
 }
 
 .icon-back {
+  background: transparent;
   position: absolute;
-  left: 10px;
-  top: 10px;
-  color: red;
-  width: 1em;
-  height: 1em;
+  left: 20px;
+  top: 20px;
+  color: white;
+  width: 1.2em;
+  height: 1.2em;
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
