@@ -44,6 +44,7 @@ export default createStore({
         loadProject({state,commit}){
             return new Promise((resolve,reject) => {
                 getKG(state.pid).then(res => {
+                    console.log(res);
                     if (res.success){
                         commit('setProject', res.content);
                     }else {

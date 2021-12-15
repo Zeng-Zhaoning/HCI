@@ -115,7 +115,7 @@
 
 <script>
 import { getProjectList, getUserInfo, newProject } from "@/api/basicAPI";
-import { mapMutations, mapState } from "vuex";
+import { mapMutations, mapState, mapActions } from "vuex";
 // import { Calendar, Search } from "@element-plus/icons-vue";
 export default {
   name: "Lobby",
@@ -176,6 +176,7 @@ export default {
   },
   methods: {
     ...mapMutations(["setPid", "setProjectName"]),
+    ...mapActions(['loadProject']),
     newProject() {
       this.$prompt("请输入项目名称", {
         confirmButtonText: "确定",
@@ -250,10 +251,10 @@ export default {
         if (proj === this.projectList[val]) {
           this.setPid(val);
           this.setProjectName(proj);
+          this.loadProject();
+          this.$router.push({ name: "Home" });
         }
       });
-      console.log(this.proj_name);
-      this.$router.push({ name: "Home" });
     },
     show_all_projects() {
       this.show_projectList = this.projectList;
@@ -262,7 +263,7 @@ export default {
       this.show_state = index;
       if (index == 1) {
         this.show_projectList = this.projectList;
-        if (this.show_projectList != []) {
+        if (Object.keys(this.show_projectList).length > 0) {
           this.show_no_proj = false;
         }
       } else if (index == 2) {
