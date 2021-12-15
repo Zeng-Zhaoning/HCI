@@ -221,6 +221,7 @@ export default {
           });
         }
       });
+      count === 0 && (this.showNoResult = true);
       this.informResult(count > 0, "搜索完毕", "未找到符合条件的结果");
     },
     informMsg(type, msg) {

@@ -10,65 +10,19 @@ export default {
     components: {OpItem,EditBarBlock, MyButton},
     data(){
         return{
-            showEditBar: false,
+            showEditBar: true,
             showExportOps: false,
-            opInfo: '打开的文件后缀为".json"，其表示一个知识图谱\n',
+            opInfo: '未保存的修改将被丢弃且无法恢复',
             entities_data: [],
             relations_data: [],
 
-            ////////////////////////////搜索相关/////////////////////////////////
-            max_log_len: 10,
-
-            search_node_text: [],
-            search_node_condition: [],
-            node_searched: false,
-            search_node_log: [],
-
-            search_edge_text:[],
-            search_edge_condition: [],
-            edge_searched:false,
-            search_edge_log: [],
-
-            // search_text: '',
-            // search_type: '',
-            // select_value: '',
-            // showEnabled: false,
-            // edgeDisabled: true,
-            // types: [
-            //     {
-            //         label: '节点',
-            //         value: '1'
-            //     },
-            //     {
-            //         label: '关系',
-            //         value: '2'
-            //     }
-            // ],
-            // currentSearch: {
-            //     params: {},
-            //     result: []
-            // },
-            // searchLog: [],
-
             //////////////////////过滤相关/////////////////////////////
-
             filter_node_checkList: [],
             filter_edge_checkList: [],
 
-            // filter_disabled: true,
-            // filterShowEnabled: false,
-            //
-            // filter_node_checked: false,
-            // filter_node_checkList: [],
-            // filter_edge_checked: false,
-            // filter_edge_checkList: [],
-
             //////////////////////展示效果相关////////////////////////////////
-
             layout: null,
-
             layoutTypeNow : '',
-
             relation_label_enabled: true,
             font_size: 20,
             node_radius: 20,

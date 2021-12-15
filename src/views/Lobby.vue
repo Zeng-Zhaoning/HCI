@@ -5,7 +5,7 @@
         <img src="/icons/knowledgegraph.png" class="logo-title" />
       </div>
       <div class="left-box">
-        <svg class="left-icon" style="color: #ff6161" @click="newProject">
+        <svg class="left-icon" style="color: #ff6161" @click="createProject">
           <use xlink:href="#iconjiahao2fill"></use>
         </svg>
         <div class="left-context">新建</div>
@@ -177,23 +177,20 @@ export default {
   methods: {
     ...mapMutations(["setPid", "setProjectName"]),
     ...mapActions(['loadProject']),
-    newProject() {
+    createProject() {
       this.$prompt("请输入项目名称", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        // inputPattern:
-        // inputErrorMessage:
       })
         .then(({ value }) => {
-          this.$message({
-            type: "success",
-            message: "你新建了项目: " + value,
+          !value && this.$message({
+            type: "error",
+            message: "项目名不能为空",
           });
           // api
           newProject({ name: value, uid: this.uid }).then((res) => {
             if (res.success) {
               let new_pid = res.content;
-              //TODO
               getProjectList(this.uid).then((res) => {
                 if (res.success) {
                   let resObj = res.content;
@@ -201,6 +198,10 @@ export default {
                     this.projectList = res.content;
                     this.show_projectList = this.projectList;
                     this.show_state = 1;
+                    this.$message({
+                      type: "success",
+                      message: "项目新建成功",
+                    });
                   }
                 } else {
                   this.$message.error(res.message);
@@ -211,12 +212,6 @@ export default {
             }
           });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "新建已取消",
-          });
-        });
     },
     keyDownHandler(event) {
       if (event.keyCode == "13") {
@@ -507,7 +502,7 @@ export default {
       height: 100%;
       display: inline-block;
       &:hover {
-        background-color: @set1-dove-grey;
+        background-color: #dadada;
       }
     }
     .hidden-box-2 {
@@ -516,7 +511,7 @@ export default {
       height: 100%;
       display: inline-block;
       &:hover {
-        background-color: @set1-dove-grey;
+        background-color: #dadada;
       }
     }
   }

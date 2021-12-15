@@ -14,7 +14,7 @@ export default createStore({
         upass: '',
         pid: 0,
         project: null,
-        project_name: '',
+        project_name: '--',
     },
 
     mutations: {

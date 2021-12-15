@@ -1,6 +1,6 @@
 <template>
   <div class="edit-block" :class="{'collapsed-edit-block':!show, 'expanded-edit-block':show}">
-    <div class="title">
+    <div class="title" @click="changeShow">
       <span>{{ blockName }}</span>
     </div>
     <span class="control-edit-block" @click="changeShow" v-if="blockName !== '操作'">
@@ -54,6 +54,10 @@ export default {
   height: @len3;
   span{
     line-height: @len3;
+    user-select: none;
+  }
+  &:hover{
+    cursor: pointer;
   }
 }
 
@@ -66,9 +70,9 @@ export default {
   i{
     line-height: 20px;
   }
-}
-.control-edit-block:hover{
-  cursor: pointer;
+  &:hover{
+    cursor: pointer;
+  }
 }
 
 .collapsed-edit-block {

@@ -70,7 +70,7 @@ export default {
   border-radius: 4px;
   border-left: none;
   position: absolute;
-  left: @len3 - 10px;
+  left: @len3 + 3px;
   display: flex;
   flex-direction: row;
   align-items: center;

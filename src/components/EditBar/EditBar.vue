@@ -1,15 +1,22 @@
 <template>
   <div class="edit-bar-container" :class="{ hideEditBarAni: !showEditBar, ShowEditBarAni: showEditBar }">
-    <div class="control-edit-bar" @click="changeEditBarState">
-      <i :class="{'el-icon-arrow-right': showEditBar, 'el-icon-arrow-left': !showEditBar}"></i>
-      <div class="control-edit-bar-label">工具</div>
-    </div>
+    <el-tooltip
+        effect="dark"
+        content="工具栏"
+        placement="left"
+        :disabled="showEditBar"
+      >
+      <div class="control-edit-bar" @click="changeEditBarState">
+        <i :class="{'el-icon-arrow-right': showEditBar, 'el-icon-arrow-left': !showEditBar}"></i>
+        <!-- <div class="control-edit-bar-label">工具</div> -->
+      </div>
+    </el-tooltip>
 
     <div class="helper-edit-bar-container">
       <edit-bar-block block-name="操作">
        <el-popover
            placement="bottom"
-           title="操作说明"
+           title="注意"
            :width="180"
            trigger="hover"
            :content="opInfo">
