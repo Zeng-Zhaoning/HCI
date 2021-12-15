@@ -10,6 +10,8 @@ export default createStore({
 
     state: {
         uid: 1,
+        umail: '',
+        upass: '',
         pid: 0,
         project: null,
         project_name: '',
@@ -31,6 +33,11 @@ export default createStore({
         setProjectName(state, name){
             state.project_name = name;
         },
+        setUserInfo(state, uid, umail, upass){
+            state.uid = uid;
+            state.umail = umail;
+            state.pass = upass;
+        }
     },
 
     actions: {

@@ -94,7 +94,7 @@
           </div>
         </div>
         <div class="user-info-1l-2">
-          <svg class="icon-acc" aria-hidden="true" @click="query">
+          <svg class="icon-acc" aria-hidden="true" @click="backToLogin">
             <use xlink:href="#iconqiehuan1"></use>
           </svg>
         </div>
@@ -156,7 +156,8 @@ export default {
           this.show_projectList = this.projectList;
         }
       } else {
-        this.$message.error(res.message);
+        // this.$message.error(res.message);
+        this.show_no_proj = true;
       }
     });
 
@@ -273,10 +274,12 @@ export default {
       }
     },
     show_lock_item(index) {
+      this.show_projectList = this.projectList;
       if (index == 1) {
-        this.show_projectList = this.projectList;
-        if (this.show_projectList != []) {
+        if (Object.keys(this.show_projectList).length > 0) {
           this.show_no_proj = false;
+        }else{
+          this.show_no_proj = true;
         }
       } else {
         this.show_projectList = [];
@@ -292,6 +295,9 @@ export default {
         }
       });
       console.log(this.projectList);
+    },
+    backToLogin(){
+      this.$router.push('/');
     }
   },
 };
@@ -602,10 +608,14 @@ export default {
   .user-info-2l-1 {
     margin: 10px 0;
     font-size: 17px;
+    overflow:hidden; 
+    text-overflow:ellipsis;
   }
   .user-info-2l-2 {
     margin: 10px 0;
     font-size: 14px;
+    overflow:hidden; 
+    text-overflow:ellipsis;
   }
 }
 
