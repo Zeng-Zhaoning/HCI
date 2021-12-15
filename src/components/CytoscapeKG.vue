@@ -197,6 +197,7 @@
             // document.oncontextmenu = () => {
             //     event.returnValue = false;
             // }
+            console.log("mounted cytoscapeKG.vue");
             if (this.project !== undefined && this.project !== null){
               let data = {
                 edges: this.project.edges,
