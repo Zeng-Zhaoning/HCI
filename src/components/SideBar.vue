@@ -3,13 +3,13 @@
     <div class="search-box">
       <div class="header">
         <div style="display: flex; flex-direction: row">
-          <!-- <div style="margin-left: 10px; margin-bottom: 10px">
-            <el-button icon="el-icon-back" circle @click="lastPage"></el-button>
-          </div> -->
-          <svg class="icon-back" @click="lastPage">
+          <div class="back" @click="lastPage">
+            <svg class="icon-back">
               <use xlink:href="#iconweibiaoti--"></use>
             </svg>
-          <span>{{ proj_name }}</span>
+            <span>返回</span>
+          </div>
+          <span style="top: 15px; position: relative;">{{ proj_name }}</span>
         </div>
         <div class="input-box">
           <input
@@ -216,7 +216,7 @@ export default {
             pan: this.initPan,
           });
           this.cy.zoom({
-            level: 1.4,
+            level: 1.3,
             position: val.position(),
           });
         }
@@ -312,7 +312,7 @@ export default {
 .header {
   background: @theme;
   padding-top: @pad;
-  height: 65px;
+  height: 90px;
   line-height: 30px;
   width: 300px;
   font-size: 17px;
@@ -327,28 +327,48 @@ export default {
   }
 }
 
-.icon-back {
-  background: transparent;
+.back {
   position: absolute;
-  left: 20px;
-  top: 20px;
-  color: white;
-  width: 1.2em;
-  height: 1.2em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
+  left: 10px;
+  top: 13px;
   &:hover {
     cursor: pointer;
   }
+  span {
+    font-size: 15px;
+    font-weight: normal;
+    vertical-align: middle;
+  }
+}
+
+.icon-back {
+  background: transparent;
+  color: white;
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  fill: currentColor;
+  overflow: hidden;
+  display: inline-block;
 }
 
 .search-box {
   .input-box {
     height: 40px;
     width: 100% - 15px;
-    margin: 8px auto;
+    margin: 28px auto;
     position: relative;
+    svg {
+      position: absolute;
+      right: 5px;
+      top: 13px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
   input {
     border: 2px solid @separator;
@@ -371,18 +391,6 @@ export default {
   }
   input::placeholder {
     color: @prompt;
-  }
-}
-
-svg {
-  position: absolute;
-  right: 5px;
-  top: 13px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  &:hover {
-    cursor: pointer;
   }
 }
 

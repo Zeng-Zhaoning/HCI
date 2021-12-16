@@ -142,7 +142,7 @@ export default {
     //让过长的内容作为展示的标题时省略
     fontShow(text) {
       if (text && text.length > 5) {
-        return text.substring(0, 3) + "..."
+        return text.substring(0, 4) + "..."
       }
       return text
     },
@@ -156,7 +156,7 @@ export default {
         };
       }
       let defaultWidth = 30;
-      let minWidth = 12;
+      let minWidth = 19;
       let fontSize = defaultWidth - (length - 2) * 6;//这个计算字体大小的算式可能有点拉胯，
       //根据节点大小调整文字大小
       let nodeWidth = width?width:defaultWidth;
