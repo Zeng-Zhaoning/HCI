@@ -21,12 +21,6 @@ export default createStore({
         setProject(state, project){
             state.project = project;
         },
-        // setWholeProject(state, whole){
-        //     state.whole_project = whole;
-        // },
-        // setProjectLeft(state, left){
-        //     state.project_left = left;
-        // },
         setPid(state, pid){
             state.pid = pid;
         },
@@ -44,7 +38,7 @@ export default createStore({
         loadProject({state,commit}){
             return new Promise((resolve,reject) => {
                 getKG(state.pid).then(res => {
-                    console.log(res);
+                    console.log('loadProject=======', res);
                     if (res.success){
                         commit('setProject', res.content);
                     }else {

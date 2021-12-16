@@ -245,7 +245,9 @@ export default {
       Object.keys(this.projectList).forEach((val) => {
         if (proj === this.projectList[val]) {
           this.setPid(val);
+          window.localStorage.setItem("pid", val);
           this.setProjectName(proj);
+          window.localStorage.setItem("project_name", proj);
           this.loadProject();
           this.$router.push({ name: "Home" });
         }

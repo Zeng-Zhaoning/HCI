@@ -12,7 +12,7 @@
 <script>
 import SideBar from "../components/SideBar";
 import WorkSpace from "../components/WorkSpace";
-import { mapActions,mapState,mapMutations,mapGetters } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 
 export default {
   name: 'Home',
@@ -21,16 +21,21 @@ export default {
     SideBar,
   },
   computed: {
+    pid: state => state.pid,
     project: state => state.project,
+    project_name: state => state.project_name,
   },
   methods: {
     ...mapActions(['loadProject']),
-  },
-  mounted(){
-    this.loadProject();
+    ...mapMutations(['setPid', 'setProjectName', 'setUserInfo']),
   },
   created(){
-    this.loadProject();
+    !this.pid && this.setPid(window.localStorage.getItem("pid"));
+    !this.project && this.loadProject();
+    !this.project_name && this.setProjectName(window.localStorage.getItem("project_name"));
+    const uidCached = parseInt(window.localStorage.getItem("uid"));
+    const umailCached = window.localStorage.getItem("umail");
+    !this.uid && !this.umail && this.setUserInfo(uidCached, umailCached, undefined);
   }
 }
 </script>

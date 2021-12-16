@@ -91,6 +91,8 @@ export default {
 
       let uid = res.content["id"];
       this.setUserInfo(uid, this.mail, this.password);
+      window.localStorage.setItem("uid", uid);
+      window.localStorage.setItem("umail", this.mail);
       this.$router.push("/lobby");
     },
     toRegister() {

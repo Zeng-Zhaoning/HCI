@@ -55,12 +55,3 @@ function getUserInfo(uid) {
             console.log(err);
         })
 }
-
-// function removeProject(pid) {
-//     return axios.get(`${base}/removeProject?pid=${pid}`)
-//         .then(res => {
-//             return res.data
-//         }).catch(err => {
-//             console.log(err);
-//         })
-// }
