@@ -31,7 +31,7 @@ export default createStore({
             state.uid = uid;
             state.umail = umail;
             state.pass = upass;
-        }
+        },
     },
 
     actions: {

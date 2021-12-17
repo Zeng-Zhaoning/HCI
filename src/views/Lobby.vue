@@ -86,18 +86,14 @@
       <div class="account-box" @click="accountShow">
         <el-avatar :size="50" :src="avatar_url"></el-avatar>
       </div>
-      <div v-if="show_account" class="user-info">
+      <div v-if="show_account" class="user-info" @click.stop="">
         <div class="user-info-1l-1">
-          <div class="user-info-2l-1" style="color: white">{{ mail }}</div>
-          <div class="user-info-2l-2" style="color: #e7e7ef">
-            {{ password }}
+          <span class="user-info-2l-1">您好，</span>
+          <div class="user-info-2l-2">
+            {{ mail }}
           </div>
         </div>
-        <div class="user-info-1l-2">
-          <svg class="icon-acc" aria-hidden="true" @click="backToLogin">
-            <use xlink:href="#iconqiehuan1"></use>
-          </svg>
-        </div>
+        <div class="log-out" @click="backToLogin">退出</div>
       </div>
       <div v-if="show_qa" class="qa-menu">
         <div>帮助中心</div>
@@ -173,6 +169,11 @@ export default {
         this.$message.error(res.message);
       }
     });
+
+    document.querySelector('#app').addEventListener("click", (event) => {
+      this.show_account = false;
+      this.show_qa = false;
+    });
   },
   methods: {
     ...mapMutations(["setPid", "setProjectName"]),
@@ -223,11 +224,26 @@ export default {
         this.search_project(event);
       }
     },
-    questionAnswer() {
-      this.show_qa = !this.show_qa;
+    /**用于统一控制面板的开关，新增面板时在这里加一下变量名 */
+    showModal(modalName) {
+      const modals = ['show_qa', 'show_account'];
+      modals.forEach((item) => {
+        if (item === modalName) {
+          this[item] = !this[item];
+        } else {
+          this[item] = false;
+        }
+      });
     },
-    accountShow() {
-      this.show_account = !this.show_account;
+    questionAnswer(event) {
+      // this.show_qa = !this.show_qa;
+      this.showModal('show_qa');
+      event.stopPropagation();
+    },
+    accountShow(event) {
+      // this.show_account = !this.show_account;
+      this.showModal('show_account');
+      event.stopPropagation();
     },
     search_project(event) {
       this.show_projectList = [];
@@ -380,7 +396,7 @@ export default {
 
 .input-box {
   height: 40px;
-  width: 100% - 15px;
+  width: 90%;
   margin: 30px auto 20px auto;
   position: relative;
   input {
@@ -392,7 +408,7 @@ export default {
     font-size: 15px;
     font-family: 微软雅黑;
     letter-spacing: 1px;
-    width: 100% - 23px;
+    width: 72%;
     height: 100%;
     color: #565657;
   }
@@ -582,15 +598,20 @@ export default {
 }
 
 .user-info {
-  border: 1px solid #333333;
-  border-radius: 15px;
+  // border: 1px solid #333333;
+  // border-radius: 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 0 5px 3px #f0f0f1;
+  
   position: absolute;
   right: 50px;
   top: 100px;
 
   width: 200px;
   height: 80px;
-  background-color: @shadow-1;
+  // background-color: @shadow-1;
 
   padding-left: 15px;
   padding-top: 10px;
@@ -599,34 +620,32 @@ export default {
     width: 80%;
     display: inline-block;
   }
-  .user-info-1l-2 {
-    width: 20%;
-    display: inline-block;
-  }
   .user-info-2l-1 {
+    color: @theme;
     margin: 10px 0;
-    font-size: 17px;
-    overflow:hidden; 
-    text-overflow:ellipsis;
+    font-size: 15px;
+    overflow: hidden; 
+    text-overflow: ellipsis;
   }
   .user-info-2l-2 {
-    margin: 10px 0;
-    font-size: 14px;
-    overflow:hidden; 
-    text-overflow:ellipsis;
+    margin: 5px 0;
+    font-size: 15px;
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    color: @modao-font;
   }
 }
 
-.icon-acc {
-  color: white;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-
+.log-out {
+  color: @prompt;
+  font-size: 14px;
+  position: absolute;
+  right: 16px;
+  bottom: 11px;
   &:hover {
     cursor: pointer;
+    color: tomato;
+    text-decoration: underline;
   }
 }
 

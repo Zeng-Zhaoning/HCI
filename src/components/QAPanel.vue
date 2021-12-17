@@ -1,13 +1,11 @@
 <template>
   <div class="qa-panel">
     <div class="title-box">
-      <div style="min-width: 60px; margin-top: 12px">智能问答</div>
-      <div class="qa-button">
-        <el-button
-          icon="el-icon-close"
-          circle
-          @click="changeShowQAPanel"
-        ></el-button>
+      <div style="min-width: 60px;">智能问答</div>
+      <div class="qa-button" @click="changeShowQAPanel">
+        <svg class="icon-close">
+          <use xlink:href="#iconguanbi"></use>
+        </svg>
       </div>
     </div>
 
@@ -127,10 +125,12 @@ export default {
   font-family: 微软雅黑;
   height: 40px;
   line-height: 20px;
-  padding: 14px;
+  padding: 10px 14px;
   border-bottom: 1px solid #eeeeee;
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .message-box {
@@ -152,9 +152,16 @@ export default {
   margin-bottom: 5px;
 }
 .qa-button {
-  margin-left: 180px;
-  margin-bottom: 30px;
-  align-content: center;
+  line-height: 40px;
+  align-self: flex-end;
+  .icon-close {
+    height: 14px;
+    width: 14px;
+    padding-right: 5px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 .name {
   color: @myblack;
