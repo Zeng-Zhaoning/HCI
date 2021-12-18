@@ -93,7 +93,7 @@
             {{ mail }}
           </div>
         </div>
-        <div class="log-out" @click="backToLogin">退出</div>
+        <div class="log-out" @click="backToLogin">退出登录</div>
       </div>
       <div v-if="show_qa" class="qa-menu">
         <div>帮助中心</div>

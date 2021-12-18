@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import {post} from '../../api/Request'
+import {post} from '../../api/Request';
 
 export default {
   name: "Register",
@@ -37,7 +37,7 @@ export default {
     return {
       email: '',
       password: '',
-      rePassword: ''
+      rePassword: '',
     }
   },
   methods: {
