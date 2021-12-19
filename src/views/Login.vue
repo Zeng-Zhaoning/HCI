@@ -72,6 +72,12 @@ export default {
       upass: (state) => state.upass,
     }),
   },
+  mounted() {
+    document.addEventListener('keypress', this.hadleKeyPress);
+  },
+  unmounted() {
+    document.removeEventListener('keypress', this.hadleKeyPress);
+  },
   methods: {
     ...mapMutations(["setUserInfo"]),
     checkEmail() {
@@ -131,6 +137,7 @@ export default {
       this.setUserInfo(uid, this.mail, this.password);
       window.localStorage.setItem("uid", uid);
       window.localStorage.setItem("umail", this.mail);
+      this.clearData();
       this.$router.push("/lobby");
     },
     async register() {
@@ -149,19 +156,30 @@ export default {
         return
       }
       this.$message.success("创建成功");
+      this.clearData();
       this.changePage();
     },
-    changePage() {
+    clearData() {
       this.email = "";
       this.emailErrorMsg = "";
       this.password = "";
       this.passwordErrorMsg = "";
       this.rePassword = "";
       this.rePasswordErrorMsg = "";
+    },
+    changePage() {
+      this.clearData();
       this.isRegistering = !this.isRegistering;
     },
     toForget() {
       this.$message.info("请联系管理员找回密码");
+    },
+    hadleKeyPress(event) {
+      console.log('chufa');
+      if (event.keyCode === 13) {
+        !this.isRegistering && this.login();
+        this.isRegistering && this.register();
+      }
     },
   },
 };
