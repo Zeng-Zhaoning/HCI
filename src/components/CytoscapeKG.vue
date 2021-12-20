@@ -86,7 +86,7 @@
                       if(this.isUnique(this.cy.nodes(),val=>val.data("name"),validName)){
                           callback();
                       }else {
-                          callback(new Error('该实体已存在哦，换一个名字吧，亲~'));
+                          callback(new Error('该节点已存在哦，换一个名字吧，亲~'));
                       }
                   }else{
                       let {source,target} = this.form.edgeCondition;
@@ -262,7 +262,7 @@
             },
 
             //根据内容设置字体大小，使之不会超出节点（未验证）
-            //最好改成根据实体大小设置字体大小
+            //最好改成根据节点大小设置字体大小
             fontStyle(length,width) {
                 if(this.nodeFontSize!==''){
                     return {
@@ -635,7 +635,7 @@
                         },
                         {
                             id: 'add-node',
-                            content: '实体',
+                            content: '节点',
                             image: {src: "/icons/add.svg", x: 7, y: 8}, // menu icon
                             coreAsWell: true,
                             hasTrailingDivider: true,
@@ -731,7 +731,7 @@
                         },
                         {
                             id: 'select-all-nodes',
-                            content: '全选实体',
+                            content: '全选节点',
                             selector: 'node',
                             coreAsWell: true,
                             show: true,
@@ -744,7 +744,7 @@
                         },
                         {
                             id: 'unselect-all-nodes',
-                            content: '取消全选实体',
+                            content: '取消全选节点',
                             selector: 'node',
                             coreAsWell: true,
                             show: false,

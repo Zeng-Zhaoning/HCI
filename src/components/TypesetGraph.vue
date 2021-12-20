@@ -148,7 +148,7 @@ export default {
     },
 
     //根据内容设置字体大小，使之不会超出节点（未验证）
-    //最好改成根据实体大小设置字体大小
+    //最好改成根据节点大小设置字体大小
     fontStyle(length,width) {
       if(this.nodeFontSize!==''){
         return {

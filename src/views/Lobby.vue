@@ -610,8 +610,7 @@ export default {
   top: 100px;
 
   width: 200px;
-  height: 80px;
-  // background-color: @shadow-1;
+  height: 90px;
 
   padding-left: 15px;
   padding-top: 10px;

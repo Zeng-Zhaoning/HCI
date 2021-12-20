@@ -41,7 +41,7 @@
       </edit-bar-block>
 
       <edit-bar-block block-name="统计">
-        <div class="table_name">| 实体</div>
+        <div class="table_name">| 节点</div>
         <el-table
             :data="entities_data"
             size="mini">
@@ -64,13 +64,13 @@
       </edit-bar-block>
 
      <edit-bar-block block-name="过滤">
-       <div class="item_title">| 滤去实体</div>
+       <div class="item_title">| 滤去节点</div>
        <el-select
        v-model="filter_node_checkList"
        @change="nodeFilter"
        collapse-tags
        multiple
-       placeholder="请选择过滤的实体"
+       placeholder="请选择过滤的节点"
        style="width: 100%"
        >
          <el-option v-for="item in nodeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -84,7 +84,7 @@
            <my-button class="my-button" @click="edgeDefilter">还原关系</my-button>
          </el-col>
          <el-col :span="11">
-           <my-button class="my-button" @click="nodeDefilter">还原实体</my-button>
+           <my-button class="my-button" @click="nodeDefilter">还原节点</my-button>
          </el-col>
        </div>
      </edit-bar-block>

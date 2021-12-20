@@ -17,7 +17,7 @@
       <div class="login-inputs">
         <div class="input-box" :class="{error: emailErrorMsg}">
           <img class="mail-icon" src="/icons/email.svg" />
-          <input placeholder="邮箱" v-model="email" @blur="checkEmail" @input="onInputEmail" />
+          <input placeholder="邮箱" v-model="email" @blur="checkEmail" @input="onInputEmail" autofocus />
           <div class="errorMsg">{{emailErrorMsg}}</div>
         </div>
         <div class="input-box" :class="{error: passwordErrorMsg}">
@@ -32,8 +32,12 @@
         </div>
       </div>
       <div class="bottom-btns">
-        <button v-if="!isRegistering" class="login-btn" @click="login">登录</button>
-        <button v-else class="login-btn" @click="register">注册</button>
+        <button v-if="!isRegistering" class="login-btn" :class="{disabled: isRequesting}" @click="login" :disabled="isRequesting">
+          {{isRequesting ? '登陆中...' : '登录'}}
+        </button>
+        <button v-if="isRegistering" class="login-btn" :class="{disabled: isRequesting}" @click="register" :disabled="isRequesting">
+          {{isRequesting ? '注册中...' : '注册'}}
+        </button>
         <div class="other-btns">
           <div v-if="!isRegistering" class="other-btn" @click="changePage">注册账号</div>
           <div v-if="!isRegistering" class="other-btn" @click="toForget">忘记密码？</div>
@@ -63,6 +67,7 @@ export default {
       rePassword: "",
       rePasswordErrorMsg: "",
       isRegistering: false,
+      isRequesting: false,
     };
   },
   computed: {
@@ -121,10 +126,13 @@ export default {
         this.$message.error(errorMsg);
         return;
       }
+
+      this.isRequesting = true;
       let res = await post("/checkUser", {
         mail: this.email,
         password: this.password,
       });
+      this.isRequesting = false;
 
       if (!res.success) {
         this.$message.error(res.message);
@@ -149,7 +157,15 @@ export default {
         this.$message.error(errorMsg);
         return;
       }
-      const res = await post('/createUser', {id: null, mail: this.email, password: this.password})
+
+      this.isRequesting = true;
+      const res = await post('/createUser', {
+        id: null,
+        mail: this.email,
+        password: this.password
+      });
+      this.isRequesting = false;
+
       if(res.content==false){
         this.$message.error(res.message)
         console.log("wrong",res)
@@ -349,6 +365,9 @@ export default {
   }
   &:active {
     background-color: rgba(105, 137, 226, 0.9);
+  }
+  &.disabled {
+    opacity: 0.8;
   }
 }
 
