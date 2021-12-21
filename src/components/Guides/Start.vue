@@ -1,0 +1,57 @@
+<template>
+  <div class="container">
+    <div class="panel">
+      <div class="guide-title">欢迎！</div>
+      <div class="guide-text">
+        跟随教程创建属于你的知识图谱吧！<br />
+      </div>
+      <div class="btns">
+        <div class="skip-btn" @click="changeShowGuide">跳过</div>
+        <div class="btn" @click="changeGuideStep(1)">开始</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapMutations } from "vuex";
+
+export default {
+  name: "Start",
+
+  methods: {
+    ...mapMutations(["changeGuideStep", "changeShowGuide"]),
+  },
+};
+</script>
+
+<style lang="less" scoped>
+@import "./guide.less";
+.container {
+  background-color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel {
+  width: 400px;
+  padding: 25px 30px;
+}
+
+.guide-title {
+  color: @theme;
+  font-size: 21px;
+  margin-bottom: 20px;
+  font-weight: normal;
+}
+
+.guide-text {
+  color: @modao-font;
+  font-size: 16px;
+  margin-bottom: 45px;
+}
+
+</style>

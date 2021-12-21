@@ -1,0 +1,76 @@
+@import "../../assets/css/colors.less";
+
+.guide-highlight {
+  box-shadow: 0 0 0px 2000px rgba(0, 0, 0, 0.7);
+  position: absolute,
+}
+
+.panel {
+  width: 330px;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 8px;  
+  box-shadow: 0 0 5px 3px @shadow;
+  padding: 15px 20px;
+  position: absolute;
+}
+
+.array {
+  height: 16px;
+  width: 16px;
+  background-color: white;
+  border-bottom-left-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.guide-title {
+  color: @theme;
+  font-size: 18px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.guide-text {
+  color: @modao-font;
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+.current-step {
+  font-size: 15px;
+  color: @prompt;
+}
+
+.btns {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.skip-btn {
+  font-size: 15px;
+  text-decoration: underline;
+  margin-right: 20px;
+  &:hover {
+    cursor: pointer;
+    color: tomato;
+  }
+}
+
+.btn {
+  font-size: 14px;
+  color: white;
+  background-color: @theme;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+    background-color: rgb(105, 137, 226);
+  }
+  &:active {
+    background-color: rgba(105, 137, 226, 0.9);
+  }
+}
+

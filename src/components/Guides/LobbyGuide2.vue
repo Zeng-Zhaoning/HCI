@@ -20,7 +20,7 @@
 import { mapMutations, mapState } from "vuex";
 
 export default {
-  name: "LobbyGuide1",
+  name: "LobbyGuide2",
   data() {
     return {
       highlightStyle: {},
