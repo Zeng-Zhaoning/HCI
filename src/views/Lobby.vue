@@ -4,8 +4,8 @@
       <div class="logo-box">
         <img src="/icons/knowledgegraph.png" class="logo-title" />
       </div>
-      <div class="left-box">
-        <svg class="left-icon" style="color: #ff6161" @click="createProject">
+      <div class="left-box" id="create-new" @click="createProject">
+        <svg class="left-icon" style="color: #ff6161">
           <use xlink:href="#iconjiahao2fill"></use>
         </svg>
         <div class="left-context">新建</div>
@@ -106,19 +106,20 @@
         </svg>
       </div>
     </el-col>
+    <!-- <lobby-guide-1 /> -->
   </el-row>
 </template>
 
 <script>
 import { getProjectList, getUserInfo, newProject } from "@/api/basicAPI";
 import { mapMutations, mapState, mapActions } from "vuex";
-// import { Calendar, Search } from "@element-plus/icons-vue";
+import LobbyGuide1 from "../components/Guides/LobbyGuide1.vue";
+
 export default {
   name: "Lobby",
-//   components: {
-//     Calendar,
-//     Search,
-//   },
+  components: {
+    LobbyGuide1,
+  },
   data() {
     return {
       show_projectList: [], // 展示的项目列表，键不保证是项目id
@@ -468,7 +469,7 @@ export default {
 }
 
 .horizontal-menu {
-  width: 11%;
+  width: 40%;
   margin-top: 1%;
   margin-left: 3%;
   background-color: @modao-background;

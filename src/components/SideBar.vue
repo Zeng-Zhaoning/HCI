@@ -27,7 +27,7 @@
 
     <el-scrollbar>
       <div class="result-box" v-loading="resultLoading">
-        <div class="title"><span>搜索结果</span></div>
+        <div class="title"><span>节点属性</span></div>
         <div class="empty" v-if="!searched">先输入关键词搜索吧~</div>
         <div class="empty" v-if="showNoResult">无匹配，换个关键词搜索吧</div>
         <div v-if="showNodeInfo">
