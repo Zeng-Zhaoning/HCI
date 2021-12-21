@@ -71,13 +71,13 @@
        @change="nodeFilter"
        collapse-tags
        multiple
-       placeholder="请选择过滤的节点"
+       placeholder="选择要滤去的节点类型"
        style="width: 100%"
        >
          <el-option v-for="item in nodeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
        </el-select>
        <div class="item_title">| 滤去关系</div>
-       <el-select v-model="filter_edge_checkList" @change="edgeFilter" collapse-tags multiple placeholder="在这里选择要滤去的关系" style="width: 100%">
+       <el-select v-model="filter_edge_checkList" @change="edgeFilter" collapse-tags multiple placeholder="选择要滤去的关系类型" style="width: 100%">
          <el-option v-for="item in edgeType" :key="item.value" :label="item.label" :value="item.value"></el-option>
        </el-select>
        <div class="btn-box2">

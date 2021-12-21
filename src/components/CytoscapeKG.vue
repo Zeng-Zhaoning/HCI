@@ -413,7 +413,9 @@
                     fontSize = fontSize<minSize?minSize:fontSize;
                     target.style({label:data.name,fontSize: fontSize,'z-index':9999});
                     if(!target.scratch('tip')){
-                        let text = "类型: "+data.type+'<br/>'+"属性: " +'<br/>' + this.property2String(data.property)
+                        const typeItem = this.nodeType.find((item) => item.value === data.type);
+                        const typeText = typeItem ? typeItem.label : '其他';
+                        let text = "类型: "+ typeText +'<br/>'+"属性: " +'<br/>' + this.property2String(data.property)
                         target.scratch('tip',that.makeTippy(target,text));
                     }
                     target.scratch('tip').show();
@@ -436,7 +438,9 @@
                         //如果要改旋转，是"edge-text-rotation": "none"和"edge-text-rotation": "autorotate"
                         target.style({label:data.relation,fontSize: 36, width: 6, color: '#bc5f6a','z-index':9999});//此数无意义，仅仅需要比rendNode最大label的36更大即可
                         if(!target.scratch('tip')){
-                            let text = "类型: "+data.type;
+                            const typeItem = this.edgeType.find((item) => item.value === data.type);
+                            const typeText = typeItem ? typeItem.label : '其他';
+                            let text = "类型: "+ typeText;
                             target.scratch('tip',that.makeTippy(target,text));
                         }
                         target.scratch('tip').show();
