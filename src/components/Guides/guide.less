@@ -1,6 +1,7 @@
 @import "../../assets/css/colors.less";
 
 .guide-highlight {
+  border-radius: 3px;
   box-shadow: 0 0 0px 2000px rgba(0, 0, 0, 0.7);
   position: absolute,
 }
@@ -47,10 +48,11 @@
   align-items: center;
 }
 
-.skip-btn {
+.text-btn {
   font-size: 15px;
   text-decoration: underline;
   margin-right: 20px;
+  user-select: none;
   &:hover {
     cursor: pointer;
     color: tomato;
@@ -65,8 +67,8 @@
   border-radius: 4px;
   padding: 8px 15px;
   cursor: pointer;
+  user-select: none;
   &:hover {
-    cursor: pointer;
     background-color: rgb(105, 137, 226);
   }
   &:active {

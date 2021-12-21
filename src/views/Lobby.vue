@@ -96,7 +96,7 @@
         <div class="log-out" @click="backToLogin">退出登录</div>
       </div>
       <div v-if="show_qa" class="qa-menu">
-        <div @click="toGuide">新手教程</div>
+        <div @click="toGuide">新手引导</div>
         <div>需求反馈</div>
         <div>客服中心</div>
       </div>
@@ -106,19 +106,19 @@
         </svg>
       </div>
     </el-col>
-    <guide v-if="showGuide" />
+    <lobby-guide v-if="isLobbyGuideShow" />
   </el-row>
 </template>
 
 <script>
 import { getProjectList, getUserInfo, newProject } from "@/api/basicAPI";
 import { mapMutations, mapState, mapActions } from "vuex";
-import Guide from "../components/Guides/Guide.vue";
+import LobbyGuide from "../components/Guides/LobbyGuide.vue";
 
 export default {
   name: "Lobby",
   components: {
-    Guide,
+    LobbyGuide,
   },
   data() {
     return {
@@ -141,8 +141,7 @@ export default {
       uid: (state) => state.uid,
       pid: (state) => state.pid,
       proj_name: (state) => state.project_name,
-      showGuide: state => state.showGuide,
-      guideStep: state => state.guideStep,
+      isLobbyGuideShow: state => state.isLobbyGuideShow,
     }),
   },
   mounted() {
@@ -179,7 +178,7 @@ export default {
     });
   },
   methods: {
-    ...mapMutations(["setPid", "setProjectName", "changeGuideStep", "changeShowGuide"]),
+    ...mapMutations(["setPid", "setProjectName", "changeLobbyGuideStep", "changeIsLobbyGuideShow"]),
     ...mapActions(['loadProject']),
     createProject() {
       this.$prompt("请输入项目名称", {
@@ -317,8 +316,9 @@ export default {
       this.$router.push('/');
     },
     toGuide() {
-      this.changeGuideStep(-this.guideStep);
-      this.changeShowGuide();
+      this.changeLobbyGuideStep(-100);
+      this.changeLobbyGuideStep(1);
+      this.changeIsLobbyGuideShow();
     },
   },
 };

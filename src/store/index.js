@@ -8,18 +8,24 @@ export default createStore({
     },
 
     state: {
-        uid: 1,
+        uid: undefined,
         umail: '',
         upass: '',
-        pid: 0,
+        pid: undefined,
         project: null,
-        project_name: '--',
-        /**当前新手引导的步骤 */
-        guideStep: 0,
-        /**新手引导总步骤数 */
-        guideMaxStep: 2,
+        project_name: '',
+        /**项目页新手引导的当前步骤 */
+        lobbyGuideStep: 0,
+        /**项目页新手引导总步骤数 */
+        lobbyGuideMaxStep: 2,
         /**将来要改缓存 */
-        showGuide: true,
+        isLobbyGuideShow: true,
+        /**编辑页新手引导的当前步骤 */
+        editGuideStep: 1,
+        /**编辑页新手引导总步骤数 */
+        editGuideMaxStep: 1,
+        /**将来要改缓存 */
+        isEditGuideShow: true,
     },
 
     mutations: {
@@ -38,16 +44,28 @@ export default createStore({
             state.pass = upass;
         },
         /**step: 可为负数，表示后退 */
-        changeGuideStep(state, step) {
-            const result = state.guideStep + step;
-            state.guideStep = Math.max(result, 0);
-            if (state.guideStep > state.guideMaxStep) {
-                state.showGuide = false;
+        changeLobbyGuideStep(state, step) {
+            const result = state.lobbyGuideStep + step;
+            state.lobbyGuideStep = Math.max(result, 0);
+            if (state.lobbyGuideStep > state.lobbyGuideMaxStep) {
+                state.isLobbyGuideShow = false;
             }
         },
         /**将来改缓存 */
-        changeShowGuide(state) {
-            state.showGuide = !state.showGuide;
+        changeIsLobbyGuideShow(state) {
+            state.isLobbyGuideShow = !state.isLobbyGuideShow;
+        },
+        /**step: 可为负数，表示后退 */
+        changeEditGuideStep(state, step) {
+            const result = state.editGuideStep + step;
+            state.editGuideStep = Math.max(result, 0);
+            if (state.editGuideStep > state.editGuideMaxStep) {
+                state.isEditGuideShow = false;
+            }
+        },
+        /**将来改缓存 */
+        changeIsEditGuideShow(state) {
+            state.isEditGuideShow = !state.isEditGuideShow;
         },
     },
 

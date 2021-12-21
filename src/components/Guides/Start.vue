@@ -6,8 +6,8 @@
         跟随教程创建属于你的知识图谱吧！<br />
       </div>
       <div class="btns">
-        <div class="skip-btn" @click="changeShowGuide">跳过</div>
-        <div class="btn" @click="changeGuideStep(1)">开始</div>
+        <div class="text-btn" @click="changeIsLobbyGuideShow">跳过</div>
+        <div class="btn" @click="changeLobbyGuideStep(1)">开始</div>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@ export default {
   name: "Start",
 
   methods: {
-    ...mapMutations(["changeGuideStep", "changeShowGuide"]),
+    ...mapMutations(["changeLobbyGuideStep", "changeIsLobbyGuideShow"]),
   },
 };
 </script>

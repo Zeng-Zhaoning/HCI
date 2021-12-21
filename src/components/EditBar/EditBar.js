@@ -179,7 +179,8 @@ export default {
     },
     methods:{
         ...mapMutations(['setJsonSrcPath', 'setSeCurrentSearchParams',
-            'setCurrentSearchResult','setNodeRadius','setNodeFontSize', 'setProject', 'changeShowQAPanel']),
+            'setCurrentSearchResult','setNodeRadius','setNodeFontSize',
+            'setProject', 'changeShowQAPanel', 'changeEditGuideStep', 'changeIsEditGuideShow']),
         changeEditBarState(){
             this.showEditBar = !this.showEditBar;
         },
@@ -383,6 +384,12 @@ export default {
                 name = new Date().getTime();
             }
             return name;
+        },
+
+        showGuide() {
+            this.changeEditGuideStep(-100);
+            this.changeEditGuideStep(1);
+            this.changeIsEditGuideShow();
         },
 
         /**

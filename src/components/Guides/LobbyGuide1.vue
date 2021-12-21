@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div class="guide-highlight" :style="highlightStyle" @click="changeGuideStep" />
+    <div class="guide-highlight" :style="highlightStyle" @click="changeLobbyGuideStep(1)" />
     <div class="panel" :style="panelStyle">
       <div class="array" />
       <div class="guide-title">新建</div>
       <div class="guide-text">
         在这里新建图谱项目
-        <span class="current-step">({{guideStep}}/{{guideMaxStep}})</span>
+        <span class="current-step">({{lobbyGuideStep}}/{{lobbyGuideMaxStep}})</span>
       </div>
       <div class="btns">
-        <div class="skip-btn" @click="changeShowGuide">跳过</div>
-        <div class="btn" @click="changeGuideStep(1)">下一步</div>
+        <div class="text-btn" @click="changeIsLobbyGuideShow">退出</div>
+        <div class="btn" @click="changeLobbyGuideStep(1)">下一步</div>
       </div>
     </div>
   </div>
@@ -29,12 +29,12 @@ export default {
   },
 
   computed: {
-    ...mapState(["guideMaxStep", "guideStep"]),
+    ...mapState(["lobbyGuideMaxStep", "lobbyGuideStep"]),
   },
 
   mounted() {
-    const createNewBtn = document.querySelector("#create-new");
-    const info = createNewBtn.getBoundingClientRect();
+    const target = document.querySelector("#create-new");
+    const info = target.getBoundingClientRect();
     const { height, width, top, left } = info;
     this.highlightStyle = {
       height: height + 20 + 'px',
@@ -46,12 +46,12 @@ export default {
     const panelTopBias = height / 2 - 28;
     this.panelStyle = {
       top: top + panelTopBias + 'px',
-      left: width + 20 + 'px',
+      left: width + 25 + 'px',
     };
   },
 
   methods: {
-    ...mapMutations(["changeGuideStep", "changeShowGuide"]),
+    ...mapMutations(["changeLobbyGuideStep", "changeIsLobbyGuideShow"]),
   },
 };
 </script>

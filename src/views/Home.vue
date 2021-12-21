@@ -6,30 +6,36 @@
     <el-main>
       <work-space></work-space>
     </el-main>
+    <edit-guide v-if="isEditGuideShow"/>
   </el-container>
 </template>
 
 <script>
 import SideBar from "../components/SideBar";
 import WorkSpace from "../components/WorkSpace";
-import { mapActions, mapMutations } from "vuex";
+import EditGuide from "../components/Guides/EditGuide.vue";
+import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   name: 'Home',
   components: {
     WorkSpace,
     SideBar,
+    EditGuide,
   },
   computed: {
-    pid: state => state.pid,
-    project: state => state.project,
-    project_name: state => state.project_name,
+    ...mapState({
+      pid: state => state.pid,
+      project: state => state.project,
+      project_name: state => state.project_name,
+      isEditGuideShow: state => state.isEditGuideShow,
+    }),
   },
   methods: {
     ...mapActions(['loadProject']),
     ...mapMutations(['setPid', 'setProjectName', 'setUserInfo']),
   },
-  created(){
+  mounted(){
     !this.pid && this.setPid(window.localStorage.getItem("pid"));
     !this.project && this.loadProject();
     !this.project_name && this.setProjectName(window.localStorage.getItem("project_name"));

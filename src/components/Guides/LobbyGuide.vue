@@ -1,8 +1,8 @@
 <template>
   <div class="guide-container">
-    <start v-if="guideStep === 0" />
-    <lobby-guide-1 v-else-if="guideStep === 1" />
-    <lobby-guide-2 v-else-if="guideStep === 2" />
+    <start v-if="lobbyGuideStep === 0" />
+    <lobby-guide-1 v-else-if="lobbyGuideStep === 1" />
+    <lobby-guide-2 v-else-if="lobbyGuideStep === 2" />
   </div>
 </template>
 
@@ -13,7 +13,7 @@ import LobbyGuide1 from "./LobbyGuide1.vue";
 import LobbyGuide2 from "./LobbyGuide2.vue";
 
 export default {
-  name: "Guide",
+  name: "LobbyGuide",
 
   components: {
     Start,
@@ -23,7 +23,7 @@ export default {
 
   computed: {
     ...mapState({
-      guideStep: (state) => state.guideStep,
+      lobbyGuideStep: (state) => state.lobbyGuideStep,
     }),
   },
 

@@ -37,6 +37,7 @@
             </div>
           </op-item>
           <op-item op-name="智能问答" icon="#iconcomment" @click="changeShowQAPanel"></op-item>
+          <op-item op-name="新手引导" icon="#iconxinshouyindao" @click="showGuide"></op-item>
         </div>
       </edit-bar-block>
 
