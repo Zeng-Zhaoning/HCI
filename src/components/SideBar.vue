@@ -203,10 +203,21 @@ export default {
       // 获得搜索结果相邻点的集合，补充“猜你想看”
       if (this.recommendations.length < 10) {
         const neighbors = this.result.neighborhood() || [];
-        const neighborNodes = neighbors
-          .filter(item => item.isNode())
-          .map(item => item.data('name'));
-        this.recommendations = this.recommendations.concat(neighborNodes);
+        const neighborNodes = neighbors.filter(item => item.isNode());
+        const neighborNodeNames = neighborNodes.map(item => item.data('name'));
+        this.recommendations = this.recommendations.concat(neighborNodeNames);
+        // 一层节点太少，多找一层
+        if (this.recommendations.length < 10) {
+          const moreNeighbors = neighbors.neighborhood() || [];
+          for (let i = 0; i < moreNeighbors.length; i++) {
+            if (this.recommendations.length >= 10) break;
+            if (moreNeighbors[i].isEdge()) continue;
+            const name = moreNeighbors[i].data('name');
+            if (this.recommendations.includes(name) || this.result.data('name') === name) continue;
+            this.recommendations.push(name);
+            console.trace();
+          }
+        }
       }
 
       count === 0 && (this.showNoResult = true);
