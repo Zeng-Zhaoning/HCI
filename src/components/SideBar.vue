@@ -133,7 +133,7 @@ export default {
       this.input = content;
       this.query();
     },
-    query(event) {
+    query() {
       if (this.input === "") {
         return;
       }
@@ -148,29 +148,6 @@ export default {
 
       this.searchNode();
       this.resultLoading = false;
-
-      //请求api获得“猜你想看”结果
-      let recommendationlist = {
-        "詹姆·斯图尔特": 20,
-        "玛莎·斯图尔特": 19,
-        "伊索特·塞耶": 18,
-        "查威克·布特": 17,
-        "韦伯·布特": 16,
-        "雷欧娜·斯图尔特": 15,
-        "伊尔弗莫尼魔法学校": 14,
-        "威廉·塞耶": 13,
-        "雷欧娜·塞耶": 12,
-        "葛姆蕾·冈特": 11,
-        "萨拉查·斯莱特林": 10,
-      };
-
-      // recommendation
-      this.recommendations = Object.keys(recommendationlist).sort(function (
-        a,
-        b
-      ) {
-        return recommendationlist[b] - recommendationlist[a];
-      });
       this.recommendations = this.recommendations.slice(0, 10);
 
       this.recsLoading = false;
@@ -187,7 +164,7 @@ export default {
     searchNode() {
       let keyWords = this.checkKeyWords(this.input);
       if (keyWords.length === 0) {
-        this.informMsg("error", "请确认搜索内容和筛选条件都不为空哦");
+        this.informMsg("error", "请确认搜索内容不为空哦");
         return;
       }
       //开始一次搜索
@@ -202,6 +179,7 @@ export default {
         for (let key of keyWords) {
           if (this.fuzzyMatch(valName, key)) {
             hit = true;
+            this.recommendations.push(valName);
             break;
           }
         }
@@ -221,6 +199,16 @@ export default {
           });
         }
       });
+      this.recommendations = this.recommendations.filter(item => item !== this.result.data('name'));
+      // 获得搜索结果相邻点的集合，补充“猜你想看”
+      if (this.recommendations.length < 10) {
+        const neighbors = this.result.neighborhood() || [];
+        const neighborNodes = neighbors
+          .filter(item => item.isNode())
+          .map(item => item.data('name'));
+        this.recommendations = this.recommendations.concat(neighborNodes);
+      }
+
       count === 0 && (this.showNoResult = true);
       this.informResult(count > 0, "搜索完毕", "未找到符合条件的结果");
     },

@@ -6,7 +6,7 @@
     <el-main>
       <work-space></work-space>
     </el-main>
-    <edit-guide v-if="isEditGuideShow"/>
+    <!-- <edit-guide v-if="isEditGuideShow"/> -->
   </el-container>
 </template>
 

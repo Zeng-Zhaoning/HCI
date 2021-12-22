@@ -1,5 +1,5 @@
 <template>
-  <div class="work-space-container">
+  <div class="work-space-container" id="work-space">
 
     <component :is="current_graph_component"></component>
 
