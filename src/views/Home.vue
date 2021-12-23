@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     ...mapActions(['loadProject']),
-    ...mapMutations(['setPid', 'setProjectName', 'setUserInfo']),
+    ...mapMutations(['setPid', 'setProjectName', 'setUserInfo', 'changeIsEditGuideShow']),
   },
   mounted(){
     !this.pid && this.setPid(window.localStorage.getItem("pid"));
@@ -42,6 +42,10 @@ export default {
     const uidCached = parseInt(window.localStorage.getItem("uid"));
     const umailCached = window.localStorage.getItem("umail");
     !this.uid && !this.umail && this.setUserInfo(uidCached, umailCached, undefined);
+    if (window.localStorage.getItem("isEditGuideShow") !== "true") {
+      window.localStorage.setItem("isEditGuideShow", true);
+      this.changeIsEditGuideShow();
+    }
   }
 }
 </script>

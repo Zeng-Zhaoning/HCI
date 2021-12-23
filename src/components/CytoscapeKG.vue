@@ -20,7 +20,7 @@
                                 allow-create
                                 default-first-option
                                 no-data-text="输入已存在的属性会取消勾选哦"
-                                placeholder="在这里可以输入属性哦">
+                                placeholder="格式如“性别:女”">
                         </el-select>
                     </el-form-item>
 
@@ -825,12 +825,8 @@
 
             handleClose(done) {
                 let that = this;
-                this.$confirm('所作的编辑将不会保存')
-                    .then(_ => {
-                        done();
-                        that.resetForm();
-                    })
-                    .catch(_ => {});
+                done();
+                that.resetForm();
             },
 
             //addForm组件
@@ -1007,6 +1003,7 @@
 @import "../assets/css/colors";
     .knowledge-graph-cy{
       height: 100%;
+      overflow: hidden;
     }
     #graph {
         width: 100%;

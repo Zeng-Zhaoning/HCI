@@ -50,7 +50,6 @@ export default {
       top: top + panelTopBias + 'px',
       left: width + 35 + 'px',
     };
-    // TODO: 模拟搜索
   },
 
   methods: {

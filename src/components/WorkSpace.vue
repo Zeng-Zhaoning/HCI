@@ -159,6 +159,7 @@ export default {
 .work-space-container{
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 .view-ops{
   position: absolute;

@@ -84,7 +84,7 @@ export default {
     document.removeEventListener('keypress', this.hadleKeyPress);
   },
   methods: {
-    ...mapMutations(["setUserInfo", "changeIsLobbyGuideShow", "changeIsEditGuideShow"]),
+    ...mapMutations(["setUserInfo", "changeIsLobbyGuideShow"]),
     checkEmail() {
       if (!this.email) {
         this.emailErrorMsg = "请输入邮箱";
@@ -149,10 +149,6 @@ export default {
         window.localStorage.setItem("isLobbyGuideShow", true);
         this.changeIsLobbyGuideShow();
       }
-      if (window.localStorage.getItem("isEditGuideShow") !== "true") {
-        window.localStorage.setItem("isEditGuideShow", true);
-        this.changeIsEditGuideShow();
-      }
       this.clearData();
       this.$router.push("/lobby");
     },
@@ -199,7 +195,6 @@ export default {
       this.$message.info("请联系管理员找回密码");
     },
     hadleKeyPress(event) {
-      console.log('chufa');
       if (event.keyCode === 13) {
         !this.isRegistering && this.login();
         this.isRegistering && this.register();

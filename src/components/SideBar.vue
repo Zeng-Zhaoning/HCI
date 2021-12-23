@@ -105,14 +105,26 @@ export default {
       project: (state) => state.project,
       proj_name: (state) => state.project_name,
       pid: (state) => state.pid,
+      isEditGuideShow: (state) => state.isEditGuideShow,
     }),
   },
   watch: {
-    cy(newValue, oldValue) {
+    cy(newValue) {
       this.initZoom = newValue._private.zoom;
       let p_pan = this.cy._private.pan;
       this.initPan = { x: p_pan.x, y: p_pan.y };
     },
+    isEditGuideShow(newValue) {
+      if (newValue) {
+        // 配合新手教程，模拟搜索
+        let node;
+        if (this.cy) {
+          node = this.cy.nodes()[0];
+          node && (this.input = node.data('name'));
+          this.query();
+        }
+      }
+    }
   },
   methods: {
     ...mapMutations(["setProject"]),
@@ -201,7 +213,7 @@ export default {
       });
       this.recommendations = this.recommendations.filter(item => item !== this.result.data('name'));
       // 获得搜索结果相邻点的集合，补充“猜你想看”
-      if (this.recommendations.length < 10) {
+      if (count > 0 && this.recommendations.length < 10) {
         const neighbors = this.result.neighborhood() || [];
         const neighborNodes = neighbors.filter(item => item.isNode());
         const neighborNodeNames = neighborNodes.map(item => item.data('name'));
@@ -215,13 +227,12 @@ export default {
             const name = moreNeighbors[i].data('name');
             if (this.recommendations.includes(name) || this.result.data('name') === name) continue;
             this.recommendations.push(name);
-            console.trace();
           }
         }
       }
 
-      count === 0 && (this.showNoResult = true);
-      this.informResult(count > 0, "搜索完毕", "未找到符合条件的结果");
+      count === 0 && (this.showNoResult = true) && (this.showNoRecs = true);
+      !this.isEditGuideShow && this.informResult(count > 0, "搜索完毕", "未找到符合条件的结果");
     },
     informMsg(type, msg) {
       this.$message({
