@@ -1,12 +1,12 @@
 <template>
   <el-container id="home">
     <el-aside width="300px">
-      <side-bar class="side-bar"></side-bar>
+      <side-bar class="side-bar" id="side-bar"></side-bar>
     </el-aside>
     <el-main>
-      <work-space></work-space>
+      <work-space id="work-space"></work-space>
     </el-main>
-    <!-- <edit-guide v-if="isEditGuideShow"/> -->
+    <edit-guide v-if="isEditGuideShow"/>
   </el-container>
 </template>
 

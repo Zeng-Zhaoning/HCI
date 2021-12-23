@@ -3,7 +3,7 @@
     <div class="panel">
       <div class="guide-title">欢迎！</div>
       <div class="guide-text">
-        跟随教程创建属于你的知识图谱吧！<br />
+        跟随教程创建属于你的知识图谱吧！
       </div>
       <div class="btns">
         <div class="text-btn" @click="changeIsLobbyGuideShow">跳过</div>
@@ -42,15 +42,11 @@ export default {
 }
 
 .guide-title {
-  color: @theme;
   font-size: 21px;
-  margin-bottom: 20px;
   font-weight: normal;
 }
 
 .guide-text {
-  color: @modao-font;
-  font-size: 16px;
   margin-bottom: 45px;
 }
 

@@ -18,14 +18,12 @@ export default createStore({
         lobbyGuideStep: 0,
         /**项目页新手引导总步骤数 */
         lobbyGuideMaxStep: 2,
-        /**将来要改缓存 */
-        isLobbyGuideShow: true,
+        isLobbyGuideShow: false,
         /**编辑页新手引导的当前步骤 */
         editGuideStep: 1,
         /**编辑页新手引导总步骤数 */
-        editGuideMaxStep: 1,
-        /**将来要改缓存 */
-        isEditGuideShow: true,
+        editGuideMaxStep: 4,
+        isEditGuideShow: false,
     },
 
     mutations: {
@@ -51,7 +49,6 @@ export default createStore({
                 state.isLobbyGuideShow = false;
             }
         },
-        /**将来改缓存 */
         changeIsLobbyGuideShow(state) {
             state.isLobbyGuideShow = !state.isLobbyGuideShow;
         },
@@ -63,7 +60,6 @@ export default createStore({
                 state.isEditGuideShow = false;
             }
         },
-        /**将来改缓存 */
         changeIsEditGuideShow(state) {
             state.isEditGuideShow = !state.isEditGuideShow;
         },

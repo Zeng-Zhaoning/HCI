@@ -84,7 +84,7 @@ export default {
     document.removeEventListener('keypress', this.hadleKeyPress);
   },
   methods: {
-    ...mapMutations(["setUserInfo"]),
+    ...mapMutations(["setUserInfo", "changeIsLobbyGuideShow", "changeIsEditGuideShow"]),
     checkEmail() {
       if (!this.email) {
         this.emailErrorMsg = "请输入邮箱";
@@ -144,7 +144,15 @@ export default {
       let uid = res.content["id"];
       this.setUserInfo(uid, this.mail, this.password);
       window.localStorage.setItem("uid", uid);
-      window.localStorage.setItem("umail", this.mail);
+      window.localStorage.setItem("umail", this.email);
+      if (window.localStorage.getItem("isLobbyGuideShow") !== "true") {
+        window.localStorage.setItem("isLobbyGuideShow", true);
+        this.changeIsLobbyGuideShow();
+      }
+      if (window.localStorage.getItem("isEditGuideShow") !== "true") {
+        window.localStorage.setItem("isEditGuideShow", true);
+        this.changeIsEditGuideShow();
+      }
       this.clearData();
       this.$router.push("/lobby");
     },

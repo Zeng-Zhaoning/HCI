@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-bar-container" :class="{ hideEditBarAni: !showEditBar, ShowEditBarAni: showEditBar }">
+  <div id="edit-bar" class="edit-bar-container" :class="{ hideEditBarAni: !showEditBar, ShowEditBarAni: showEditBar }">
     <el-tooltip
         effect="dark"
         content="工具栏"
