@@ -197,12 +197,12 @@ export default {
     ]),
 
     ctrl_S(e) {
-        e.preventDefault();
         var currKey=0, e=e||event||window.event;
         currKey = e.keyCode||e.which||e.charCode;
         if(currKey == 83 && (e.ctrlKey||e.metaKey)){
-            this.save();
-            return false;
+          e.preventDefault();
+          this.save();
+          return false;
         }
     },
 
