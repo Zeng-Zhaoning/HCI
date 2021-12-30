@@ -1,5 +1,7 @@
 # knowledgegraph
 
+请使用 latest_zzn 分支，那里是最新的。后端地址：https://github.com/owenrrr/HCI_BackEnd.git
+
 1、不要 npm install ！不要 npm install ！不要 npm install ！
 也尽量不要引用新库。
 直接 npm run serve 即可启动项目
